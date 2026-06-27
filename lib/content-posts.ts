@@ -1,6 +1,13 @@
 import { createClient } from "@/lib/supabase/server"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import { sortByPinnedThenDate } from "@/lib/content-post-pin"
+import {
+  filterActiveEvents,
+  getEventArchiveContentType,
+  isEventEligibleForArchive,
+  mergeEventArchivePosts,
+  type EventArchiveEntry,
+} from "@/lib/event-archive-merge"
 import { parseEventPostMetadata } from "@/lib/event-metadata"
 import type { EventPost } from "@/lib/event-types"
 import type { BlogPost } from "@/lib/blog-types"
@@ -260,7 +267,9 @@ export async function getPublishedEvents(): Promise<EventPost[]> {
     return []
   }
 
-  return sortEventsByFeaturedThenDate((data ?? []).map(mapContentPostToEventPost))
+  return sortEventsByFeaturedThenDate(
+    filterActiveEvents((data ?? []).map(mapContentPostToEventPost)),
+  )
 }
 
 export async function getPublishedEventBySlug(slug: string): Promise<EventPost | null> {
@@ -297,29 +306,51 @@ export async function getPublishedEventWithView(slug: string): Promise<EventPost
 
 export const mapContentPostToEventArchivePost = mapContentPostToEventPost
 
-export async function getPublishedEventArchives(): Promise<EventPost[]> {
+async function fetchPublishedEventArchiveRows() {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from("content_posts")
-    .select("*")
-    .eq("content_type", "event_archive")
-    .eq("status", "published")
-    .order("is_pinned", { ascending: false })
-    .order("published_at", { ascending: false, nullsFirst: false })
 
-  if (error) {
-    console.error("Failed to fetch event archives:", error.message)
-    return []
+  const [{ data: archiveRows, error: archiveError }, { data: eventRows, error: eventError }] =
+    await Promise.all([
+      supabase
+        .from("content_posts")
+        .select("*")
+        .eq("content_type", "event_archive")
+        .eq("status", "published")
+        .order("is_pinned", { ascending: false })
+        .order("published_at", { ascending: false, nullsFirst: false }),
+      supabase
+        .from("content_posts")
+        .select("*")
+        .eq("content_type", "event")
+        .eq("status", "published")
+        .order("published_at", { ascending: false, nullsFirst: false }),
+    ])
+
+  if (archiveError) {
+    console.error("Failed to fetch event archives:", archiveError.message)
   }
 
-  return (data ?? [])
-    .map(mapContentPostToEventArchivePost)
-    .sort((a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime())
+  if (eventError) {
+    console.error("Failed to fetch events for archive merge:", eventError.message)
+  }
+
+  return {
+    manualArchives: (archiveRows ?? []).map(mapContentPostToEventArchivePost),
+    events: (eventRows ?? []).map(mapContentPostToEventPost),
+  }
 }
 
-export async function getPublishedEventArchiveBySlug(slug: string): Promise<EventPost | null> {
+export async function getPublishedEventArchives(): Promise<EventArchiveEntry[]> {
+  const { manualArchives, events } = await fetchPublishedEventArchiveRows()
+  return mergeEventArchivePosts(manualArchives, events)
+}
+
+async function resolvePublishedEventArchiveEntry(
+  slug: string,
+): Promise<EventArchiveEntry | null> {
   const supabase = await createClient()
-  const { data, error } = await supabase
+
+  const { data: archiveRow } = await supabase
     .from("content_posts")
     .select("*")
     .eq("content_type", "event_archive")
@@ -327,26 +358,53 @@ export async function getPublishedEventArchiveBySlug(slug: string): Promise<Even
     .eq("status", "published")
     .maybeSingle()
 
-  if (error || !data) {
+  if (archiveRow) {
+    return {
+      ...mapContentPostToEventArchivePost(archiveRow),
+      archiveSource: "manual",
+    }
+  }
+
+  const { data: eventRow } = await supabase
+    .from("content_posts")
+    .select("*")
+    .eq("content_type", "event")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .maybeSingle()
+
+  if (!eventRow) {
     return null
   }
 
-  return mapContentPostToEventArchivePost(data)
+  const event = mapContentPostToEventPost(eventRow)
+  if (isEventEligibleForArchive(event)) {
+    return { ...event, archiveSource: "event" }
+  }
+
+  return null
+}
+
+export async function getPublishedEventArchiveBySlug(slug: string): Promise<EventPost | null> {
+  const entry = await resolvePublishedEventArchiveEntry(slug)
+  return entry ?? null
 }
 
 export async function getPublishedEventArchiveWithView(slug: string): Promise<EventPost | null> {
-  const views = await recordContentPostView("event_archive", slug)
-  const post = await getPublishedEventArchiveBySlug(slug)
+  const entry = await resolvePublishedEventArchiveEntry(slug)
 
-  if (!post) {
+  if (!entry) {
     return null
   }
 
+  const contentType = getEventArchiveContentType(entry)
+  const views = await recordContentPostView(contentType, slug)
+
   if (views > 0) {
-    return { ...post, views }
+    return { ...entry, views }
   }
 
-  return post
+  return entry
 }
 
 export function getPublicPathsForContentType(

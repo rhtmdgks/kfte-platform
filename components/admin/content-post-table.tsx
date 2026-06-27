@@ -23,6 +23,12 @@ import {
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog"
 import { sortByPinnedThenDate } from "@/lib/content-post-pin"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
+import { parseEventPostMetadata } from "@/lib/event-metadata"
+import {
+  getEventRegistrationStatus,
+  registrationStatusLabel,
+  type EventPost,
+} from "@/lib/event-types"
 import type { Tables, Database } from "@/types/database"
 
 type ContentPost = Tables<"content_posts">
@@ -59,6 +65,26 @@ export function ContentPostTable({
 
   const sortedPosts = useMemo(() => sortByPinnedThenDate(posts), [posts])
 
+  const getEventRegistrationStatusLabel = (post: ContentPost) => {
+    const meta = parseEventPostMetadata(post.metadata)
+    const eventDate = meta.eventDate ?? post.published_at ?? post.created_at
+    const status = getEventRegistrationStatus({
+      id: post.slug,
+      title: post.title,
+      summary: post.summary ?? "",
+      content: post.body ?? "",
+      category: meta.category ?? "프로그램",
+      eventDate,
+      eventEndDate: meta.eventEndDate,
+      location: meta.location ?? "",
+      registrationStart: meta.registrationStart,
+      registrationEnd: meta.registrationEnd,
+      views: 0,
+    } satisfies EventPost)
+
+    return registrationStatusLabel[status]
+  }
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "—"
     return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -92,6 +118,9 @@ export function ContentPostTable({
           <TableHeader>
             <TableRow>
               <TableHead>제목</TableHead>
+              {contentType === "event" ? (
+                <TableHead className="w-28">모집 상태</TableHead>
+              ) : null}
               <TableHead className="w-24">상태</TableHead>
               <TableHead className="w-20 text-right">조회</TableHead>
               <TableHead className="w-32">게시일</TableHead>
@@ -102,13 +131,15 @@ export function ContentPostTable({
           <TableBody>
             {posts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={contentType === "event" ? 7 : 6} className="py-10 text-center text-muted-foreground">
                   게시글이 없습니다.
                 </TableCell>
               </TableRow>
             ) : (
               sortedPosts.map((post) => {
                 const views = parseContentPostMetadata(post.metadata).views ?? 0
+                const registrationLabel =
+                  contentType === "event" ? getEventRegistrationStatusLabel(post) : null
 
                 return (
                 <TableRow key={post.id}>
@@ -123,6 +154,24 @@ export function ContentPostTable({
                       {post.title}
                     </span>
                   </TableCell>
+                  {contentType === "event" ? (
+                    <TableCell>
+                      <Badge
+                        variant={
+                          registrationLabel === "모집중"
+                            ? "default"
+                            : registrationLabel === "모집 예정"
+                              ? "secondary"
+                              : "outline"
+                        }
+                      >
+                        {registrationLabel}
+                      </Badge>
+                      {registrationLabel === "모집 마감" ? (
+                        <p className="mt-1 text-[11px] text-muted-foreground">아카이브 자동 노출</p>
+                      ) : null}
+                    </TableCell>
+                  ) : null}
                   <TableCell>
                     <Badge variant={statusVariants[post.status]}>
                       {statusLabels[post.status]}

@@ -35,5 +35,10 @@ export function groupArchivesByYear(posts: readonly EventArchivePost[]) {
 
   return [...map.entries()]
     .sort(([a], [b]) => b - a)
-    .map(([year, items]) => ({ year, items }))
+    .map(([year, items]) => ({
+      year,
+      items: [...items].sort(
+        (a, b) => new Date(b.eventDate).getTime() - new Date(a.eventDate).getTime(),
+      ),
+    }))
 }

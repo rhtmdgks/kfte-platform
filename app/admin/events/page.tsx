@@ -15,7 +15,12 @@ export default async function AdminEventsPage() {
     <div className="flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b px-6">
         <AdminSidebarTrigger />
-        <h1 className="text-lg font-semibold text-[#002065]">행사 관리</h1>
+        <div>
+          <h1 className="text-lg font-semibold text-[#002065]">행사 관리</h1>
+          <p className="text-xs text-muted-foreground">
+            모집 마감된 공개 행사는 아카이브에 자동 노출됩니다.
+          </p>
+        </div>
       </header>
       <main className="flex-1 p-6">
         <ContentPostTable posts={posts ?? []} adminPath="/admin/events" contentType="event" onDelete={deletePost} />

@@ -181,15 +181,19 @@ export function EventPostForm({ post, contentType, action }: EventPostFormProps)
               defaultValue={toDatetimeLocalValue(metadata.registrationStart)}
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="metadata_registration_end">모집 마감</Label>
-            <Input
-              id="metadata_registration_end"
-              name="metadata_registration_end"
-              type="datetime-local"
-              defaultValue={toDatetimeLocalValue(metadata.registrationEnd)}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label htmlFor="metadata_registration_end">모집 마감</Label>
+          <Input
+            id="metadata_registration_end"
+            name="metadata_registration_end"
+            type="datetime-local"
+            defaultValue={toDatetimeLocalValue(metadata.registrationEnd)}
+          />
+          <p className="text-xs text-muted-foreground">
+            모집 마감일이 지나면 행사 목록에서 아카이브로 자동 이동합니다. (모집 기간 미입력 시
+            행사일 기준)
+          </p>
+        </div>
         </div>
 
         <div className="space-y-2">
