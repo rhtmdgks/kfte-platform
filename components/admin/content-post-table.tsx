@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog"
+import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import type { Tables, Database } from "@/types/database"
 
 type ContentPost = Tables<"content_posts">
@@ -89,6 +90,7 @@ export function ContentPostTable({
             <TableRow>
               <TableHead>제목</TableHead>
               <TableHead className="w-24">상태</TableHead>
+              <TableHead className="w-20 text-right">조회</TableHead>
               <TableHead className="w-32">게시일</TableHead>
               <TableHead className="w-32">수정일</TableHead>
               <TableHead className="w-12" />
@@ -97,18 +99,24 @@ export function ContentPostTable({
           <TableBody>
             {posts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="py-10 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
                   게시글이 없습니다.
                 </TableCell>
               </TableRow>
             ) : (
-              posts.map((post) => (
+              posts.map((post) => {
+                const views = parseContentPostMetadata(post.metadata).views ?? 0
+
+                return (
                 <TableRow key={post.id}>
                   <TableCell className="font-medium">{post.title}</TableCell>
                   <TableCell>
                     <Badge variant={statusVariants[post.status]}>
                       {statusLabels[post.status]}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-right tabular-nums text-muted-foreground">
+                    {views.toLocaleString("ko-KR")}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(post.published_at)}
@@ -141,7 +149,8 @@ export function ContentPostTable({
                     </DropdownMenu>
                   </TableCell>
                 </TableRow>
-              ))
+                )
+              })
             )}
           </TableBody>
         </Table>

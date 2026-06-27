@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import type { Tables, Database } from "@/types/database"
 
 type ContentPost = Tables<"content_posts">
@@ -24,6 +25,11 @@ type ContentPostFormProps = {
   contentType: ContentType
   action: (formData: FormData) => Promise<void>
   showExternalUrl?: boolean
+  showAttachmentFields?: boolean
+  authorFieldLabel?: string
+  defaultAuthor?: string
+  categoryOptions?: readonly string[]
+  defaultCategory?: string
 }
 
 function SubmitButton() {
@@ -41,7 +47,13 @@ export function ContentPostForm({
   contentType,
   action,
   showExternalUrl = false,
+  showAttachmentFields = false,
+  authorFieldLabel = "작성자",
+  defaultAuthor = "KFTE",
+  categoryOptions = [],
+  defaultCategory,
 }: ContentPostFormProps) {
+  const metadata = parseContentPostMetadata(post?.metadata ?? null)
   const [, formAction] = useActionState(async (_: void | null, formData: FormData) => {
     await action(formData)
     return null
@@ -62,6 +74,39 @@ export function ContentPostForm({
         />
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="metadata_author">{authorFieldLabel}</Label>
+          <Input
+            id="metadata_author"
+            name="metadata_author"
+            defaultValue={metadata.author ?? defaultAuthor}
+            placeholder={authorFieldLabel}
+          />
+        </div>
+
+        {categoryOptions.length > 0 && (
+          <div className="space-y-2">
+            <Label htmlFor="metadata_category">카테고리</Label>
+            <Select
+              name="metadata_category"
+              defaultValue={metadata.category ?? defaultCategory ?? categoryOptions[0]}
+            >
+              <SelectTrigger id="metadata_category">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((category) => (
+                  <SelectItem key={category} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="summary">요약</Label>
         <Input
@@ -74,25 +119,13 @@ export function ContentPostForm({
 
       <div className="space-y-2">
         <Label htmlFor="body">본문</Label>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">마크다운 입력</p>
-            <Textarea
-              id="body"
-              name="body"
-              defaultValue={post?.body ?? ""}
-              placeholder="본문을 마크다운으로 입력하세요"
-              className="min-h-[400px] font-mono text-sm"
-            />
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">미리보기</p>
-            <div
-              className="prose prose-sm min-h-[400px] max-w-none rounded-md border bg-surface p-4 text-sm"
-              id="preview"
-            />
-          </div>
-        </div>
+        <Textarea
+          id="body"
+          name="body"
+          defaultValue={post?.body ?? ""}
+          placeholder="본문을 입력하세요"
+          className="min-h-[400px] font-mono text-sm"
+        />
       </div>
 
       {showExternalUrl && (
@@ -105,6 +138,30 @@ export function ContentPostForm({
             defaultValue={post?.external_url ?? ""}
             placeholder="https://example.com/article"
           />
+        </div>
+      )}
+
+      {showAttachmentFields && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="metadata_attachment_name">첨부파일 이름</Label>
+            <Input
+              id="metadata_attachment_name"
+              name="metadata_attachment_name"
+              defaultValue={metadata.attachmentName ?? ""}
+              placeholder="예: 안내.pdf"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="metadata_attachment_url">첨부파일 URL</Label>
+            <Input
+              id="metadata_attachment_url"
+              name="metadata_attachment_url"
+              type="url"
+              defaultValue={metadata.attachmentUrl ?? ""}
+              placeholder="https://..."
+            />
+          </div>
         </div>
       )}
 

@@ -1,19 +1,19 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { NewsDetailPageContent } from "@/components/news/news-detail-page-content"
-import { getNewsPostById } from "@/lib/news-types"
-import { noticesPage } from "@/lib/notices-content"
+import { getPublishedNewsPostWithView } from "@/lib/content-posts"
+import { noticesPageConfig } from "@/lib/notices-content"
 
 type PageProps = {
   params: Promise<{ id: string }>
 }
 
-export async function generateStaticParams() {
-  return noticesPage.posts.map((post) => ({ id: post.id }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
-  const post = getNewsPostById(noticesPage.posts, id)
+  const { getPublishedNewsPostBySlug } = await import("@/lib/content-posts")
+  const post = await getPublishedNewsPostBySlug("notice", id)
 
   if (!post) {
     return { title: "공지사항 | 한국기술창업진흥재단(KFTE)" }
@@ -27,5 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function NoticeDetailPage({ params }: PageProps) {
   const { id } = await params
-  return <NewsDetailPageContent config={noticesPage} postId={id} />
+  const post = await getPublishedNewsPostWithView("notice", id)
+
+  if (!post) {
+    notFound()
+  }
+
+  return <NewsDetailPageContent config={noticesPageConfig} post={post} />
 }

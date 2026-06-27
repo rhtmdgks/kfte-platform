@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react"
 import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { ContentPostForm } from "@/components/admin/content-post-form"
 import { createPost } from "@/app/admin/content/actions"
+import { pressCategoryOptions } from "@/lib/press-content"
 
 export default function NewPressPage() {
   return (
@@ -15,7 +16,15 @@ export default function NewPressPage() {
         <h1 className="text-lg font-semibold text-[#002065]">새 언론보도</h1>
       </header>
       <main className="flex-1 p-6">
-        <ContentPostForm contentType="press" action={createPost} showExternalUrl />
+        <ContentPostForm
+          contentType="press"
+          action={createPost}
+          authorFieldLabel="매체"
+          defaultAuthor=""
+          categoryOptions={pressCategoryOptions}
+          defaultCategory="보도자료"
+          showExternalUrl
+        />
       </main>
     </div>
   )

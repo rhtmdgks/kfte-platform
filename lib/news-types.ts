@@ -18,6 +18,8 @@ export type NewsListConfig = {
   pageHeading: string
   basePath: string
   authorColumnLabel: string
+  /** 첫 번째 열(작성자·매체) 너비. 기본 100px */
+  authorColumnWidth?: string
   categories: readonly NewsCategory[]
   posts: readonly NewsPost[]
 }

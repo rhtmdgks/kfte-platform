@@ -1,19 +1,19 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { NewsDetailPageContent } from "@/components/news/news-detail-page-content"
-import { getNewsPostById } from "@/lib/news-types"
-import { pressPage } from "@/lib/press-content"
+import { getPublishedNewsPostWithView } from "@/lib/content-posts"
+import { pressPageConfig } from "@/lib/press-content"
 
 type PageProps = {
   params: Promise<{ id: string }>
 }
 
-export async function generateStaticParams() {
-  return pressPage.posts.map((post) => ({ id: post.id }))
-}
+export const dynamic = "force-dynamic"
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params
-  const post = getNewsPostById(pressPage.posts, id)
+  const { getPublishedNewsPostBySlug } = await import("@/lib/content-posts")
+  const post = await getPublishedNewsPostBySlug("press", id)
 
   if (!post) {
     return { title: "언론보도 | 한국기술창업진흥재단(KFTE)" }
@@ -27,5 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PressDetailPage({ params }: PageProps) {
   const { id } = await params
-  return <NewsDetailPageContent config={pressPage} postId={id} />
+  const post = await getPublishedNewsPostWithView("press", id)
+
+  if (!post) {
+    notFound()
+  }
+
+  return <NewsDetailPageContent config={pressPageConfig} post={post} />
 }

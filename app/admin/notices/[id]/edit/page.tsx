@@ -5,6 +5,7 @@ import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { ContentPostForm } from "@/components/admin/content-post-form"
 import { createClient } from "@/lib/supabase/server"
 import { updatePost } from "@/app/admin/content/actions"
+import { noticeCategoryOptions } from "@/lib/notices-content"
 
 type PageProps = { params: Promise<{ id: string }> }
 
@@ -38,6 +39,11 @@ export default async function EditNoticePage({ params }: PageProps) {
           post={post}
           contentType="notice"
           action={updatePost.bind(null, id)}
+          authorFieldLabel="작성자"
+          defaultAuthor="KFTE"
+          categoryOptions={noticeCategoryOptions}
+          defaultCategory="아티클"
+          showAttachmentFields
         />
       </main>
     </div>

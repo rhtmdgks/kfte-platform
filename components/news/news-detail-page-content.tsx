@@ -3,21 +3,16 @@
 import Link from "next/link"
 import { ArrowLeft, Download, Eye, FileIcon } from "lucide-react"
 import { MotionReveal } from "@/components/motion"
-import {
-  formatNewsDetailDate,
-  getNewsPostById,
-  type NewsListConfig,
-} from "@/lib/news-types"
+import { formatNewsDetailDate, type NewsListConfig, type NewsPost } from "@/lib/news-types"
 import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
 
 type NewsDetailPageContentProps = {
-  config: NewsListConfig
-  postId: string
+  config: Omit<NewsListConfig, "posts">
+  post: NewsPost
 }
 
-export function NewsDetailPageContent({ config, postId }: NewsDetailPageContentProps) {
-  const post = getNewsPostById(config.posts, postId)
+export function NewsDetailPageContent({ config, post }: NewsDetailPageContentProps) {
 
   const handleDownload = (url: string) => {
     if (url === "#") {
@@ -47,19 +42,6 @@ export function NewsDetailPageContent({ config, postId }: NewsDetailPageContentP
         window.alert("링크가 복사되었습니다.")
         break
     }
-  }
-
-  if (!post) {
-    return (
-      <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
-        <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
-          <p className="text-[#7B7B7B]">{config.pageTitle}을 찾을 수 없습니다.</p>
-          <Link href={config.basePath} className="text-primary underline">
-            목록으로 돌아가기
-          </Link>
-        </div>
-      </main>
-    )
   }
 
   return (

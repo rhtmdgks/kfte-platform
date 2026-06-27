@@ -14,6 +14,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_post_view_events: {
+        Row: {
+          id: string
+          post_id: string
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_post_view_events_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "content_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_posts: {
         Row: {
           author_id: string | null
@@ -158,7 +184,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_content_view_trends: {
+        Args: {
+          p_content_type: Database["public"]["Enums"]["content_type"]
+          p_days?: number
+        }
+        Returns: {
+          day: string
+          views: number
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
+      record_content_post_view: {
+        Args: {
+          p_content_type: Database["public"]["Enums"]["content_type"]
+          p_slug: string
+        }
+        Returns: number
+      }
     }
     Enums: {
       application_status: "pending" | "reviewing" | "approved" | "rejected"
