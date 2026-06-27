@@ -123,6 +123,8 @@ function revalidateContentPaths(contentType: ContentType, slug?: string) {
     if (slug) {
       revalidatePath(`${publicBase}/${slug}`)
     }
+    // sitemap을 콘텐츠 변경 시마다 무효화
+    revalidatePath("/sitemap.xml")
   }
 }
 

@@ -48,9 +48,9 @@ export function NewsDetailPageContent({ config, post }: NewsDetailPageContentPro
     <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
       <div className="relative z-10 px-6 pb-16 md:px-10 lg:px-[72px]">
         <MotionReveal>
-          <h1 className="mb-12 text-center text-[32px] font-medium text-black">
+          <p className="mb-12 text-center text-[32px] font-medium text-black">
             {config.pageHeading}
-          </h1>
+          </p>
         </MotionReveal>
 
         <MotionReveal delay={0.08}>
@@ -63,12 +63,12 @@ export function NewsDetailPageContent({ config, post }: NewsDetailPageContentPro
             목록으로
           </Link>
 
-          <h2 className="mb-4 text-[32px] font-semibold leading-[1.5] text-black">
+          <h1 className="mb-4 text-[32px] font-semibold leading-[1.5] text-black">
             {post.title}
-          </h2>
+          </h1>
 
           <div className="mb-4 flex flex-wrap items-center gap-2 text-[16px] text-[#C4C4C4]">
-            <span>{formatNewsDetailDate(post.createdAt)}</span>
+            <time dateTime={post.createdAt}>{formatNewsDetailDate(post.createdAt)}</time>
             <span>·</span>
             <span>{post.author}</span>
             <span>·</span>
@@ -80,9 +80,9 @@ export function NewsDetailPageContent({ config, post }: NewsDetailPageContentPro
 
           <div className="mb-8 h-px w-full bg-[#D9D9D9]" />
 
-          <div className="mb-8 whitespace-pre-wrap text-[16px] leading-[2] text-[#555555]">
+          <article className="mb-8 whitespace-pre-wrap text-[16px] leading-[2] text-[#555555]">
             {post.content}
-          </div>
+          </article>
 
           {post.externalUrl ? (
             <a

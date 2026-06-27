@@ -3,6 +3,7 @@ import { EmptyPage } from "@/components/empty-page"
 
 export const metadata: Metadata = {
   title: "회원사 인터뷰 | 한국기술창업진흥재단(KFTE)",
+  robots: { index: false, follow: true },
 }
 
 export default function Page() {

@@ -61,8 +61,16 @@ export function Hero() {
             </p>
           </motion.div>
 
+          <motion.p
+            className="mt-6 text-xs tracking-[0.12em] text-primary-foreground/40 font-medium"
+            variants={fadeUpHero}
+            transition={springGentle}
+          >
+            민간 비영리 재단 · 고유번호 316-82-77638
+          </motion.p>
+
           <motion.div
-            className="mt-10 flex flex-col sm:flex-row flex-wrap gap-3"
+            className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3"
             variants={fadeUpHero}
             transition={springGentle}
           >
@@ -72,8 +80,8 @@ export function Hero() {
               variant="secondary"
               className="rounded-none bg-primary-foreground text-primary hover:bg-primary-foreground/90"
             >
-              <Link href="#contact">
-                KFTE와 함께하기
+              <Link href="/activities/events">
+                행사·프로그램 보기
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Button>
@@ -91,7 +99,7 @@ export function Hero() {
               variant="ghost"
               className="rounded-none text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
             >
-              <Link href="#resources">재단 소개서 보기</Link>
+              <Link href="/about">재단 소개 보기</Link>
             </Button>
           </motion.div>
         </div>

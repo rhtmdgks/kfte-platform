@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { EmptyPage } from "@/components/empty-page"
 
 export const metadata: Metadata = {
-  title: "회원가입 | 한국기술창업진흥재단(KFTE)",
+  title: "회원가입",
 }
 
 export default function Page() {

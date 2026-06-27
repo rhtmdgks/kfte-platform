@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { MotionReveal, MotionStagger, MotionStaggerItem } from "@/components/motion"
 import { news as newsContent } from "@/lib/kfte-content"
 
@@ -14,7 +15,7 @@ function NewsEntry({
 }) {
   return (
     <MotionStaggerItem index={index}>
-      <Link href="#" className="group block py-7 md:py-8">
+      <Link href="/news/notices" className="group block py-7 md:py-8">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-3">
@@ -45,13 +46,21 @@ function NewsEntry({
 export function NewsSection() {
   return (
     <section id="news" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <MotionReveal className="mb-20 pb-6 border-b border-border">
-        <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
-          {newsContent.eyebrow}
-        </p>
-        <h2 className="text-3xl md:text-4xl lg:text-[3rem] font-semibold tracking-tight text-foreground">
-          {newsContent.headline}
-        </h2>
+      <MotionReveal className="mb-20 pb-6 border-b border-border flex flex-col md:flex-row md:items-end gap-6">
+        <div className="flex-1">
+          <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
+            {newsContent.eyebrow}
+          </p>
+          <h2 className="text-3xl md:text-4xl lg:text-[3rem] font-semibold tracking-tight text-foreground">
+            {newsContent.headline}
+          </h2>
+        </div>
+        <Button asChild variant="outline" className="rounded-none self-start md:self-auto shrink-0">
+          <Link href="/news/notices">
+            모든 소식 보기
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
+        </Button>
       </MotionReveal>
 
       <MotionStagger className="divide-y divide-border">

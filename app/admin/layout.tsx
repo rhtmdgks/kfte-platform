@@ -6,6 +6,12 @@ import { AdminContentShell } from "@/components/admin/admin-content-shell"
 import { Toaster } from "@/components/ui/sonner"
 import { createClient } from "@/lib/supabase/server"
 
+export const metadata = {
+  robots: { index: false, follow: false },
+  alternates: {},
+  openGraph: { images: [] },
+}
+
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
 

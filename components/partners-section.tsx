@@ -46,21 +46,6 @@ export function PartnersSection() {
         ))}
       </MotionStagger>
 
-      <MotionReveal delay={0.08}>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-12">
-          {Array.from({ length: 8 }, (_, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-center bg-background p-10 border-0"
-            >
-              <span className="text-sm tracking-[0.15em] uppercase font-semibold text-muted-foreground/40">
-                Partner {String(i + 1).padStart(2, "0")}
-              </span>
-            </div>
-          ))}
-        </div>
-      </MotionReveal>
-
       <MotionReveal delay={0.12} className="text-center">
         <Button asChild size="lg" className="rounded-none">
           <Link href="#contact">{partnersContent.cta}</Link>

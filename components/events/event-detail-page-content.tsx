@@ -134,6 +134,9 @@ export function EventDetailPageContent({
         </MotionReveal>
 
         <div className="mx-auto max-w-7xl">
+          <MotionReveal delay={0.03}>
+            <h1 className="sr-only">{post.title}</h1>
+          </MotionReveal>
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
             <div className="lg:col-span-2">
               <MotionReveal delay={0.05}>
@@ -216,9 +219,9 @@ export function EventDetailPageContent({
                   </p>
                 ) : null}
 
-                <h1 className="text-xl font-bold leading-snug tracking-tight text-foreground md:text-2xl">
+                <h2 className="text-xl font-bold leading-snug tracking-tight text-foreground md:text-2xl">
                   {post.title}
-                </h1>
+                </h2>
 
                 {post.summary ? (
                   <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{post.summary}</p>

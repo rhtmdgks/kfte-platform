@@ -3,6 +3,9 @@ import { notFound } from "next/navigation"
 import { EventDetailPageContent } from "@/components/events/event-detail-page-content"
 import { getPublishedEventArchiveWithView } from "@/lib/content-posts"
 import { eventArchivePageConfig } from "@/lib/event-archive-content"
+import { JsonLd } from "@/components/seo/json-ld"
+import { buildEventSchema } from "@/lib/seo/event-schema"
+import { buildBreadcrumbSchema } from "@/lib/seo/breadcrumb-schema"
 
 type PageProps = {
   params: Promise<{ id: string }>
@@ -19,15 +22,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "행사 아카이브 | 한국기술창업진흥재단(KFTE)" }
   }
 
-  return {
-    title: `${post.title} | 행사 아카이브 | KFTE`,
+  const { buildContentMetadata } = await import("@/lib/seo/metadata")
+  return buildContentMetadata({
+    title: `${post.title} | 행사 아카이브`,
     description: post.summary || post.content.slice(0, 120),
-    openGraph: post.thumbnailUrl
-      ? {
-          images: [{ url: post.thumbnailUrl }],
-        }
-      : undefined,
-  }
+    slug: id,
+    basePath: '/activities/events/archive',
+    thumbnailUrl: post.thumbnailUrl,
+  })
 }
 
 export default async function EventArchiveDetailPage({ params }: PageProps) {
@@ -38,18 +40,28 @@ export default async function EventArchiveDetailPage({ params }: PageProps) {
     notFound()
   }
 
+  const breadcrumb = buildBreadcrumbSchema([
+    { name: '홈', href: '/' },
+    { name: '활동', href: '/activities/events' },
+    { name: '행사 아카이브', href: '/activities/events/archive' },
+    { name: post.title, href: `${eventArchivePageConfig.basePath}/${id}` },
+  ])
   return (
-    <EventDetailPageContent
-      config={{
-        pageTitle: eventArchivePageConfig.pageTitle,
-        pageHeading: eventArchivePageConfig.pageHeading,
-        description: eventArchivePageConfig.description,
-        basePath: eventArchivePageConfig.basePath,
-        archivePath: eventArchivePageConfig.basePath,
-        categories: eventArchivePageConfig.categories,
-      }}
-      post={post}
-      mode="archive"
-    />
+    <>
+      <JsonLd data={buildEventSchema(post, eventArchivePageConfig.basePath, true)} />
+      <JsonLd data={breadcrumb} />
+      <EventDetailPageContent
+        config={{
+          pageTitle: eventArchivePageConfig.pageTitle,
+          pageHeading: eventArchivePageConfig.pageHeading,
+          description: eventArchivePageConfig.description,
+          basePath: eventArchivePageConfig.basePath,
+          archivePath: eventArchivePageConfig.basePath,
+          categories: eventArchivePageConfig.categories,
+        }}
+        post={post}
+        mode="archive"
+      />
+    </>
   )
 }

@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+import { ArrowUpRight } from "lucide-react"
 import { MotionReveal, MotionStagger, MotionStaggerItem } from "@/components/motion"
 import { whatWeDo } from "@/lib/kfte-content"
 
@@ -42,6 +44,13 @@ export function WhatWeDoSection() {
         <p className="text-base leading-[1.8] text-muted-foreground max-w-3xl">
           {whatWeDo.description}
         </p>
+        <Link
+          href="/about/what-we-do"
+          className="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-primary hover:underline"
+        >
+          자세히 보기
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </Link>
       </MotionReveal>
 
       <MotionStagger className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">

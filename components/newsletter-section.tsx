@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { MotionReveal } from "@/components/motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -74,7 +75,7 @@ export function NewsletterSection() {
               htmlFor="newsletter-privacy"
               className="text-base leading-[1.6] text-muted-foreground font-normal cursor-pointer"
             >
-              개인정보 수집·이용에 동의합니다 (필수)
+              <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground transition-colors">개인정보처리방침</Link>에 따른 수집·이용에 동의합니다 (필수)
             </Label>
           </div>
           <Button type="submit" className="rounded-none w-full h-11" disabled={!agreed}>

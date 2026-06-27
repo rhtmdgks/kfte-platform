@@ -4,7 +4,7 @@ export const site = {
   fullName: "한국기술창업진흥재단(KFTE)",
   tagline: "청소년과 청년의\n기술창업을 현실로 연결합니다",
   description:
-    "KFTE 한국기술창업진흥재단은 기술로 문제를 해결하고 창업에 도전하는 청소년·청년 창업가를 연결하고 지원하는 민간 중심 기술창업 생태계 재단입니다.",
+    "한국기술창업진흥재단(KFTE)은 청소년과 청년이 기술로 창업에 도전할 수 있도록 교육·멘토링·네트워크·커뮤니티를 운영하는 민간 비영리 기술창업 생태계 재단입니다.",
   email: "yun@seongyong.com",
   phone: "070-7954-8795",
   fax: "050-8945-3639",
@@ -72,7 +72,7 @@ export const whatWeDo = {
   title: "What We Do",
   headline: "우리는 기술창업을 시작하는 사람들을 위해 일합니다",
   description:
-    "KFTE는 청소년과 청년이 창업의 가능성을 발견하고, 기술 기반 아이디어를 검증하며, 실제 시장과 연결될 수 있도록 교육·네트워크·멘토링·정책 제안·커뮤니티 활동을 운영합니다.",
+    "KFTE는 청소년과 청년이 기술 기반 아이디어를 검증하고, 팀을 구성하며, 실제 시장과 연결될 수 있도록 교육·멘토링·네트워크·정책 제안·커뮤니티를 운영합니다.",
   pillars: [
     {
       number: "01",
@@ -104,7 +104,7 @@ export const whatWeDo = {
 export const whoWeServe = {
   eyebrow: "대상",
   title: "Who We Serve",
-  headline: "KFTE가 연결하는 사람들",
+  headline: "KFTE가 지원하는 청소년·청년 창업가",
   audiences: [
     {
       number: "01",
@@ -142,7 +142,7 @@ export const whoWeServe = {
 export const impact = {
   eyebrow: "성과",
   title: "Impact",
-  headline: "함께 만드는 변화",
+  headline: "KFTE 임팩트",
   description:
     "KFTE의 임팩트 지표는 주요 프로그램 운영 이후 순차적으로 공개됩니다.",
   stats: [
@@ -166,8 +166,8 @@ export const programs = {
       category: "커뮤니티",
       description:
         "청소년·청년 기술창업가를 위한 정기 커뮤니티와 네트워킹 모임",
-      cta: "커뮤니티 참여하기",
-      href: "#contact",
+      cta: "행사 일정 보기",
+      href: "/activities/events",
       image:
         "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200&q=80",
     },
@@ -176,8 +176,8 @@ export const programs = {
       category: "멘토링",
       description:
         "아이디어 검증, MVP 개발, 사업화 전략을 위한 창업 멘토링",
-      cta: "멘토링 신청하기",
-      href: "#contact",
+      cta: "신청 일정 확인하기",
+      href: "/activities/events",
       image:
         "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200&q=80",
     },
@@ -186,8 +186,8 @@ export const programs = {
       category: "실험형",
       description:
         "청소년 창업팀이 실제 문제를 발견하고 제품으로 구현하는 실험형 프로그램",
-      cta: "랩 알아보기",
-      href: "#contact",
+      cta: "행사 일정 보기",
+      href: "/activities/events",
       image:
         "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80",
     },
@@ -294,28 +294,65 @@ export const news = {
   headline: "KFTE의 최근 활동",
   entries: [
     {
-      date: "2026.00.00",
+      date: "2026.06",
       title: "프로그램 모집 안내",
-      summary: "2026년 상반기 KFTE 프로그램 모집 일정이 공개됩니다.",
+      summary: "2026년 하반기 KFTE 프로그램 모집 일정을 공지사항에서 확인하세요.",
       tag: "공지사항",
     },
     {
-      date: "2026.00.00",
+      date: "2026.05",
       title: "네트워킹 데이 후기",
       summary: "청년 창업가들이 모인 KFTE 네트워킹 데이 현장을 소개합니다.",
       tag: "행사 후기",
     },
     {
-      date: "2025.00.00",
+      date: "2025.12",
       title: "KFTE 활동 관련 보도",
       summary: "재단 활동과 생태계 확장에 관한 언론 보도 자료입니다.",
       tag: "언론보도",
     },
     {
-      date: "2025.00.00",
+      date: "2025.11",
       title: "청년 창업가 인터뷰",
       summary: "KFTE와 함께 성장한 청년 창업가의 이야기를 담았습니다.",
       tag: "인터뷰",
+    },
+  ],
+} as const
+
+export const faq = {
+  eyebrow: "자주 묻는 질문",
+  title: "FAQ",
+  headline: "KFTE에 대해 자주 묻는 질문",
+  items: [
+    {
+      question: "KFTE(한국기술창업진흥재단)는 어떤 단체인가요?",
+      answer:
+        "KFTE는 청소년과 청년이 기술로 창업에 도전할 수 있도록 교육·멘토링·네트워크·커뮤니티를 운영하는 민간 비영리 재단입니다. 서울특별시 강남구 테헤란로 128에 위치하며 고유번호 316-82-77638로 등록되어 있습니다.",
+    },
+    {
+      question: "KFTE가 지원하는 대상은 누구인가요?",
+      answer:
+        "청소년 창업가, 대학생·청년 창업가, 초기 기술창업팀, 크리에이터·메이커, 그리고 다음 세대 창업가를 발굴하려는 파트너 기관·기업이 대상입니다.",
+    },
+    {
+      question: "KFTE 프로그램에 어떻게 참여할 수 있나요?",
+      answer:
+        "최신 행사 및 프로그램 모집 일정은 '행사' 페이지에서 확인할 수 있습니다. 참여 문의는 이메일(yun@seongyong.com) 또는 전화(070-7954-8795)로 가능합니다.",
+      href: "/activities/events",
+      hrefLabel: "행사 페이지 보기",
+    },
+    {
+      question: "KFTE 회원사 가입은 어떻게 하나요?",
+      answer:
+        "기업, 기관, 개인 등 다양한 형태로 파트너십에 참여할 수 있습니다. 자세한 가입 절차와 혜택은 '가입안내' 페이지에서 확인하세요.",
+      href: "/members/join",
+      hrefLabel: "가입안내 페이지 보기",
+    },
+    {
+      question: "파트너십 또는 후원은 어떻게 문의하나요?",
+      answer:
+        "교육 협력, 행사 협력, 멘토링 협력, 후원 등 다양한 방식으로 함께할 수 있습니다. 이메일(yun@seongyong.com)로 문의해 주세요.",
     },
   ],
 } as const
@@ -342,8 +379,8 @@ export const finalCta = {
     "지금 KFTE와 연결되어 더 많은 청소년과 청년이 기술로 도전할 수 있는 기반을 함께 만들어 주세요.",
   primaryCta: "지금 KFTE와 연결되세요",
   actions: [
-    { label: "창업가로 참여하기", href: "#contact" },
-    { label: "파트너로 협력하기", href: "#contact" },
+    { label: "창업가로 참여하기", href: "/activities/events" },
+    { label: "파트너로 협력하기", href: "/about/partners" },
     { label: "후원 문의하기", href: "#contact" },
   ],
 } as const
@@ -352,9 +389,8 @@ export const footer = {
   description:
     "청소년과 청년이 기술로 창업하고, 연결되고, 성장하도록 돕는 민간 중심 기술창업 생태계 재단입니다.",
   legal: [
-    { label: "개인정보처리방침", href: "#" },
-    { label: "이용약관", href: "#" },
-    { label: "재단 소개서 다운로드", href: "#" },
+    { label: "개인정보처리방침", href: "/privacy" },
+    { label: "이용약관", href: "/terms" },
   ],
   social: [
     { label: "Instagram", href: "https://www.instagram.com/kfte.official/" },
@@ -370,6 +406,6 @@ export const footer = {
     tel: "070-7954-8795",
     fax: "050-8945-3639",
     email: "yun@seongyong.com",
-    copyright: "2026 KFTE - All right reserved.",
+    copyright: "2026 KFTE - All rights reserved.",
   },
 } as const
