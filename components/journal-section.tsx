@@ -1,85 +1,80 @@
 "use client"
 
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { news as newsContent } from "@/lib/kfte-content"
 
-const entries = [
-  {
-    date: "Jan 2026",
-    title: "Nordheim Residence Shortlisted for the Nordic Architecture Prize",
-    tag: "News",
-  },
-  {
-    date: "Dec 2025",
-    title: "On Materiality: A Conversation with Studio Voss",
-    tag: "Interview",
-  },
-  {
-    date: "Nov 2025",
-    title: "The Lund Pavilion Published in Architectural Review",
-    tag: "Press",
-  },
-  {
-    date: "Oct 2025",
-    title: "Designing for Northern Light: Lessons from 20 Years of Practice",
-    tag: "Essay",
-  },
-]
-
-function JournalEntry({ entry, index }: { entry: typeof entries[0]; index: number }) {
+function NewsEntry({
+  entry,
+  index,
+}: {
+  entry: (typeof newsContent.entries)[number]
+  index: number
+}) {
   const { ref, isVisible } = useScrollReveal<HTMLAnchorElement>(0.1)
 
   return (
-    <a
+    <Link
       ref={ref}
       href="#"
-      className={`group flex items-start md:items-center justify-between py-7 md:py-8 gap-6 transition-all duration-700 ${
+      className={`group block py-7 md:py-8 transition-all duration-700 ${
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
       style={{ transitionDelay: `${index * 100}ms` }}
     >
-      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-10 flex-1">
-        <span className="text-[11px] tracking-[0.15em] text-muted-foreground/50 shrink-0 w-24 tabular-nums">
-          {entry.date}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-4 mb-3">
+            <span className="text-sm tracking-[0.12em] uppercase font-semibold text-primary">
+              {entry.tag}
+            </span>
+            <span className="text-sm tracking-[0.12em] text-muted-foreground/50 tabular-nums">
+              {entry.date}
+            </span>
+          </div>
+          <h3 className="text-base md:text-lg font-semibold tracking-tight text-foreground group-hover:text-primary transition-colors duration-300 mb-2">
+            {entry.title}
+          </h3>
+          <p className="text-base leading-[1.75] text-muted-foreground max-w-2xl">
+            {entry.summary}
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-2 text-sm tracking-[0.08em] uppercase font-semibold text-muted-foreground group-hover:text-primary shrink-0 transition-colors">
+          자세히 보기
+          <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
         </span>
-        <h3 className="text-base md:text-lg font-light tracking-tight text-foreground group-hover:text-muted-foreground transition-colors duration-300">
-          {entry.title}
-        </h3>
       </div>
-      <div className="flex items-center gap-5 shrink-0">
-        <span className="text-[11px] tracking-[0.15em] uppercase text-muted-foreground/40 hidden md:block">
-          {entry.tag}
-        </span>
-        <ArrowUpRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-foreground group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
-      </div>
-    </a>
+    </Link>
   )
 }
 
-export function JournalSection() {
+export function NewsSection() {
   const { ref, isVisible } = useScrollReveal(0.05)
 
   return (
-    <section id="journal" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
+    <section id="news" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
       <div
         ref={ref}
         className={`mb-20 pb-6 border-b border-border transition-all duration-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
-        <p className="text-[11px] tracking-[0.3em] uppercase text-muted-foreground mb-3">
-          News & Writing
+        <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
+          {newsContent.eyebrow}
         </p>
-        <h2 className="text-3xl md:text-[2.75rem] font-extralight tracking-tight text-foreground">
-          Journal
+        <h2 className="text-3xl md:text-4xl lg:text-[3rem] font-semibold tracking-tight text-foreground">
+          {newsContent.headline}
         </h2>
       </div>
 
       <div className="divide-y divide-border">
-        {entries.map((entry, index) => (
-          <JournalEntry key={entry.title} entry={entry} index={index} />
+        {newsContent.entries.map((entry, index) => (
+          <NewsEntry key={entry.title} entry={entry} index={index} />
         ))}
       </div>
     </section>
   )
 }
+
+export { NewsSection as JournalSection }

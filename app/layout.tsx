@@ -1,18 +1,20 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+
+import { Navigation } from '@/components/navigation'
+import { Footer } from '@/components/footer'
+import { paperlogy } from '@/lib/fonts'
 
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-
 export const metadata: Metadata = {
-  title: 'Voss Architects — Contemporary Architecture & Design',
-  description: 'Award-winning architecture studio specializing in residential, cultural, and commercial projects. Shaping spaces that define how we live.',
+  title: '한국기술창업진흥재단(KFTE) — 청소년·청년 기술창업 생태계',
+  description:
+    'KFTE는 청소년과 청년이 기술로 창업하고, 연결되고, 성장하도록 돕는 민간 중심 기술창업 생태계 재단입니다.',
 }
 
 export const viewport: Viewport = {
-  themeColor: '#0d0d0d',
+  themeColor: '#002065',
 }
 
 export default function RootLayout({
@@ -21,8 +23,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">{children}</body>
+    <html lang="ko" className={paperlogy.variable} suppressHydrationWarning>
+      <body className="font-sans antialiased">
+        <Navigation />
+        {children}
+        <Footer />
+      </body>
     </html>
   )
 }

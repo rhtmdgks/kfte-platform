@@ -1,14 +1,17 @@
 "use client"
 
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { Button } from "@/components/ui/button"
+import { finalCta, site } from "@/lib/kfte-content"
 
-export function ContactSection() {
+export function FinalCtaSection() {
   const { ref: headRef, isVisible: headVisible } = useScrollReveal(0.15)
   const { ref: bodyRef, isVisible: bodyVisible } = useScrollReveal(0.1)
 
   return (
-    <section id="contact" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-foreground text-background">
+    <section id="contact" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-primary text-primary-foreground">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28">
         <div
           ref={headRef}
@@ -16,22 +19,29 @@ export function ContactSection() {
             headVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <p className="text-[11px] tracking-[0.3em] uppercase text-background/40 mb-8">
-            Get in Touch
+          <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/40 mb-8">
+            {finalCta.eyebrow}
           </p>
-          <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] font-extralight leading-[1.15] tracking-tight text-balance">
-            {"Let's discuss your"}<br />next project
+          <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-[1.15] tracking-tight text-balance mb-6">
+            {finalCta.headline}
           </h2>
-          <div className="mt-10">
-            <a
-              href="mailto:studio@vossarchitects.com"
-              className="group inline-flex items-center gap-3 text-sm tracking-wide text-background/60 hover:text-background transition-colors duration-500"
-            >
-              <span className="border-b border-background/20 pb-0.5 group-hover:border-background/60 transition-colors duration-500">
-                studio@vossarchitects.com
-              </span>
-              <ArrowUpRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300" />
-            </a>
+          <p className="text-base leading-[1.75] text-primary-foreground/55 mb-10 max-w-lg">
+            {finalCta.description}
+          </p>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+            {finalCta.actions.map((action) => (
+              <Button
+                key={action.label}
+                asChild
+                variant="secondary"
+                className="rounded-none bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+              >
+                <Link href={action.href}>
+                  {action.label}
+                  <ArrowUpRight className="h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            ))}
           </div>
         </div>
 
@@ -41,31 +51,38 @@ export function ContactSection() {
             bodyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <p className="text-2xl md:text-3xl font-bold tracking-tight mb-10">
+            {finalCta.primaryCta}
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-10 border-t border-primary-foreground/10">
             <div>
-              <p className="text-[11px] tracking-[0.3em] uppercase text-background/35 mb-5">
-                Stockholm
+              <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/35 mb-5">
+                Email
               </p>
-              <p className="text-sm leading-[1.75] text-background/55">
-                Strandvagen 7B<br />
-                114 56 Stockholm<br />
-                Sweden
-              </p>
-              <p className="text-sm text-background/55 mt-4">
-                +46 8 123 456 78
-              </p>
+              <a
+                href={`mailto:${site.email}`}
+                className="text-base leading-[1.75] text-primary-foreground/55 hover:text-primary-foreground transition-colors"
+              >
+                {site.email}
+              </a>
             </div>
             <div>
-              <p className="text-[11px] tracking-[0.3em] uppercase text-background/35 mb-5">
-                Copenhagen
+              <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/35 mb-5">
+                Tel
               </p>
-              <p className="text-sm leading-[1.75] text-background/55">
-                Bredgade 42<br />
-                1260 Copenhagen K<br />
-                Denmark
+              <a
+                href={`tel:${site.phone.replace(/-/g, "")}`}
+                className="text-base leading-[1.75] text-primary-foreground/55 hover:text-primary-foreground transition-colors"
+              >
+                {site.phone}
+              </a>
+            </div>
+            <div className="md:col-span-2">
+              <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/35 mb-5">
+                Address
               </p>
-              <p className="text-sm text-background/55 mt-4">
-                +45 33 12 34 56
+              <p className="text-base leading-[1.75] text-primary-foreground/55">
+                {site.address}
               </p>
             </div>
           </div>
@@ -74,3 +91,5 @@ export function ContactSection() {
     </section>
   )
 }
+
+export { FinalCtaSection as ContactSection }

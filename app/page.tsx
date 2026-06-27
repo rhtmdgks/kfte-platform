@@ -1,25 +1,29 @@
-import { Navigation } from "@/components/navigation"
 import { Hero } from "@/components/hero"
-import { ProjectsSection } from "@/components/projects-section"
-import { StudioSection } from "@/components/studio-section"
-import { EditorialBreak } from "@/components/editorial-break"
-import { ApproachSection } from "@/components/approach-section"
-import { JournalSection } from "@/components/journal-section"
-import { ContactSection } from "@/components/contact-section"
-import { Footer } from "@/components/footer"
+import { WhatWeDoSection } from "@/components/approach-section"
+import { WhoWeServeSection } from "@/components/who-we-serve-section"
+import { ImpactSection } from "@/components/studio-section"
+import { ProgramsSection } from "@/components/projects-section"
+import { DivisionsSection } from "@/components/divisions-section"
+import { ManifestoSection } from "@/components/editorial-break"
+import { PartnersSection } from "@/components/partners-section"
+import { NewsSection } from "@/components/journal-section"
+import { NewsletterSection } from "@/components/newsletter-section"
+import { FinalCtaSection } from "@/components/contact-section"
 
 export default function Page() {
   return (
     <main>
-      <Navigation />
       <Hero />
-      <ProjectsSection />
-      <EditorialBreak />
-      <StudioSection />
-      <ApproachSection />
-      <JournalSection />
-      <ContactSection />
-      <Footer />
+      <WhatWeDoSection />
+      <WhoWeServeSection />
+      <ImpactSection />
+      <ProgramsSection />
+      <DivisionsSection />
+      <ManifestoSection />
+      <PartnersSection />
+      <NewsSection />
+      <NewsletterSection />
+      <FinalCtaSection />
     </main>
   )
 }
