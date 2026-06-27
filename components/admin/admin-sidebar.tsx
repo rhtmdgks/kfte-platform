@@ -25,6 +25,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
 import {
   DropdownMenu,
@@ -60,24 +62,38 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
+  const { state } = useSidebar()
+  const isCollapsed = state === "collapsed"
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push("/admin/login")
+    router.push("/kfte-os/internal/login")
     router.refresh()
   }
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-        <Link href="/admin" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
-            <KfteLogo variant="symbol" className="h-8 w-8" />
+      <SidebarHeader className="flex h-14 shrink-0 flex-row items-center gap-0 border-b border-border p-0">
+        {isCollapsed ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <Link
+              href="/admin"
+              className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full"
+              title="KFTE 운영 페이지"
+            >
+              <KfteLogo variant="symbol" className="h-8 w-8" />
+            </Link>
           </div>
-          <span className="font-semibold text-[#002065] group-data-[collapsible=icon]:hidden">
-            KFTE 운영 페이지
-          </span>
-        </Link>
+        ) : (
+          <div className="flex h-full w-full items-center gap-2 px-4">
+            <Link href="/admin" className="flex min-w-0 flex-1 items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+                <KfteLogo variant="symbol" className="h-8 w-8" />
+              </div>
+              <span className="font-semibold text-[#002065]">KFTE 운영 페이지</span>
+            </Link>
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
@@ -151,7 +167,7 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002065] text-xs text-white">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002065] text-xs text-primary-foreground">
                     {profile?.display_name?.[0] ?? profile?.email?.[0] ?? "A"}
                   </div>
                   <span className="truncate">
@@ -170,6 +186,7 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      <SidebarRail />
     </Sidebar>
   )
 }

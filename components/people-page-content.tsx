@@ -1,3 +1,5 @@
+"use client"
+
 import type { ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
@@ -10,6 +12,7 @@ import {
   type ProfilePeopleSection,
   type TeamMember,
 } from "@/lib/people-content"
+import { MotionReveal } from "@/components/motion"
 import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
 
@@ -122,18 +125,22 @@ export function PeoplePageContent() {
   return (
     <main className={pageMainClassName}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 xl:px-20">
-        <header>
-          <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.15] tracking-tight text-foreground">
-            <span className="font-light">{peoplePage.pageTitleLight}</span>
-            <span className="font-bold"> {peoplePage.pageTitleBold}</span>
-          </h1>
-          <p className="mt-8 max-w-3xl text-base md:text-lg leading-relaxed text-foreground/80">
-            {peoplePage.description}
-          </p>
-        </header>
+        <MotionReveal>
+          <header>
+            <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.15] tracking-tight text-foreground">
+              <span className="font-light">{peoplePage.pageTitleLight}</span>
+              <span className="font-bold"> {peoplePage.pageTitleBold}</span>
+            </h1>
+            <p className="mt-8 max-w-3xl text-base md:text-lg leading-relaxed text-foreground/80">
+              {peoplePage.description}
+            </p>
+          </header>
+        </MotionReveal>
 
-        {peoplePage.sections.map((section) => (
-          <PeopleSectionBlock key={section.id} section={section} />
+        {peoplePage.sections.map((section, index) => (
+          <MotionReveal key={section.id} delay={0.06 + index * 0.05}>
+            <PeopleSectionBlock section={section} />
+          </MotionReveal>
         ))}
       </div>
     </main>

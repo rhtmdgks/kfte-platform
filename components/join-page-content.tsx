@@ -2,8 +2,11 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { AnimatePresence, motion } from "motion/react"
 import { joinPage, type JoinTabId } from "@/lib/join-content"
+import { MotionReveal } from "@/components/motion"
 import { pageMainClassName } from "@/lib/page-layout"
+import { tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
 
 function JoinProcessTimeline() {
@@ -22,7 +25,7 @@ function JoinProcessTimeline() {
             <li key={step.label} className="flex flex-col items-center text-center">
               <span
                 className={cn(
-                  "relative z-10 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,0.04)]",
+                  "relative z-10 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-surface shadow-[0_0_0_1px_rgba(0,0,0,0.04)]",
                   step.complete ? "bg-[#22c55e]" : "bg-primary",
                 )}
                 aria-hidden
@@ -133,6 +136,7 @@ export function JoinPageContent() {
   return (
     <main className={pageMainClassName}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 xl:px-20">
+        <MotionReveal>
         <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start lg:gap-x-12 xl:gap-x-20">
           <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-tight text-foreground">
             {joinPage.pageTitle}
@@ -176,9 +180,20 @@ export function JoinPageContent() {
             )
           })}
         </nav>
+        </MotionReveal>
 
         <div className="mt-12 md:mt-16">
-          <TabPanel activeTab={activeTab} />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={tweenSmooth}
+            >
+              <TabPanel activeTab={activeTab} />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </main>

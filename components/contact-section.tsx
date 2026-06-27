@@ -2,23 +2,15 @@
 
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { MotionReveal } from "@/components/motion"
 import { Button } from "@/components/ui/button"
 import { finalCta, site } from "@/lib/kfte-content"
 
 export function FinalCtaSection() {
-  const { ref: headRef, isVisible: headVisible } = useScrollReveal(0.15)
-  const { ref: bodyRef, isVisible: bodyVisible } = useScrollReveal(0.1)
-
   return (
     <section id="contact" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-primary text-primary-foreground">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28">
-        <div
-          ref={headRef}
-          className={`transition-all duration-1000 ${
-            headVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
+        <MotionReveal>
           <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/40 mb-8">
             {finalCta.eyebrow}
           </p>
@@ -43,14 +35,9 @@ export function FinalCtaSection() {
               </Button>
             ))}
           </div>
-        </div>
+        </MotionReveal>
 
-        <div
-          ref={bodyRef}
-          className={`flex flex-col justify-end transition-all duration-1000 delay-200 ${
-            bodyVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
+        <MotionReveal delay={0.12} className="flex flex-col justify-end">
           <p className="text-2xl md:text-3xl font-bold tracking-tight mb-10">
             {finalCta.primaryCta}
           </p>
@@ -86,7 +73,7 @@ export function FinalCtaSection() {
               </p>
             </div>
           </div>
-        </div>
+        </MotionReveal>
       </div>
     </section>
   )

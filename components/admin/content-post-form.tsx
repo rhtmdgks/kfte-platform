@@ -88,7 +88,7 @@ export function ContentPostForm({
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">미리보기</p>
             <div
-              className="prose prose-sm min-h-[400px] max-w-none rounded-md border bg-gray-50 p-4 text-sm"
+              className="prose prose-sm min-h-[400px] max-w-none rounded-md border bg-surface p-4 text-sm"
               id="preview"
             />
           </div>

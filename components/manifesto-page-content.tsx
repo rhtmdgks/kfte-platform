@@ -3,6 +3,7 @@
 // import { useState } from "react"
 import Link from "next/link"
 import { manifestoPage, type ManifestoTabId } from "@/lib/manifesto-content"
+import { MotionReveal } from "@/components/motion"
 import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
 
@@ -18,6 +19,7 @@ export function ManifestoPageContent() {
   return (
     <main className={pageMainClassName}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 xl:px-20">
+        <MotionReveal>
         <h1 className="text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-foreground">
           {manifestoPage.pageTitle}
         </h1>
@@ -69,7 +71,9 @@ export function ManifestoPageContent() {
             )
           })}
         </nav>
+        </MotionReveal>
 
+        <MotionReveal delay={0.1}>
         <div className="mt-14 md:mt-20 lg:grid lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
           <aside className="lg:sticky lg:top-32 lg:self-start">
             <h2 className="text-xl md:text-2xl font-bold leading-snug text-primary">
@@ -122,6 +126,7 @@ export function ManifestoPageContent() {
             </ol>
           </section>
         </div>
+        </MotionReveal>
       </div>
     </main>
   )

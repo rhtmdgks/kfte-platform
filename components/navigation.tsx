@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Menu, X } from "lucide-react"
 import { KfteLogo } from "@/components/kfte-logo"
 import { navAuth, navMenu } from "@/lib/kfte-content"
+import { easeSmooth, tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
 
 type NavItem = { label: string; href: string }
@@ -90,6 +92,7 @@ function NavUnderline({
 
 export function Navigation() {
   const pathname = usePathname()
+  const reduceMotion = useReducedMotion()
   const [megaOpen, setMegaOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [activeGroup, setActiveGroup] = useState<number | null>(null)
@@ -123,7 +126,7 @@ export function Navigation() {
       className={cn(
         "fixed top-0 left-0 right-0 z-[100] transition-colors duration-300",
         light
-          ? "bg-white text-foreground shadow-[0_1px_0_rgba(0,0,0,0.06)]"
+          ? "bg-surface text-foreground shadow-[0_1px_0_rgba(0,0,0,0.06)]"
           : "bg-primary text-primary-foreground",
       )}
       onMouseLeave={() => {
@@ -134,18 +137,24 @@ export function Navigation() {
     >
       {/* Desktop */}
       <div className="relative hidden lg:block">
-        {megaOpen && (
-          <div
-            className={cn(
-              "absolute inset-x-0 bottom-0 -z-0 border-t",
-              light
-                ? "bg-white border-border/40 shadow-[0_12px_40px_rgba(0,0,0,0.08)]"
-                : "bg-[#001540] border-primary-foreground/10",
-            )}
-            style={{ top: HEADER_TOP }}
-            aria-hidden
-          />
-        )}
+        <AnimatePresence>
+          {megaOpen && (
+            <motion.div
+              initial={reduceMotion ? false : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2, ease: easeSmooth }}
+              className={cn(
+                "absolute inset-x-0 bottom-0 -z-0 border-t",
+                light
+                  ? "bg-surface border-border/40 shadow-[0_12px_40px_rgba(0,0,0,0.08)]"
+                  : "bg-[#001540] border-primary-foreground/10",
+              )}
+              style={{ top: HEADER_TOP }}
+              aria-hidden
+            />
+          )}
+        </AnimatePresence>
 
         <Link
           href="/"
@@ -191,45 +200,52 @@ export function Navigation() {
                   <NavUnderline active={underlineActive} light={light} />
                 </div>
 
-                <ul
-                  className={cn(
-                    "overflow-hidden transition-all duration-200 text-left",
-                    megaOpen
-                      ? "max-h-[640px] space-y-4 pb-14 pt-7 opacity-100"
-                      : "max-h-0 space-y-0 pb-0 pt-0 opacity-0",
-                  )}
+                <motion.ul
+                  initial={false}
+                  animate={
+                    reduceMotion
+                      ? undefined
+                      : {
+                          height: megaOpen ? "auto" : 0,
+                          opacity: megaOpen ? 1 : 0,
+                        }
+                  }
+                  transition={tweenSmooth}
+                  className="overflow-hidden text-left"
                   aria-label={`${group.label} 하위 메뉴`}
                   aria-hidden={!megaOpen}
                 >
-                  {group.items.map((item) => {
-                    const isItemActive = pathname === item.href
+                  <div className={cn(megaOpen ? "space-y-4 pb-14 pt-7" : "pb-0 pt-0")}>
+                    {group.items.map((item) => {
+                      const isItemActive = pathname === item.href
 
-                    return (
-                      <li key={item.label}>
-                        <Link
-                          href={item.href}
-                          className={cn(
-                            "block py-0.5 text-left text-[17px] xl:text-lg leading-relaxed transition-colors",
-                            isItemActive
-                              ? cn(
-                                  "font-bold",
-                                  light ? "text-primary" : "text-primary-foreground",
-                                )
-                              : cn(
-                                  "font-normal hover:font-bold",
-                                  light
-                                    ? "text-muted-foreground hover:text-foreground"
-                                    : "text-primary-foreground/70 hover:text-primary-foreground",
-                                ),
-                          )}
-                          onClick={() => setMegaOpen(false)}
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    )
-                  })}
-                </ul>
+                      return (
+                        <li key={item.label}>
+                          <Link
+                            href={item.href}
+                            className={cn(
+                              "block py-0.5 text-left text-[17px] xl:text-lg leading-relaxed transition-colors",
+                              isItemActive
+                                ? cn(
+                                    "font-bold",
+                                    light ? "text-primary" : "text-primary-foreground",
+                                  )
+                                : cn(
+                                    "font-normal hover:font-bold",
+                                    light
+                                      ? "text-muted-foreground hover:text-foreground"
+                                      : "text-primary-foreground/70 hover:text-primary-foreground",
+                                  ),
+                            )}
+                            onClick={() => setMegaOpen(false)}
+                          >
+                            {item.label}
+                          </Link>
+                        </li>
+                      )
+                    })}
+                  </div>
+                </motion.ul>
               </div>
             )
           })}
@@ -240,7 +256,7 @@ export function Navigation() {
       <div
         className={cn(
           "flex lg:hidden items-center gap-4 px-6 h-[80px] border-b",
-          light ? "border-border/40 bg-white" : "border-transparent bg-primary",
+          light ? "border-border/40 bg-surface" : "border-transparent bg-primary",
         )}
       >
         <Link href="/" className="shrink-0">
@@ -261,14 +277,37 @@ export function Navigation() {
         </button>
       </div>
 
-      <div
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 0.45 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: easeSmooth }}
+            className="fixed inset-0 z-[90] bg-black/50 backdrop-blur-[2px] lg:hidden"
+            onClick={closeMobile}
+            aria-hidden
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.div
+        initial={false}
+        animate={
+          reduceMotion
+            ? undefined
+            : {
+                height: mobileOpen ? "auto" : 0,
+                opacity: mobileOpen ? 1 : 0,
+              }
+        }
+        transition={tweenSmooth}
         className={cn(
-          "lg:hidden overflow-hidden border-t transition-all duration-300",
-          light ? "border-border/40 bg-white" : "border-primary-foreground/10 bg-[#001540]",
-          mobileOpen ? "max-h-[80vh] opacity-100 overflow-y-auto" : "max-h-0 opacity-0",
+          "lg:hidden overflow-hidden border-t",
+          light ? "border-border/40 bg-surface" : "border-primary-foreground/10 bg-[#001540]",
         )}
       >
-        <div className="px-6 py-8 space-y-10">
+        <div className="max-h-[80vh] overflow-y-auto px-6 py-8 space-y-10">
           {navMenu.map((group) => (
             <div key={group.label}>
               <Link
@@ -302,7 +341,7 @@ export function Navigation() {
           ))}
           <AuthLinks light={light} onNavigate={closeMobile} />
         </div>
-      </div>
+      </motion.div>
     </header>
   )
 }

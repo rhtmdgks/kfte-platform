@@ -3,9 +3,12 @@
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { AnimatePresence, motion } from "motion/react"
 import { Download } from "lucide-react"
 import { ciPage, type CiColorSwatch, type CiTabId } from "@/lib/ci-content"
+import { MotionReveal } from "@/components/motion"
 import { pageMainClassName } from "@/lib/page-layout"
+import { tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
 
 function ColorSwatch({ color }: { color: CiColorSwatch }) {
@@ -72,72 +75,84 @@ export function CiPageContent() {
   return (
     <main className={pageMainClassName}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 xl:px-20">
-        <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-tight text-foreground">
-          {ciPage.pageTitle}
-        </h1>
+        <MotionReveal>
+          <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-tight text-foreground">
+            {ciPage.pageTitle}
+          </h1>
 
-        <nav
-          className="mt-8 flex flex-wrap items-center gap-y-2 text-[15px] md:text-base"
-          aria-label="CI 아카이브"
-        >
-          {ciPage.tabs.map((tab, index) => {
-            const isActive = tab.id === activeTab
+          <nav
+            className="mt-8 flex flex-wrap items-center gap-y-2 text-[15px] md:text-base"
+            aria-label="CI 아카이브"
+          >
+            {ciPage.tabs.map((tab, index) => {
+              const isActive = tab.id === activeTab
 
-            return (
-              <span key={tab.id} className="flex items-center">
-                {index > 0 && (
-                  <span
-                    className="mx-3 text-[#c4c4c4] font-light select-none md:mx-4"
-                    aria-hidden
-                  >
-                    |
-                  </span>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "transition-colors",
-                    isActive
-                      ? "font-bold text-foreground"
-                      : "font-normal text-[#999999] hover:text-foreground/60",
+              return (
+                <span key={tab.id} className="flex items-center">
+                  {index > 0 && (
+                    <span
+                      className="mx-3 text-[#c4c4c4] font-light select-none md:mx-4"
+                      aria-hidden
+                    >
+                      |
+                    </span>
                   )}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {tab.label}
-                </button>
-              </span>
-            )
-          })}
-        </nav>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "transition-colors",
+                      isActive
+                        ? "font-bold text-foreground"
+                        : "font-normal text-[#999999] hover:text-foreground/60",
+                    )}
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {tab.label}
+                  </button>
+                </span>
+              )
+            })}
+          </nav>
+        </MotionReveal>
 
-        <Link
-          href={archive.downloadHref}
-          download={archive.downloadFilename}
-          className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-[#3366FF] px-7 py-3.5 text-[15px] md:text-base font-medium text-white transition-opacity hover:opacity-90"
-        >
-          <Download className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden />
-          {archive.downloadLabel}
-        </Link>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={tweenSmooth}
+          >
+            <Link
+              href={archive.downloadHref}
+              download={archive.downloadFilename}
+              className="mt-8 inline-flex items-center gap-2.5 rounded-full bg-[#3366FF] px-7 py-3.5 text-[15px] md:text-base font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Download className="h-[18px] w-[18px]" strokeWidth={2.25} aria-hidden />
+              {archive.downloadLabel}
+            </Link>
 
-        <div className="mt-14 md:mt-20 flex w-full flex-col items-center gap-12 md:gap-16">
-          <Image
-            src={archive.previewBlue}
-            alt={`${archive.previewAlt} (Blue)`}
-            className="h-auto w-full max-w-[min(100%,42rem)] md:max-w-[min(100%,48rem)] lg:max-w-[min(100%,56rem)]"
-            priority
-          />
+            <div className="mt-14 md:mt-20 flex w-full flex-col items-center gap-12 md:gap-16">
+              <Image
+                src={archive.previewBlue}
+                alt={`${archive.previewAlt} (Blue)`}
+                className="h-auto w-full max-w-[min(100%,42rem)] md:max-w-[min(100%,48rem)] lg:max-w-[min(100%,56rem)]"
+                priority
+              />
 
-          <div className="flex w-full max-w-[min(100%,42rem)] items-center justify-center bg-primary px-8 py-10 md:max-w-[min(100%,48rem)] md:px-12 md:py-14 lg:max-w-[min(100%,56rem)] lg:py-16">
-            <Image
-              src={archive.previewWhite}
-              alt={`${archive.previewAlt} (White)`}
-              className="h-auto w-full max-w-[min(100%,36rem)] md:max-w-[min(100%,40rem)] lg:max-w-[min(100%,48rem)]"
-            />
-          </div>
-        </div>
+              <div className="flex w-full max-w-[min(100%,42rem)] items-center justify-center bg-primary px-8 py-10 md:max-w-[min(100%,48rem)] md:px-12 md:py-14 lg:max-w-[min(100%,56rem)] lg:py-16">
+                <Image
+                  src={archive.previewWhite}
+                  alt={`${archive.previewAlt} (White)`}
+                  className="h-auto w-full max-w-[min(100%,36rem)] md:max-w-[min(100%,40rem)] lg:max-w-[min(100%,48rem)]"
+                />
+              </div>
+            </div>
 
-        <CiGuideSection activeTab={activeTab} />
+            <CiGuideSection activeTab={activeTab} />
+          </motion.div>
+        </AnimatePresence>
       </div>
     </main>
   )

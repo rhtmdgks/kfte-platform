@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { usePathname } from "next/navigation"
 import { Navigation } from "@/components/navigation"
 import { Footer } from "@/components/footer"
+import { MotionPage } from "@/components/motion"
 
 const NO_SCROLL_PATHS = [
   "/kfte-os/internal/login",
@@ -46,7 +47,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Navigation />
-      {children}
+      <MotionPage>{children}</MotionPage>
       <Footer />
     </>
   )

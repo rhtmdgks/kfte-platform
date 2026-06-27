@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import {
   Bell,
   Building2,
@@ -76,7 +76,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b px-6">
-        <SidebarTrigger />
+        <AdminSidebarTrigger />
         <h1 className="text-lg font-semibold text-[#002065]">대시보드</h1>
       </header>
 

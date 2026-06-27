@@ -1,4 +1,4 @@
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { Badge } from "@/components/ui/badge"
 import {
   Table,
@@ -49,7 +49,7 @@ export default async function MembershipApplicationsPage() {
   return (
     <div className="flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b px-6">
-        <SidebarTrigger />
+        <AdminSidebarTrigger />
         <h1 className="text-lg font-semibold text-[#002065]">회원사 가입 신청</h1>
         {pendingCount > 0 && (
           <Badge variant="secondary" className="ml-1">

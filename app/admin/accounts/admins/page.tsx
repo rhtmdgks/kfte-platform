@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { AccountTable } from "@/components/admin/account-table"
 import { createClient } from "@/lib/supabase/server"
 import { updateProfileRole, deleteProfile } from "@/app/admin/accounts/actions"
@@ -22,7 +22,7 @@ export default async function AdminAccountsPage() {
   return (
     <div className="flex flex-col">
       <header className="flex h-14 items-center gap-4 border-b px-6">
-        <SidebarTrigger />
+        <AdminSidebarTrigger />
         <h1 className="text-lg font-semibold text-[#002065]">관리자 계정</h1>
         <span className="ml-auto text-sm text-muted-foreground">
           총 {profiles?.length ?? 0}명

@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { motion } from "motion/react"
 import { ArrowUpRight } from "lucide-react"
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { MotionReveal, MotionStagger, MotionStaggerItem } from "@/components/motion"
 import { Button } from "@/components/ui/button"
 import { programs as programsContent } from "@/lib/kfte-content"
 
@@ -15,28 +16,23 @@ function ProgramCard({
   index: number
 }) {
   const [hovered, setHovered] = useState(false)
-  const { ref, isVisible } = useScrollReveal(0.1)
 
   return (
-    <div
-      ref={ref}
-      className={`bg-background group transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-      }`}
-      style={{ transitionDelay: `${(index % 2) * 150}ms` }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
+    <MotionStaggerItem index={index} className="bg-background group">
       <div className="overflow-hidden">
-        <img
+        <motion.img
           src={program.image}
           alt={program.title}
-          className={`w-full aspect-[4/3] object-cover transition-all duration-[800ms] ease-out ${
-            hovered ? "scale-[1.04]" : "scale-100"
-          }`}
+          className="aspect-[4/3] w-full object-cover"
+          animate={{ scale: hovered ? 1.04 : 1 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         />
       </div>
-      <div className="p-6 md:p-8">
+      <div
+        className="p-6 md:p-8"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
         <div className="flex items-start justify-between gap-4 mb-4">
           <div className="flex items-start gap-4 flex-1">
             <span className="text-sm tracking-[0.12em] text-muted-foreground/50 mt-1.5 tabular-nums">
@@ -64,21 +60,14 @@ function ProgramCard({
           <Link href={program.href}>{program.cta}</Link>
         </Button>
       </div>
-    </div>
+    </MotionStaggerItem>
   )
 }
 
 export function ProgramsSection() {
-  const { ref, isVisible } = useScrollReveal(0.05)
-
   return (
     <section id="programs" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <div
-        ref={ref}
-        className={`mb-12 md:mb-20 pb-6 border-b border-border transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
+      <MotionReveal className="mb-12 md:mb-20 pb-6 border-b border-border">
         <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
           {programsContent.eyebrow}
         </p>
@@ -88,13 +77,13 @@ export function ProgramsSection() {
         <p className="text-base leading-[1.8] text-muted-foreground max-w-3xl">
           {programsContent.description}
         </p>
-      </div>
+      </MotionReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+      <MotionStagger className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
         {programsContent.items.map((program, index) => (
           <ProgramCard key={program.title} program={program} index={index} />
         ))}
-      </div>
+      </MotionStagger>
     </section>
   )
 }

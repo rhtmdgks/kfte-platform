@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
+import { AnimatePresence, motion } from "motion/react"
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,12 +10,14 @@ import {
   ChevronsRight,
   Search,
 } from "lucide-react"
+import { MotionReveal } from "@/components/motion"
 import {
   formatNewsListDate,
   type NewsCategory,
   type NewsListConfig,
 } from "@/lib/news-types"
 import { pageMainClassName } from "@/lib/page-layout"
+import { listItem, tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
 
 const ITEMS_PER_PAGE = 10
@@ -51,11 +54,14 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
   return (
     <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
       <div className="relative z-10 px-6 pb-20 md:px-10 lg:px-[72px]">
-        <h1 className="mb-12 text-center text-[40px] font-medium text-black">
-          {config.pageHeading}
-        </h1>
+        <MotionReveal>
+          <h1 className="mb-12 text-center text-[40px] font-medium text-black">
+            {config.pageHeading}
+          </h1>
+        </MotionReveal>
 
-        <div className="mb-8 flex justify-center">
+        <MotionReveal delay={0.06}>
+          <div className="mb-8 flex justify-center">
           <div className="relative w-full max-w-[500px]">
             <Search className="absolute left-0 top-1/2 h-9 w-9 -translate-y-1/2 text-black" />
             <input
@@ -70,8 +76,10 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
             />
           </div>
         </div>
+        </MotionReveal>
 
-        <div className="mb-8 flex flex-wrap justify-center gap-x-9 gap-y-3">
+        <MotionReveal delay={0.1}>
+          <div className="mb-8 flex flex-wrap justify-center gap-x-9 gap-y-3">
           {config.categories.map((category) => (
             <button
               key={category}
@@ -92,7 +100,8 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
               )}
             </button>
           ))}
-        </div>
+          </div>
+        </MotionReveal>
 
         <div className="mx-auto max-w-[800px]">
           <div className="grid grid-cols-[100px_1fr_100px_80px] border-b-2 border-black py-3">
@@ -109,24 +118,35 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
               등록된 {config.pageTitle}이 없습니다.
             </div>
           ) : (
-            currentItems.map((item) => (
-              <Link
-                key={item.id}
-                href={`${config.basePath}/${item.id}`}
-                className="grid grid-cols-[100px_1fr_100px_80px] border-b border-[#D9D9D9] py-3 transition-colors hover:bg-black/5"
-              >
-                <span className="pl-4 text-[14px] font-medium text-[#7B7B7B]">
-                  {item.author}
-                </span>
-                <span className="text-[14px] font-medium text-[#7B7B7B]">{item.title}</span>
-                <span className="text-center text-[14px] font-medium text-[#7B7B7B]">
-                  {formatNewsListDate(item.createdAt)}
-                </span>
-                <span className="text-center text-[14px] font-medium text-[#7B7B7B]">
-                  {item.views}
-                </span>
-              </Link>
-            ))
+            <AnimatePresence mode="popLayout">
+              {currentItems.map((item) => (
+                <motion.div
+                  key={item.id}
+                  layout
+                  variants={listItem}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  transition={tweenSmooth}
+                >
+                  <Link
+                    href={`${config.basePath}/${item.id}`}
+                    className="grid grid-cols-[100px_1fr_100px_80px] border-b border-[#D9D9D9] py-3 transition-colors hover:bg-black/5"
+                  >
+                    <span className="pl-4 text-[14px] font-medium text-[#7B7B7B]">
+                      {item.author}
+                    </span>
+                    <span className="text-[14px] font-medium text-[#7B7B7B]">{item.title}</span>
+                    <span className="text-center text-[14px] font-medium text-[#7B7B7B]">
+                      {formatNewsListDate(item.createdAt)}
+                    </span>
+                    <span className="text-center text-[14px] font-medium text-[#7B7B7B]">
+                      {item.views}
+                    </span>
+                  </Link>
+                </motion.div>
+              ))}
+            </AnimatePresence>
           )}
         </div>
 

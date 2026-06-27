@@ -1,6 +1,8 @@
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { AdminContentShell } from "@/components/admin/admin-content-shell"
 import { Toaster } from "@/components/ui/sonner"
 import { createClient } from "@/lib/supabase/server"
 
@@ -26,11 +28,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/kfte-os/internal/login?error=wrong_portal")
   }
 
+  const cookieStore = await cookies()
+  const sidebarCookie = cookieStore.get("sidebar:state")?.value
+  const defaultOpen = sidebarCookie === undefined ? true : sidebarCookie === "true"
+
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <AdminSidebar profile={profile} />
       <SidebarInset>
-        <div className="flex min-h-screen flex-col">{children}</div>
+        <AdminContentShell>{children}</AdminContentShell>
       </SidebarInset>
       <Toaster richColors />
     </SidebarProvider>

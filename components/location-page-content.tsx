@@ -1,3 +1,5 @@
+"use client"
+
 import type { ReactNode } from "react"
 import Image from "next/image"
 import type { LucideIcon } from "lucide-react"
@@ -5,6 +7,7 @@ import { Globe, MapPin, Phone } from "lucide-react"
 import subwayIcon from "@/assets/icons/subway.svg"
 import busIcon from "@/assets/icons/bus.svg"
 import { KakaoMap } from "@/components/kakao-map"
+import { MotionReveal } from "@/components/motion"
 import { locationPage } from "@/lib/location-content"
 import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
@@ -61,10 +64,13 @@ export function LocationPageContent() {
   return (
     <main className={pageMainClassName}>
       <div className="mx-auto max-w-[1280px] px-6 md:px-10 lg:px-16 xl:px-20">
-        <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-tight text-foreground">
-          {locationPage.pageTitle}
-        </h1>
+        <MotionReveal>
+          <h1 className="text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-tight text-foreground">
+            {locationPage.pageTitle}
+          </h1>
+        </MotionReveal>
 
+        <MotionReveal delay={0.06}>
         <div className="mt-14 md:mt-20 grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-x-16 xl:gap-x-24">
           <div className="space-y-10 md:space-y-12">
             <InfoRow icon={Phone}>
@@ -120,7 +126,9 @@ export function LocationPageContent() {
             </InfoRow>
           </div>
         </div>
+        </MotionReveal>
 
+        <MotionReveal delay={0.12}>
         <KakaoMap
           className="mt-14 md:mt-20"
           address={locationPage.map.searchAddress}
@@ -129,6 +137,7 @@ export function LocationPageContent() {
           fallbackLat={locationPage.map.lat}
           fallbackLng={locationPage.map.lng}
         />
+        </MotionReveal>
       </div>
     </main>
   )

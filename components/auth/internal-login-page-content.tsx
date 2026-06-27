@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { KfteLogo } from "@/components/kfte-logo"
+import { MotionEnter } from "@/components/motion"
 import { createClient } from "@/lib/supabase/client"
 import {
   authPortals,
@@ -85,8 +86,8 @@ export function InternalLoginPageContent() {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-white p-6">
-      <div className="w-full max-w-lg rounded-2xl border border-border/60 bg-white p-8 md:p-10">
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-surface p-6">
+      <MotionEnter className="w-full max-w-lg rounded-2xl border border-border/60 bg-surface p-8 md:p-10">
         <div className="mb-8 flex items-center gap-4">
           <div className="shrink-0 overflow-hidden rounded-2xl">
             <KfteLogo variant="symbol" className="h-12 w-12 md:h-14 md:w-14" priority />
@@ -106,7 +107,7 @@ export function InternalLoginPageContent() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-          <div className="flex items-center rounded-xl border border-border bg-white px-4 py-3 focus-within:border-foreground/30">
+          <div className="flex items-center rounded-xl border border-border bg-surface px-4 py-3 focus-within:border-foreground/30">
             <input
               id="email-local"
               type="text"
@@ -149,7 +150,7 @@ export function InternalLoginPageContent() {
               type="submit"
               variant="outline"
               disabled={isLoading}
-              className="h-11 shrink-0 rounded-xl border-black bg-white px-8 text-base text-black hover:border-[#002065] hover:bg-[#002065] hover:text-white"
+              className="h-11 shrink-0 rounded-xl border-black bg-surface px-8 text-base text-black hover:border-[#002065] hover:bg-[#002065] hover:text-primary-foreground"
             >
               {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "로그인"}
             </Button>
@@ -164,7 +165,7 @@ export function InternalLoginPageContent() {
             파트너 포털 바로가기 →
           </Link>
         </div>
-      </div>
+      </MotionEnter>
     </div>
   )
 }

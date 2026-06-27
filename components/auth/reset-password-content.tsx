@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { MotionEnter } from "@/components/motion"
 import { createClient } from "@/lib/supabase/client"
 import { authPortals, type AuthPortal } from "@/lib/auth-portals"
 
@@ -47,10 +48,11 @@ export function ResetPasswordContent({ portal }: ResetPasswordContentProps) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <MotionEnter className="w-full max-w-md">
+      <Card className="w-full shadow-lg">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-[#002065] text-lg font-bold text-white">
+          <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-[#002065] text-lg font-bold text-primary-foreground">
             K
           </div>
           <CardTitle className="text-2xl font-bold text-[#002065]">새 비밀번호 설정</CardTitle>
@@ -96,6 +98,7 @@ export function ResetPasswordContent({ portal }: ResetPasswordContentProps) {
           </form>
         </CardContent>
       </Card>
+      </MotionEnter>
     </div>
   )
 }

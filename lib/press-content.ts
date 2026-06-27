@@ -2,7 +2,7 @@ import type { NewsListConfig } from "@/lib/news-types"
 
 export const pressPage: NewsListConfig = {
   pageTitle: "언론보도",
-  pageHeading: "PRESS",
+  pageHeading: "보도자료",
   basePath: "/news/press",
   authorColumnLabel: "매체",
   categories: ["전체", "보도자료", "인터뷰", "협약"],

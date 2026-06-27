@@ -21,6 +21,7 @@ const config: Config = {
   			]
   		},
   		colors: {
+  			surface: 'hsl(var(--surface))',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

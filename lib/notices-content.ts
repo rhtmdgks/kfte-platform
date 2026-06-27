@@ -2,7 +2,7 @@ import type { NewsListConfig } from "@/lib/news-types"
 
 export const noticesPage: NewsListConfig = {
   pageTitle: "공지사항",
-  pageHeading: "NOTICE",
+  pageHeading: "공지사항",
   basePath: "/news/notices",
   authorColumnLabel: "작성자",
   categories: ["전체", "이벤트", "아티클", "채용"],

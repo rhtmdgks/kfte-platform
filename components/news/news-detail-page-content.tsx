@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { ArrowLeft, Download, Eye, FileIcon } from "lucide-react"
+import { MotionReveal } from "@/components/motion"
 import {
   formatNewsDetailDate,
   getNewsPostById,
@@ -64,10 +65,13 @@ export function NewsDetailPageContent({ config, postId }: NewsDetailPageContentP
   return (
     <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
       <div className="relative z-10 px-6 pb-16 md:px-10 lg:px-[72px]">
-        <h1 className="mb-12 text-center text-[32px] font-medium text-black">
-          {config.pageHeading}
-        </h1>
+        <MotionReveal>
+          <h1 className="mb-12 text-center text-[32px] font-medium text-black">
+            {config.pageHeading}
+          </h1>
+        </MotionReveal>
 
+        <MotionReveal delay={0.08}>
         <div className="mx-auto max-w-[800px]">
           <Link
             href={config.basePath}
@@ -191,6 +195,7 @@ export function NewsDetailPageContent({ config, postId }: NewsDetailPageContentP
             </div>
           </div>
         </div>
+        </MotionReveal>
       </div>
     </main>
   )

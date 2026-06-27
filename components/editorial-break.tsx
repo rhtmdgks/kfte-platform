@@ -1,33 +1,23 @@
 "use client"
 
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { motion } from "motion/react"
+import { MotionReveal } from "@/components/motion"
 import { manifesto } from "@/lib/kfte-content"
 
 export function ManifestoSection() {
-  const { ref: imgRef, isVisible: imgVisible } = useScrollReveal(0.15)
-  const { ref: quoteRef, isVisible: quoteVisible } = useScrollReveal(0.2)
-
   return (
     <section id="manifesto" className="px-6 md:px-12 lg:px-20 py-16 md:py-24">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-start">
-        <div
-          ref={imgRef}
-          className={`lg:col-span-7 overflow-hidden transition-all duration-1000 ${
-            imgVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
-          <img
+        <MotionReveal className="lg:col-span-7 overflow-hidden">
+          <motion.img
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400&q=80"
             alt="청년 기술창업가 협업"
-            className="w-full aspect-[16/10] object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+            className="aspect-[16/10] w-full object-cover grayscale hover:grayscale-0 transition-[filter] duration-1000"
+            whileHover={{ scale: 1.02 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           />
-        </div>
-        <div
-          ref={quoteRef}
-          className={`lg:col-span-5 transition-all duration-1000 delay-200 ${
-            quoteVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          }`}
-        >
+        </MotionReveal>
+        <MotionReveal delay={0.12} className="lg:col-span-5">
           <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-6">
             {manifesto.eyebrow}
           </p>
@@ -51,7 +41,7 @@ export function ManifestoSection() {
               </div>
             ))}
           </div>
-        </div>
+        </MotionReveal>
       </div>
     </section>
   )

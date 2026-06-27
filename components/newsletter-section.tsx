@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { MotionReveal } from "@/components/motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,17 +16,11 @@ import {
 import { newsletter as newsletterContent } from "@/lib/kfte-content"
 
 export function NewsletterSection() {
-  const { ref, isVisible } = useScrollReveal(0.1)
   const [agreed, setAgreed] = useState(false)
 
   return (
     <section id="newsletter" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-secondary/30">
-      <div
-        ref={ref}
-        className={`max-w-xl mx-auto transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
+      <MotionReveal className="max-w-xl mx-auto">
         <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3 text-center">
           {newsletterContent.eyebrow}
         </p>
@@ -37,10 +31,7 @@ export function NewsletterSection() {
           {newsletterContent.description}
         </p>
 
-        <form
-          className="space-y-5"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
           <div className="space-y-2">
             <Label htmlFor="newsletter-name">이름</Label>
             <Input
@@ -86,15 +77,11 @@ export function NewsletterSection() {
               개인정보 수집·이용에 동의합니다 (필수)
             </Label>
           </div>
-          <Button
-            type="submit"
-            className="rounded-none w-full h-11"
-            disabled={!agreed}
-          >
+          <Button type="submit" className="rounded-none w-full h-11" disabled={!agreed}>
             {newsletterContent.cta}
           </Button>
         </form>
-      </div>
+      </MotionReveal>
     </section>
   )
 }

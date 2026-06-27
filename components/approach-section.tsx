@@ -1,6 +1,6 @@
 "use client"
 
-import { useScrollReveal } from "@/hooks/use-scroll-reveal"
+import { MotionReveal, MotionStagger, MotionStaggerItem } from "@/components/motion"
 import { whatWeDo } from "@/lib/kfte-content"
 
 function PillarCard({
@@ -10,15 +10,10 @@ function PillarCard({
   pillar: (typeof whatWeDo.pillars)[number]
   index: number
 }) {
-  const { ref, isVisible } = useScrollReveal(0.15)
-
   return (
-    <div
-      ref={ref}
-      className={`bg-background p-8 md:p-12 group transition-all duration-700 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-      }`}
-      style={{ transitionDelay: `${(index % 2) * 120}ms` }}
+    <MotionStaggerItem
+      index={index}
+      className="bg-background p-8 md:p-12 group"
     >
       <span className="text-sm tracking-[0.12em] text-muted-foreground/40">
         ({pillar.number})
@@ -30,21 +25,14 @@ function PillarCard({
       <p className="text-base leading-[1.75] text-muted-foreground max-w-sm">
         {pillar.description}
       </p>
-    </div>
+    </MotionStaggerItem>
   )
 }
 
 export function WhatWeDoSection() {
-  const { ref, isVisible } = useScrollReveal(0.05)
-
   return (
     <section id="what-we-do" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <div
-        ref={ref}
-        className={`mb-12 md:mb-20 pb-6 border-b border-border transition-all duration-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
-      >
+      <MotionReveal className="mb-12 md:mb-20 pb-6 border-b border-border">
         <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
           {whatWeDo.eyebrow}
         </p>
@@ -54,15 +42,13 @@ export function WhatWeDoSection() {
         <p className="text-base leading-[1.8] text-muted-foreground max-w-3xl">
           {whatWeDo.description}
         </p>
-      </div>
+      </MotionReveal>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+      <MotionStagger className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
         {whatWeDo.pillars.map((pillar, index) => (
-          <PillarCard key={pillar.number} pillar={pillar} index={index} />
+          <PillarCard key={pillar.title} pillar={pillar} index={index} />
         ))}
-      </div>
+      </MotionStagger>
     </section>
   )
 }
-
-export { WhatWeDoSection as ApproachSection }
