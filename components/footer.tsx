@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { KfteLogo } from "@/components/kfte-logo"
+import { KfteOsSection } from "@/components/kfte-os-section"
 import { footer as footerContent, navLinks, site } from "@/lib/kfte-content"
 
 export function Footer() {
@@ -56,8 +57,8 @@ export function Footer() {
       </div>
 
       <div className="pt-6 border-t border-border">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
-          <div className="space-y-3 text-sm leading-[1.8] text-muted-foreground">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-12 md:gap-8 md:items-start">
+          <div className="md:col-span-4 space-y-3 text-sm leading-[1.8] text-muted-foreground">
             <p className="text-base font-semibold text-foreground">{org.title}</p>
             <p>단체명 : {org.name}</p>
             <p>이사장 : {org.chairman}</p>
@@ -75,12 +76,14 @@ export function Footer() {
                 {org.email}
               </a>
             </p>
-            <p className="pt-4 text-sm text-muted-foreground/70">
-              © {org.copyright}
-            </p>
+            <p className="pt-4 text-sm text-muted-foreground/70">© {org.copyright}</p>
           </div>
 
-          <div id="resources" className="md:text-right shrink-0">
+          <div className="md:col-span-4 md:col-start-6">
+            <KfteOsSection variant="footer" />
+          </div>
+
+          <div id="resources" className="md:col-span-2 md:col-start-11 md:text-right">
             <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground/50 mb-4">
               자료실
             </p>

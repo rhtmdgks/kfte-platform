@@ -78,7 +78,7 @@ function NavUnderline({
   return (
     <span
       className={cn(
-        "mt-5 block h-[2px] w-full scale-x-0 transition-transform duration-300 origin-left",
+        "mt-5 block h-[2px] w-full scale-x-0 transition-transform duration-300 origin-center",
         light ? "bg-primary" : "bg-primary-foreground",
         "group-hover/col:scale-x-100",
         active && "scale-x-100",
@@ -178,11 +178,11 @@ export function Navigation() {
                 className="group/col flex min-w-0 flex-col px-4 xl:px-5"
                 onMouseEnter={() => setActiveGroup(index)}
               >
-                <div className={cn("flex flex-col justify-end", HEADER_H)}>
+                <div className={cn("flex flex-col items-center justify-end", HEADER_H)}>
                   <Link
                     href={group.href}
                     className={cn(
-                      "block w-full text-left text-base xl:text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors",
+                      "block w-full text-center text-base xl:text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors",
                       light ? "text-foreground" : "text-primary-foreground",
                     )}
                   >
@@ -193,7 +193,7 @@ export function Navigation() {
 
                 <ul
                   className={cn(
-                    "overflow-hidden transition-all duration-200",
+                    "overflow-hidden transition-all duration-200 text-left",
                     megaOpen
                       ? "max-h-[640px] space-y-4 pb-14 pt-7 opacity-100"
                       : "max-h-0 space-y-0 pb-0 pt-0 opacity-0",
@@ -209,7 +209,7 @@ export function Navigation() {
                         <Link
                           href={item.href}
                           className={cn(
-                            "block py-0.5 text-[17px] xl:text-lg leading-relaxed transition-colors",
+                            "block py-0.5 text-left text-[17px] xl:text-lg leading-relaxed transition-colors",
                             isItemActive
                               ? cn(
                                   "font-bold",

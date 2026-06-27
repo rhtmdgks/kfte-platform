@@ -1,8 +1,7 @@
 import React from "react"
 import type { Metadata, Viewport } from 'next'
 
-import { Navigation } from '@/components/navigation'
-import { Footer } from '@/components/footer'
+import { SiteChrome } from '@/components/site-chrome'
 import { paperlogy } from '@/lib/fonts'
 
 import './globals.css'
@@ -25,9 +24,7 @@ export default function RootLayout({
   return (
     <html lang="ko" className={paperlogy.variable} suppressHydrationWarning>
       <body className="font-sans antialiased">
-        <Navigation />
-        {children}
-        <Footer />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   )

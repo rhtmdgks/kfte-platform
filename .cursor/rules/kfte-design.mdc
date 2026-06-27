@@ -1,0 +1,13 @@
+---
+description: KFTE 공식 웹사이트 디자인 토큰
+alwaysApply: true
+---
+
+# KFTE Design Tokens
+
+- **Primary color**: `#002065` (HSL: `221 100% 20%`) — Tailwind `primary`, CSS `--primary`
+- **Main font**: Paperlogy (`assets/fonts/Paperlogy-*.ttf`) — `lib/fonts.ts`의 `paperlogy`, `--font-paperlogy`
+
+새 UI·컴포넌트 작성 시 위 토큰을 사용하고, Inter 등 다른 폰트나 임의 primary 색상은 사용하지 않는다.
+
+디자인·IA·톤 참고 사이트는 `.cursor/rules/kfte-reference-sites.mdc`를 따른다.
