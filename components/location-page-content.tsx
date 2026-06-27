@@ -6,7 +6,7 @@ import type { LucideIcon } from "lucide-react"
 import { Globe, MapPin, Phone } from "lucide-react"
 import subwayIcon from "@/assets/icons/subway.svg"
 import busIcon from "@/assets/icons/bus.svg"
-import { KakaoMap } from "@/components/kakao-map"
+import { NaverMap } from "@/components/naver-map"
 import { MotionReveal } from "@/components/motion"
 import { locationPage } from "@/lib/location-content"
 import { pageMainClassName } from "@/lib/page-layout"
@@ -129,11 +129,11 @@ export function LocationPageContent() {
         </MotionReveal>
 
         <MotionReveal delay={0.12}>
-        <KakaoMap
+        <NaverMap
           className="mt-14 md:mt-20"
           address={locationPage.map.searchAddress}
           markerTitle={locationPage.map.markerTitle}
-          level={locationPage.map.level}
+          zoom={locationPage.map.zoom}
           fallbackLat={locationPage.map.lat}
           fallbackLng={locationPage.map.lng}
         />

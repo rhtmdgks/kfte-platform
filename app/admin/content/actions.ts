@@ -7,6 +7,13 @@ import {
   buildContentPostMetadata,
   parseContentPostMetadata,
 } from "@/lib/content-post-metadata"
+import { uploadBlogThumbnail } from "@/lib/blog-thumbnail"
+import { parseIsPinnedFromFormData } from "@/lib/content-post-pin"
+import {
+  buildEventPostMetadata,
+  fromDatetimeLocalValue,
+  parseEventPostMetadata,
+} from "@/lib/event-metadata"
 import { getPublicPathsForContentType } from "@/lib/content-posts"
 import type { Database } from "@/types/database"
 
@@ -42,17 +49,102 @@ function parseMetadataFromFormData(
   )
 }
 
+function parseEventMetadataFromFormData(
+  formData: FormData,
+  existingMetadata?: ReturnType<typeof parseEventPostMetadata>,
+) {
+  const category = ((formData.get("metadata_category") as string) || "").trim()
+  const subcategory = ((formData.get("metadata_subcategory") as string) || "").trim()
+  const location = ((formData.get("metadata_location") as string) || "").trim()
+  const locationDetail = ((formData.get("metadata_location_detail") as string) || "").trim()
+  const cost = ((formData.get("metadata_cost") as string) || "").trim()
+  const eventDate = fromDatetimeLocalValue(
+    (formData.get("metadata_event_date") as string) || "",
+  )
+  const eventEndDate = fromDatetimeLocalValue(
+    (formData.get("metadata_event_end_date") as string) || "",
+  )
+  const registrationStart = fromDatetimeLocalValue(
+    (formData.get("metadata_registration_start") as string) || "",
+  )
+  const registrationEnd = fromDatetimeLocalValue(
+    (formData.get("metadata_registration_end") as string) || "",
+  )
+  const featured = formData.get("metadata_featured") === "1"
+
+  if (!eventDate) {
+    throw new Error("행사 시작 일시를 입력해 주세요.")
+  }
+
+  if (!location) {
+    throw new Error("행사 장소를 입력해 주세요.")
+  }
+
+  return buildEventPostMetadata(
+    {
+      category: category || undefined,
+      subcategory: subcategory || undefined,
+      location,
+      locationDetail: locationDetail || undefined,
+      cost: cost || "무료",
+      eventDate,
+      eventEndDate,
+      registrationStart,
+      registrationEnd,
+      featured,
+    },
+    existingMetadata,
+  )
+}
+
+function contentTypeUsesThumbnail(contentType: ContentType) {
+  return contentType === "blog" || contentType === "event"
+}
+
+function assertThumbnailRequired(contentType: ContentType, thumbnailUrl: string | null) {
+  if (contentType === "event" && !thumbnailUrl) {
+    throw new Error("썸네일 이미지를 첨부해 주세요.")
+  }
+}
+
 function revalidateContentPaths(contentType: ContentType, slug?: string) {
   const adminPath = contentTypeToAdminPath(contentType)
   revalidatePath(adminPath)
 
-  if (contentType === "notice" || contentType === "press") {
+  if (
+    contentType === "notice" ||
+    contentType === "press" ||
+    contentType === "blog" ||
+    contentType === "event" ||
+    contentType === "event_archive"
+  ) {
     const publicBase = getPublicPathsForContentType(contentType)
     revalidatePath(publicBase)
     if (slug) {
       revalidatePath(`${publicBase}/${slug}`)
     }
   }
+}
+
+async function resolveThumbnailUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  formData: FormData,
+  userId: string,
+  currentThumbnailUrl?: string | null,
+) {
+  const removeThumbnail = formData.get("remove_thumbnail") === "1"
+  const thumbnailFile = formData.get("thumbnail")
+
+  if (thumbnailFile instanceof File && thumbnailFile.size > 0) {
+    return uploadBlogThumbnail(supabase, thumbnailFile, userId)
+  }
+
+  if (removeThumbnail) {
+    return null
+  }
+
+  const existing = ((formData.get("existing_thumbnail_url") as string) || "").trim()
+  return existing || currentThumbnailUrl || null
 }
 
 export async function createPost(formData: FormData) {
@@ -69,7 +161,16 @@ export async function createPost(formData: FormData) {
   const status = (formData.get("status") as PostStatus) || "draft"
   const externalUrl = (formData.get("external_url") as string) || null
   const publishedAt = status === "published" ? new Date().toISOString() : null
-  const metadata = parseMetadataFromFormData(formData)
+  const isPinned = parseIsPinnedFromFormData(formData)
+  const metadata =
+    contentType === "event"
+      ? parseEventMetadataFromFormData(formData)
+      : parseMetadataFromFormData(formData)
+  const thumbnailUrl = contentTypeUsesThumbnail(contentType)
+    ? await resolveThumbnailUrl(supabase, formData, user.id)
+    : null
+
+  assertThumbnailRequired(contentType, thumbnailUrl)
 
   let slug = slugify(title) || `post-${Date.now()}`
   const { data: existing } = await supabase
@@ -92,6 +193,8 @@ export async function createPost(formData: FormData) {
     published_at: publishedAt,
     author_id: user.id,
     metadata,
+    thumbnail_url: thumbnailUrl,
+    is_pinned: isPinned,
   })
 
   if (error) throw new Error(error.message)
@@ -116,7 +219,7 @@ export async function updatePost(id: string, formData: FormData) {
 
   const { data: current } = await supabase
     .from("content_posts")
-    .select("status, published_at, metadata, slug")
+    .select("status, published_at, metadata, slug, thumbnail_url")
     .eq("id", id)
     .single()
 
@@ -125,10 +228,23 @@ export async function updatePost(id: string, formData: FormData) {
       ? new Date().toISOString()
       : current?.published_at ?? null
 
-  const metadata = parseMetadataFromFormData(
-    formData,
-    parseContentPostMetadata(current?.metadata ?? null),
-  )
+  const metadata =
+    contentType === "event"
+      ? parseEventMetadataFromFormData(
+          formData,
+          parseEventPostMetadata(current?.metadata ?? null),
+        )
+      : parseMetadataFromFormData(
+          formData,
+          parseContentPostMetadata(current?.metadata ?? null),
+        )
+  const isPinned = parseIsPinnedFromFormData(formData)
+
+  const thumbnailUrl = contentTypeUsesThumbnail(contentType)
+    ? await resolveThumbnailUrl(supabase, formData, user.id, current?.thumbnail_url)
+    : current?.thumbnail_url ?? null
+
+  assertThumbnailRequired(contentType, thumbnailUrl)
 
   const { error } = await supabase
     .from("content_posts")
@@ -141,6 +257,8 @@ export async function updatePost(id: string, formData: FormData) {
       external_url: externalUrl,
       published_at: publishedAt,
       metadata,
+      thumbnail_url: thumbnailUrl,
+      is_pinned: isPinned,
     })
     .eq("id", id)
 
@@ -171,7 +289,7 @@ function contentTypeToAdminPath(contentType: ContentType): string {
     press: "/admin/press",
     event: "/admin/events",
     event_archive: "/admin/event-archives",
-    resource: "/admin/resources",
+    resource: "/admin",
     blog: "/admin/blog",
   }
   return map[contentType]

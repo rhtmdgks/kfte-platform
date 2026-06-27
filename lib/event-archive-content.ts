@@ -1,0 +1,126 @@
+import type { EventArchivePageConfig } from "@/lib/event-archive-types"
+
+export const eventArchivePageConfig: Omit<EventArchivePageConfig, "posts"> = {
+  pageTitle: "행사 아카이브",
+  pageHeading: "행사 아카이브",
+  description:
+    "KFTE가 함께해 온 프로그램, 포럼, 데모데이, 네트워킹의 기록입니다. 지나간 현장의 에너지와 연결의 흔적을 모았습니다.",
+  basePath: "/activities/events/archive",
+  eventsPath: "/activities/events",
+  categories: ["전체", "프로그램", "네트워킹", "데모데이", "포럼", "워크숍"],
+}
+
+export const eventArchivesSeedPosts = [
+  {
+    slug: "archive-founder-forum-2025",
+    title: "Next Tech Founders Forum 2025",
+    summary: "200여 명의 창업가·멘토·파트너가 모인 연례 포럼. AI·딥테크·청년 창업 패널이 진행되었습니다.",
+    content:
+      "2025 Next Tech Founders Forum은 KFTE의 대표 연례 행사로, 기술창업 생태계의 한 해를 돌아보고 다음 방향을 논의했습니다.\n\n■ 하이라이트\n- 키노트: 2025 기술창업 리뷰\n- 패널: AI 스타트업의 Go-to-Market\n- 네트워킹 리셉션",
+    category: "포럼",
+    subcategory: "연례",
+    eventDate: "2025-09-06T10:00:00+09:00",
+    eventEndDate: "2025-09-06T16:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "외부 컨퍼런스 센터",
+    views: 312,
+  },
+  {
+    slug: "archive-youth-demo-day-2025",
+    title: "2025 청소년 Tech Demo Day",
+    summary: "12개 청소년 창업팀이 프로토타입을 발표하고, 3팀이 시상을 수상했습니다.",
+    content:
+      "청소년 Tech Demo Day 2025는 KFTE 청소년 분과 참여 팀의 학기 성과 발표 행사였습니다.\n\n■ 수상\n- 대상: EcoSense 팀\n- 우수상: CodeBridge 팀\n- 특별상: GreenLoop 팀",
+    category: "데모데이",
+    subcategory: "청소년",
+    eventDate: "2025-08-16T13:00:00+09:00",
+    eventEndDate: "2025-08-16T17:30:00+09:00",
+    location: "서울 역삼동",
+    locationDetail: "성곡빌딩 세미나실",
+    views: 245,
+  },
+  {
+    slug: "archive-networking-winter-2024",
+    title: "KFTE Winter Networking 2024",
+    summary: "연말 회원사·멘토·투자자 네트워킹. 라이트닝 피치 10팀, 1:1 미팅 80회가 진행되었습니다.",
+    content:
+      "Winter Networking 2024는 KFTE 회원사와 생태계 파트너가 한 해를 마무리하며 교류한 행사입니다.",
+    category: "네트워킹",
+    subcategory: "연말",
+    eventDate: "2024-12-07T14:00:00+09:00",
+    eventEndDate: "2024-12-07T19:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "KFTE 프로그램센터",
+    views: 198,
+  },
+  {
+    slug: "archive-mentoring-bootcamp-2024",
+    title: "KFTE Fall 멘토링 부트캠프 2024",
+    summary: "초기 창업팀 28팀이 IR·GTM·팀빌딩 트랙을 하루 만에 점검했습니다.",
+    content:
+      "Fall 멘토링 부트캠프는 현직 창업가 멘토 12명과 함께한 집중 워크숍이었습니다.",
+    category: "워크숍",
+    subcategory: "멘토링",
+    eventDate: "2024-10-19T11:00:00+09:00",
+    eventEndDate: "2024-10-19T17:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "KFTE 프로그램센터 2층",
+    views: 156,
+  },
+  {
+    slug: "archive-ecosystem-summit-2024",
+    title: "Tech Startup Ecosystem Summit 2024",
+    summary: "정부·민간·학계 패널이 참여한 생태계 정책·협력 포럼.",
+    content:
+      "Ecosystem Summit 2024는 기술창업 생태계의 협력 사례와 정책 방향을 공유한 대규모 포럼이었습니다.",
+    category: "포럼",
+    subcategory: "생태계",
+    eventDate: "2024-05-24T10:00:00+09:00",
+    eventEndDate: "2024-05-24T17:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "컨벤션 센터",
+    views: 421,
+  },
+  {
+    slug: "archive-youth-lab-demo-2023",
+    title: "2023 Youth Innovation Lab Demo Day",
+    summary: "청소년 혁신랩 1기 8팀의 최종 발표 및 시상.",
+    content:
+      "Youth Innovation Lab Demo Day 2023은 KFTE 청소년 프로그램 1기의 결산 행사였습니다.",
+    category: "데모데이",
+    subcategory: "청소년",
+    eventDate: "2023-11-18T13:00:00+09:00",
+    eventEndDate: "2023-11-18T17:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "KFTE 프로그램센터",
+    views: 134,
+  },
+  {
+    slug: "archive-spring-networking-2023",
+    title: "KFTE Spring Connect 2023",
+    summary: "KFTE 출범 이후 첫 대규모 네트워킹. 회원사·멘토 120명 참석.",
+    content:
+      "Spring Connect 2023은 KFTE의 초기 회원사와 멘토가 처음으로 대규모로 모인 네트워킹 행사였습니다.",
+    category: "네트워킹",
+    subcategory: "출범",
+    eventDate: "2023-04-22T14:00:00+09:00",
+    eventEndDate: "2023-04-22T18:30:00+09:00",
+    location: "서울 역삼동",
+    locationDetail: "성곡빌딩",
+    views: 287,
+  },
+  {
+    slug: "archive-launch-program-2023",
+    title: "Next Tech Founders Launch Program 2023",
+    summary: "KFTE 대표 창업 프로그램 1기 Demo Day & 수료식.",
+    content:
+      "Launch Program 2023 Demo Day는 KFTE의 flagship 프로그램 1기 팀 15개가 최종 피치를 진행한 행사였습니다.",
+    category: "프로그램",
+    subcategory: "Demo Day",
+    eventDate: "2023-07-08T13:00:00+09:00",
+    eventEndDate: "2023-07-08T18:00:00+09:00",
+    location: "서울 강남구",
+    locationDetail: "KFTE 프로그램센터",
+    views: 356,
+  },
+] as const

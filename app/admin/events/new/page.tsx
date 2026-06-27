@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
-import { ContentPostForm } from "@/components/admin/content-post-form"
+import { EventPostForm } from "@/components/admin/event-post-form"
 import { createPost } from "@/app/admin/content/actions"
 
 export default function NewEventPage() {
@@ -15,7 +15,7 @@ export default function NewEventPage() {
         <h1 className="text-lg font-semibold text-[#002065]">새 행사</h1>
       </header>
       <main className="flex-1 p-6">
-        <ContentPostForm contentType="event" action={createPost} />
+        <EventPostForm contentType="event" action={createPost} />
       </main>
     </div>
   )

@@ -8,9 +8,11 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Pin,
   Search,
 } from "lucide-react"
 import { MotionReveal } from "@/components/motion"
+import { sortByPinnedThenDate } from "@/lib/content-post-pin"
 import {
   formatNewsListDate,
   type NewsCategory,
@@ -32,7 +34,7 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
   const [currentPage, setCurrentPage] = useState(1)
 
   const filteredPosts = useMemo(() => {
-    return config.posts.filter((item) => {
+    const filtered = config.posts.filter((item) => {
       const matchesCategory =
         selectedCategory === "전체" || item.category === selectedCategory
       const matchesSearch = item.title
@@ -40,6 +42,8 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
         .includes(searchQuery.toLowerCase())
       return matchesCategory && matchesSearch
     })
+
+    return sortByPinnedThenDate(filtered)
   }, [config.posts, searchQuery, selectedCategory])
 
   const totalPages = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) || 1
@@ -136,7 +140,15 @@ export function NewsListPageContent({ config }: NewsListPageContentProps) {
                     <span className="pl-4 text-[14px] font-medium text-[#7B7B7B]">
                       {item.author}
                     </span>
-                    <span className="text-[14px] font-medium text-[#7B7B7B]">{item.title}</span>
+                    <span className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#7B7B7B]">
+                      {item.pinned ? (
+                        <Pin
+                          className="h-3.5 w-3.5 shrink-0 fill-[#002065] text-[#002065]"
+                          aria-label="상단 고정"
+                        />
+                      ) : null}
+                      {item.title}
+                    </span>
                     <span className="text-center text-[14px] font-medium text-[#7B7B7B]">
                       {formatNewsListDate(item.createdAt)}
                     </span>

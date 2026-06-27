@@ -110,7 +110,7 @@ export function ManifestoPageContent() {
               {statement.items.map((item) => (
                 <li
                   key={item.number}
-                  className="flex items-start gap-5 md:gap-8"
+                  className="flex items-center gap-5 md:gap-8"
                 >
                   <span
                     className="shrink-0 text-[clamp(2.5rem,5vw,4.5rem)] font-bold leading-none text-primary tabular-nums"
@@ -118,7 +118,7 @@ export function ManifestoPageContent() {
                   >
                     {item.number}
                   </span>
-                  <p className="pt-2 md:pt-3 text-base md:text-lg lg:text-xl font-medium leading-relaxed text-foreground">
+                  <p className="text-base md:text-lg lg:text-xl font-medium leading-relaxed text-foreground">
                     {item.content}
                   </p>
                 </li>

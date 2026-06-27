@@ -8,7 +8,6 @@ import {
   Building2,
   Calendar,
   ChevronDown,
-  FileText,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -49,7 +48,6 @@ const contentNavItems = [
   { href: "/admin/press", label: "언론보도", icon: Newspaper },
   { href: "/admin/events", label: "행사", icon: Calendar },
   { href: "/admin/event-archives", label: "행사 아카이브", icon: BookOpen },
-  { href: "/admin/resources", label: "자료실", icon: FileText },
   { href: "/admin/blog", label: "블로그", icon: Megaphone },
 ]
 

@@ -11,6 +11,7 @@ export type NewsPost = {
   attachmentUrl?: string
   attachmentName?: string
   externalUrl?: string
+  pinned?: boolean
 }
 
 export type NewsListConfig = {

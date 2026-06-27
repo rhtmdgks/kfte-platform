@@ -3,8 +3,9 @@
 import { useState } from "react"
 import Link from "next/link"
 import { AnimatePresence, motion } from "motion/react"
+import { Building2, Copy, Check } from "lucide-react"
 import { joinPage, type JoinTabId } from "@/lib/join-content"
-import { MotionReveal } from "@/components/motion"
+import { MotionReveal, MotionStagger, MotionStaggerItem } from "@/components/motion"
 import { pageMainClassName } from "@/lib/page-layout"
 import { tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
@@ -87,19 +88,129 @@ function CategoriesPanel() {
 }
 
 function FeesPanel() {
+  const { fees } = joinPage
+  const [copied, setCopied] = useState(false)
+  const bankMethod = fees.payment.methods[0]
+
+  const handleCopyAccount = async () => {
+    try {
+      await navigator.clipboard.writeText(bankMethod.account.replace(/-/g, ""))
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.alert("계좌번호 복사에 실패했습니다.")
+    }
+  }
+
   return (
-    <div className="space-y-10 md:space-y-12">
-      <p className="text-base leading-relaxed text-foreground/85 md:text-[17px]">
-        {joinPage.fees.intro}
-      </p>
-      {joinPage.fees.items.map((item) => (
-        <section key={item.title}>
-          <h2 className="text-lg font-bold text-primary md:text-xl">{item.title}</h2>
-          <p className="mt-4 text-base leading-relaxed text-foreground md:text-[17px]">
-            {item.content}
+    <div className="space-y-12 md:space-y-16">
+      <MotionReveal>
+        <div className="space-y-4 text-base leading-[1.85] text-foreground/85 md:text-[17px]">
+          {fees.intro.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </div>
+      </MotionReveal>
+
+      <MotionReveal delay={0.06}>
+        <section>
+          <h2 className="text-lg font-bold text-foreground md:text-xl">{fees.tableTitle}</h2>
+          <div className="mt-6 overflow-hidden border border-border">
+            <table className="w-full border-collapse text-center text-sm md:text-base">
+              <thead>
+                <tr className="bg-primary text-primary-foreground">
+                  <th className="px-4 py-4 font-semibold md:px-6 md:py-5">
+                    {fees.tableHeaders.category}
+                  </th>
+                  <th className="px-4 py-4 font-semibold md:px-6 md:py-5">
+                    {fees.tableHeaders.amount}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {fees.tableRows.map((row, index) => (
+                  <tr
+                    key={row.category}
+                    className={cn(
+                      "border-t border-border bg-surface transition-colors hover:bg-surface/80",
+                      index % 2 === 1 && "bg-background",
+                    )}
+                  >
+                    <td className="px-4 py-4 font-medium text-foreground md:px-6 md:py-5">
+                      {row.category}
+                    </td>
+                    <td className="px-4 py-4 leading-relaxed text-foreground/85 md:px-6 md:py-5">
+                      {row.amount}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+            {fees.tableNote}
           </p>
         </section>
-      ))}
+      </MotionReveal>
+
+      <section>
+        <MotionReveal delay={0.1}>
+          <h2 className="text-lg font-bold text-foreground md:text-xl">
+            {fees.payment.title}
+          </h2>
+        </MotionReveal>
+
+        <MotionStagger className="mt-6">
+          {fees.payment.methods.map((method, index) => (
+            <MotionStaggerItem key={method.id} index={index}>
+              <div className="border border-border bg-surface/60 p-6 md:p-8">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/8 text-primary">
+                    <Building2 className="h-5 w-5" strokeWidth={1.75} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold tracking-wide text-primary">
+                      {method.label}
+                    </p>
+                    <div className="mt-4 grid gap-3 sm:grid-cols-[auto_1fr] sm:gap-x-6 sm:gap-y-2">
+                      <span className="text-sm text-muted-foreground">은행</span>
+                      <span className="text-base font-medium text-foreground">{method.bank}</span>
+                      <span className="text-sm text-muted-foreground">계좌번호</span>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-base font-semibold tracking-wide text-foreground">
+                          {method.account}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleCopyAccount}
+                          className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                        >
+                          {copied ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              복사됨
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              복사
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <span className="text-sm text-muted-foreground">예금주</span>
+                      <span className="text-base font-medium text-foreground">{method.holder}</span>
+                    </div>
+                    <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+                      {method.note}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </MotionStaggerItem>
+          ))}
+        </MotionStagger>
+      </section>
     </div>
   )
 }

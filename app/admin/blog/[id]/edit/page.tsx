@@ -5,6 +5,7 @@ import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { ContentPostForm } from "@/components/admin/content-post-form"
 import { createClient } from "@/lib/supabase/server"
 import { updatePost } from "@/app/admin/content/actions"
+import { blogCategoryOptions } from "@/lib/blog-content"
 
 type PageProps = { params: Promise<{ id: string }> }
 
@@ -26,7 +27,16 @@ export default async function EditBlogPage({ params }: PageProps) {
         <h1 className="text-lg font-semibold text-[#002065]">블로그 글 수정</h1>
       </header>
       <main className="flex-1 p-6">
-        <ContentPostForm post={post} contentType="blog" action={updatePost.bind(null, id)} />
+        <ContentPostForm
+          post={post}
+          contentType="blog"
+          action={updatePost.bind(null, id)}
+          authorFieldLabel="작성자"
+          defaultAuthor="KFTE"
+          categoryOptions={blogCategoryOptions}
+          defaultCategory="아티클"
+          showThumbnailField
+        />
       </main>
     </div>
   )

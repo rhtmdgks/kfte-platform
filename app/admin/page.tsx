@@ -5,7 +5,6 @@ import {
   Bell,
   Building2,
   Calendar,
-  FileText,
   Megaphone,
   Newspaper,
   Users,
@@ -18,7 +17,6 @@ export default async function AdminDashboardPage() {
     { count: noticeCount },
     { count: pressCount },
     { count: eventCount },
-    { count: resourceCount },
     { count: blogCount },
     { count: pendingCount },
     { count: adminCount },
@@ -38,10 +36,6 @@ export default async function AdminDashboardPage() {
     supabase
       .from("content_posts")
       .select("*", { count: "exact", head: true })
-      .eq("content_type", "resource"),
-    supabase
-      .from("content_posts")
-      .select("*", { count: "exact", head: true })
       .eq("content_type", "blog"),
     supabase
       .from("membership_applications")
@@ -57,7 +51,6 @@ export default async function AdminDashboardPage() {
     { label: "공지사항", count: noticeCount ?? 0, icon: Bell, href: "/admin/notices" },
     { label: "언론보도", count: pressCount ?? 0, icon: Newspaper, href: "/admin/press" },
     { label: "행사", count: eventCount ?? 0, icon: Calendar, href: "/admin/events" },
-    { label: "자료실", count: resourceCount ?? 0, icon: FileText, href: "/admin/resources" },
     { label: "블로그", count: blogCount ?? 0, icon: Megaphone, href: "/admin/blog" },
     {
       label: "가입 신청 (대기)",

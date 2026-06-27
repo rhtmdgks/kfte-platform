@@ -12,6 +12,18 @@ export type NewsSeedPost = {
   externalUrl?: string
 }
 
+export type BlogSeedPost = {
+  slug: string
+  title: string
+  summary: string
+  content: string
+  author: string
+  category: string
+  createdAt: string
+  views: number
+  thumbnailUrl?: string
+}
+
 export const noticesSeedPosts: NewsSeedPost[] = [
   {
     slug: "notice-001",
@@ -250,5 +262,44 @@ export const pressSeedPosts: NewsSeedPost[] = [
     category: "인터뷰",
     createdAt: "2026-03-28T09:00:00+09:00",
     views: 92,
+  },
+]
+
+export const blogSeedPosts: BlogSeedPost[] = [
+  {
+    slug: "blog-001",
+    title: "2026년 KFTE 청년 기술창업 멘토링 프로그램 모집 안내",
+    summary:
+      "한국기술창업진흥재단(KFTE)은 청년 창업가를 대상으로 기술창업 멘토링 프로그램 참가자를 모집합니다. 1:1 멘토링, IR 피드백, 네트워킹까지.",
+    content:
+      "한국기술창업진흥재단(KFTE)은 청년 창업가를 대상으로 기술창업 멘토링 프로그램 참가자를 모집합니다.\n\n■ 모집 기간: 2026년 7월 1일 ~ 7월 31일\n■ 대상: 만 19세~39세 예비·초기 창업자\n■ 프로그램: 1:1 멘토링, IR 피드백, 네트워킹\n\n많은 관심과 참여 부탁드립니다.",
+    author: "KFTE",
+    category: "행사",
+    createdAt: "2026-04-14T09:00:00+09:00",
+    views: 86,
+  },
+  {
+    slug: "blog-002",
+    title: "청소년 창업가가 말하는 '첫 번째 고객' 찾기",
+    summary:
+      "아직 학생인 창업가들이 어떻게 첫 고객을 만났는지, KFTE 청소년 분과 멤버들의 이야기를 담았습니다.",
+    content:
+      "창업의 시작은 아이디어가 아니라 고객과의 만남에서 출발합니다.\n\nKFTE 청소년 분과에 참여 중인 창업가들은 학교, 동아리, 지역 커뮤니티를 무대로 작은 실험을 반복하며 첫 고객을 찾아갑니다.\n\n이번 글에서는 그 과정에서 배운 세 가지 원칙을 공유합니다.",
+    author: "KFTE",
+    category: "에세이",
+    createdAt: "2026-04-02T10:00:00+09:00",
+    views: 64,
+  },
+  {
+    slug: "blog-003",
+    title: "KFTE 네트워킹 데이 현장 스케치",
+    summary:
+      "회원사 간 교류를 위한 KFTE 네트워킹 데이 현장을 소개합니다. 1:1 미팅, 기업 소개, 간담회까지.",
+    content:
+      "KFTE 회원사 간 교류를 위한 네트워킹 데이가 성황리에 마무리되었습니다.\n\n참가 회원사들은 기업 소개 세션과 1:1 미팅을 통해 새로운 협력 기회를 모색했습니다.\n\n다음 네트워킹 데이 일정은 공지사항을 통해 안내드리겠습니다.",
+    author: "KFTE",
+    category: "행사",
+    createdAt: "2026-03-20T14:00:00+09:00",
+    views: 52,
   },
 ]

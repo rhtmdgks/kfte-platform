@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { MoreHorizontal, Pencil, Plus, Trash2 } from "lucide-react"
+import { MoreHorizontal, Pencil, Pin, Plus, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { DeleteConfirmDialog } from "@/components/admin/delete-confirm-dialog"
+import { sortByPinnedThenDate } from "@/lib/content-post-pin"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import type { Tables, Database } from "@/types/database"
 
@@ -56,6 +57,8 @@ export function ContentPostTable({
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
+  const sortedPosts = useMemo(() => sortByPinnedThenDate(posts), [posts])
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "—"
     return new Date(dateString).toLocaleDateString("ko-KR", {
@@ -79,7 +82,7 @@ export function ContentPostTable({
         <Button asChild className="bg-[#002065] hover:bg-[#002065]/90">
           <Link href={`${adminPath}/new`}>
             <Plus className="mr-2 h-4 w-4" />
-            새 글 작성
+            {contentType === "event" ? "새 행사 등록" : "새 글 작성"}
           </Link>
         </Button>
       </div>
@@ -104,12 +107,22 @@ export function ContentPostTable({
                 </TableCell>
               </TableRow>
             ) : (
-              posts.map((post) => {
+              sortedPosts.map((post) => {
                 const views = parseContentPostMetadata(post.metadata).views ?? 0
 
                 return (
                 <TableRow key={post.id}>
-                  <TableCell className="font-medium">{post.title}</TableCell>
+                  <TableCell className="font-medium">
+                    <span className="inline-flex items-center gap-2">
+                      {post.is_pinned ? (
+                        <Pin
+                          className="h-4 w-4 shrink-0 fill-[#002065] text-[#002065]"
+                          aria-label="상단 고정"
+                        />
+                      ) : null}
+                      {post.title}
+                    </span>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={statusVariants[post.status]}>
                       {statusLabels[post.status]}

@@ -22,6 +22,7 @@ export const navMenu = [
       { label: "소개", href: "/about" },
       { label: "우리가 하는 일", href: "/about/what-we-do" },
       { label: "선언문", href: "/about/manifesto" },
+      { label: "정관", href: "/about/bylaws" },
       { label: "함께하는 사람들", href: "/about/partners" },
       { label: "찾아오시는 길", href: "/about/location" },
       { label: "CI", href: "/about/ci" },
@@ -52,7 +53,6 @@ export const navMenu = [
     items: [
       { label: "공지사항", href: "/news/notices" },
       { label: "언론보도", href: "/news/press" },
-      { label: "자료실", href: "/news/resources" },
       { label: "블로그", href: "/news/blog" },
     ],
   },

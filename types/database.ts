@@ -48,6 +48,7 @@ export type Database = {
           created_at: string
           external_url: string | null
           id: string
+          is_pinned: boolean
           metadata: Json | null
           published_at: string | null
           slug: string
@@ -64,6 +65,7 @@ export type Database = {
           created_at?: string
           external_url?: string | null
           id?: string
+          is_pinned?: boolean
           metadata?: Json | null
           published_at?: string | null
           slug: string
@@ -80,6 +82,7 @@ export type Database = {
           created_at?: string
           external_url?: string | null
           id?: string
+          is_pinned?: boolean
           metadata?: Json | null
           published_at?: string | null
           slug?: string

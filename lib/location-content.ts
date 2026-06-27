@@ -16,7 +16,7 @@ export const locationPage = {
   map: {
     searchAddress: "서울특별시 강남구 테헤란로 128",
     markerTitle: "한국기술창업진흥재단(KFTE)",
-    level: 3,
+    zoom: 16,
     lat: 37.501022,
     lng: 127.036698,
   },

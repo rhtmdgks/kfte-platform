@@ -15,6 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
+import { BlogThumbnailField } from "@/components/admin/blog-thumbnail-field"
+import { PinToggleField } from "@/components/admin/pin-toggle-field"
 import type { Tables, Database } from "@/types/database"
 
 type ContentPost = Tables<"content_posts">
@@ -30,6 +32,7 @@ type ContentPostFormProps = {
   defaultAuthor?: string
   categoryOptions?: readonly string[]
   defaultCategory?: string
+  showThumbnailField?: boolean
 }
 
 function SubmitButton() {
@@ -52,6 +55,7 @@ export function ContentPostForm({
   defaultAuthor = "KFTE",
   categoryOptions = [],
   defaultCategory,
+  showThumbnailField = false,
 }: ContentPostFormProps) {
   const metadata = parseContentPostMetadata(post?.metadata ?? null)
   const [, formAction] = useActionState(async (_: void | null, formData: FormData) => {
@@ -60,7 +64,7 @@ export function ContentPostForm({
   }, null)
 
   return (
-    <form action={formAction} className="space-y-6">
+    <form action={formAction} encType="multipart/form-data" className="space-y-6">
       <input type="hidden" name="content_type" value={contentType} />
 
       <div className="space-y-2">
@@ -109,13 +113,18 @@ export function ContentPostForm({
 
       <div className="space-y-2">
         <Label htmlFor="summary">요약</Label>
-        <Input
+        <Textarea
           id="summary"
           name="summary"
           defaultValue={post?.summary ?? ""}
-          placeholder="목록에 표시될 짧은 요약"
+          placeholder="목록에 표시될 짧은 요약 (2~3줄 권장)"
+          className="min-h-[96px] resize-y"
         />
       </div>
+
+      {showThumbnailField && <BlogThumbnailField currentUrl={post?.thumbnail_url} />}
+
+      <PinToggleField defaultChecked={post?.is_pinned ?? false} />
 
       <div className="space-y-2">
         <Label htmlFor="body">본문</Label>
