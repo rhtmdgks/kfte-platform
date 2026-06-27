@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils"
 
 type NavItem = { label: string; href: string }
 
-const HEADER_H = "h-[84px]"
-const HEADER_TOP = 84
+const HEADER_H = "h-[96px]"
+const HEADER_TOP = 96
 const MENU_GRID = "mx-auto grid w-[880px] xl:w-[980px] grid-cols-4"
 
 function isGroupActive(pathname: string, group: { href: string; items: readonly NavItem[] }) {
@@ -104,7 +104,7 @@ export function Navigation() {
 
     const observer = new IntersectionObserver(
       ([entry]) => setHeroIntersecting(entry.isIntersecting),
-      { rootMargin: "-84px 0px 0px 0px", threshold: 0 },
+      { rootMargin: "-96px 0px 0px 0px", threshold: 0 },
     )
     observer.observe(hero)
     return () => observer.disconnect()
@@ -154,7 +154,11 @@ export function Navigation() {
             HEADER_H,
           )}
         >
-          <KfteLogo variant={light ? "blue" : "white"} priority />
+          <KfteLogo
+            variant={light ? "blue" : "white"}
+            priority
+            className="h-12 w-auto xl:h-14"
+          />
         </Link>
 
         <AuthLinks
@@ -178,7 +182,7 @@ export function Navigation() {
                   <Link
                     href={group.href}
                     className={cn(
-                      "block w-full text-left text-[15px] xl:text-base font-semibold leading-snug tracking-[-0.01em] transition-colors",
+                      "block w-full text-left text-base xl:text-[17px] font-semibold leading-snug tracking-[-0.01em] transition-colors",
                       light ? "text-foreground" : "text-primary-foreground",
                     )}
                   >
@@ -205,7 +209,7 @@ export function Navigation() {
                         <Link
                           href={item.href}
                           className={cn(
-                            "block py-0.5 text-base xl:text-[17px] leading-relaxed transition-colors",
+                            "block py-0.5 text-[17px] xl:text-lg leading-relaxed transition-colors",
                             isItemActive
                               ? cn(
                                   "font-bold",
@@ -235,12 +239,16 @@ export function Navigation() {
       {/* Mobile */}
       <div
         className={cn(
-          "flex lg:hidden items-center gap-4 px-6 h-[72px] border-b",
+          "flex lg:hidden items-center gap-4 px-6 h-[80px] border-b",
           light ? "border-border/40 bg-white" : "border-transparent bg-primary",
         )}
       >
         <Link href="/" className="shrink-0">
-          <KfteLogo variant={light ? "blue" : "white"} priority />
+          <KfteLogo
+            variant={light ? "blue" : "white"}
+            priority
+            className="h-11 w-auto"
+          />
         </Link>
         <button
           type="button"
