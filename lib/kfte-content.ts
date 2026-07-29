@@ -30,23 +30,26 @@ export const navMenu = [
   },
   {
     label: "활동",
-    href: "/activities/programs",
+    href: "/activities/events",
     items: [
-      { label: "프로그램", href: "/activities/programs" },
+      // HIDDEN: 프로그램 — 복구 시 주석 해제
+      // { label: "프로그램", href: "/activities/programs" },
       { label: "행사", href: "/activities/events" },
-      { label: "행사 아카이브", href: "/activities/events/archive" },
+      // HIDDEN: 행사 아카이브 — 복구 시 주석 해제
+      // { label: "행사 아카이브", href: "/activities/events/archive" },
     ],
   },
-  {
-    label: "회원사",
-    href: "/members",
-    items: [
-      { label: "회원사", href: "/members" },
-      { label: "가입안내", href: "/members/join" },
-      { label: "회원사 인터뷰", href: "/members/interviews" },
-      { label: "회원사 혜택", href: "/members/benefits" },
-    ],
-  },
+  // HIDDEN: 회원사 전체 — 복구 시 주석 해제
+  // {
+  //   label: "회원사",
+  //   href: "/members",
+  //   items: [
+  //     { label: "회원사", href: "/members" },
+  //     { label: "가입안내", href: "/members/join" },
+  //     { label: "회원사 인터뷰", href: "/members/interviews" },
+  //     { label: "회원사 혜택", href: "/members/benefits" },
+  //   ],
+  // },
   {
     label: "뉴스",
     href: "/news/notices",
@@ -59,8 +62,9 @@ export const navMenu = [
 ] as const
 
 export const navAuth = [
-  { label: "로그인", href: "/login" },
-  { label: "회원가입", href: "/signup" },
+  // 공개 GNB 로그인·회원가입 — 당분간 숨김 (라우트는 유지)
+  // { label: "로그인", href: "/login" },
+  // { label: "회원가입", href: "/signup" },
 ] as const
 
 export const navLinks = navMenu.flatMap((group) =>
@@ -199,7 +203,7 @@ export const programs = {
       cta: "분과 참여하기",
       href: "#divisions",
       image:
-        "https://images.unsplash.com/photo-1505373877841-8d25f39d466a?w=1200&q=80",
+        "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80",
     },
     {
       title: "Policy & Ecosystem Forum",
@@ -345,9 +349,10 @@ export const faq = {
     {
       question: "KFTE 회원사 가입은 어떻게 하나요?",
       answer:
-        "기업, 기관, 개인 등 다양한 형태로 파트너십에 참여할 수 있습니다. 자세한 가입 절차와 혜택은 '가입안내' 페이지에서 확인하세요.",
-      href: "/members/join",
-      hrefLabel: "가입안내 페이지 보기",
+        "기업, 기관, 개인 등 다양한 형태로 파트너십에 참여할 수 있습니다. 자세한 가입 절차와 혜택은 이메일(yun@seongyong.com)로 문의해 주세요.",
+      // HIDDEN: 가입안내 페이지 링크 — 복구 시 주석 해제, answer도 원문으로
+      // href: "/members/join",
+      // hrefLabel: "가입안내 페이지 보기",
     },
     {
       question: "파트너십 또는 후원은 어떻게 문의하나요?",
@@ -359,9 +364,9 @@ export const faq = {
 
 export const newsletter = {
   eyebrow: "Newsletter",
-  title: "KFTE의 소식을 가장 먼저 받아보세요",
+  title: "소식을 가장 먼저 받아보세요",
   description:
-    "청소년·청년 기술창업 프로그램, 커뮤니티 소식, 파트너십 기회, 정책·생태계 인사이트를 이메일로 전해드립니다.",
+    "기술창업 프로그램, 커뮤니티 소식, 파트너십 기회를 이메일로 전해드립니다.",
   interests: [
     "청소년 창업",
     "기술창업",

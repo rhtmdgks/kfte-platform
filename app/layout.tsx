@@ -2,7 +2,7 @@ import React from "react"
 import type { Metadata, Viewport } from 'next'
 
 import { SiteChrome } from '@/components/site-chrome'
-import { paperlogy } from '@/lib/fonts'
+import { instrumentSerif, paperlogy, unbounded } from '@/lib/fonts'
 import { JsonLd } from '@/components/seo/json-ld'
 import { organizationSchema } from '@/lib/seo/organization-schema'
 import { websiteSchema } from '@/lib/seo/website-schema'
@@ -62,7 +62,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" className={paperlogy.variable} suppressHydrationWarning>
+    <html
+      lang="ko"
+      className={`${paperlogy.variable} ${unbounded.variable} ${instrumentSerif.variable}`}
+      suppressHydrationWarning
+    >
       <body className="font-sans antialiased">
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />

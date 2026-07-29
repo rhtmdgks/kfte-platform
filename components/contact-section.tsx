@@ -8,10 +8,10 @@ import { finalCta, site } from "@/lib/kfte-content"
 
 export function FinalCtaSection() {
   return (
-    <section id="contact" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-primary text-primary-foreground">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-28">
+    <section id="contact" className="px-5 py-14 sm:px-6 md:px-12 md:py-28 lg:px-20 lg:py-36 bg-primary text-primary-foreground">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-28">
         <MotionReveal>
-          <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/40 mb-8">
+          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-primary-foreground/40 md:mb-8 md:text-base">
             {finalCta.eyebrow}
           </p>
           <h2 className="text-3xl md:text-4xl lg:text-[2.75rem] font-semibold leading-[1.15] tracking-tight text-balance mb-6">

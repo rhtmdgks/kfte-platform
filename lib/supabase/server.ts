@@ -1,28 +1,32 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
+import { getSupabasePublicEnv } from "@/lib/supabase/config"
 import type { Database } from "@/types/database"
 
 export async function createClient() {
+  const env = getSupabasePublicEnv()
+  if (!env) {
+    throw new Error(
+      "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local.",
+    )
+  }
+
   const cookieStore = await cookies()
 
-  return createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
-            )
-          } catch {
-            // Server component 내부에서 setAll 호출 시 무시. middleware가 처리.
-          }
-        },
+  return createServerClient<Database>(env.url, env.anonKey, {
+    cookies: {
+      getAll() {
+        return cookieStore.getAll()
+      },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          )
+        } catch {
+          // Server component 내부에서 setAll 호출 시 무시. middleware가 처리.
+        }
       },
     },
-  )
+  })
 }

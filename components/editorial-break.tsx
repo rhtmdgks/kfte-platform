@@ -1,46 +1,63 @@
 "use client"
 
-import { motion } from "motion/react"
+import Link from "next/link"
+import { ArrowUpRight } from "lucide-react"
 import { MotionReveal } from "@/components/motion"
 import { manifesto } from "@/lib/kfte-content"
 
+/** Manifesto band — monochrome navy glass. Accent reserved for CTA link only. */
 export function ManifestoSection() {
   return (
-    <section id="manifesto" className="px-6 md:px-12 lg:px-20 py-16 md:py-24">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-start">
-        <MotionReveal className="lg:col-span-7 overflow-hidden">
-          <motion.img
-            src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1400&q=80"
-            alt="청년 기술창업가 협업"
-            className="aspect-[16/10] w-full object-cover grayscale hover:grayscale-0 transition-[filter] duration-1000"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          />
+    <section
+      id="manifesto"
+      className="bg-primary px-5 py-12 text-primary-foreground sm:px-6 md:px-12 md:py-20 lg:px-20"
+    >
+      <div className="mx-auto max-w-3xl">
+        <MotionReveal>
+          <div className="rounded-xl border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl md:p-8">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-white/40 md:text-sm">
+              {manifesto.eyebrow}
+            </p>
+            <h2 className="text-display-ko text-[clamp(1.5rem,3vw,2.15rem)] text-balance text-white">
+              {manifesto.headline}
+            </h2>
+            <div className="mt-6 space-y-4">
+              {manifesto.paragraphs.map((p) => (
+                <p
+                  key={p}
+                  className="break-keep text-sm leading-[1.85] text-white/60 md:text-base md:leading-[1.9]"
+                >
+                  {p}
+                </p>
+              ))}
+            </div>
+          </div>
         </MotionReveal>
-        <MotionReveal delay={0.12} className="lg:col-span-5">
-          <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-6">
-            {manifesto.eyebrow}
-          </p>
-          <h2 className="text-2xl md:text-3xl font-semibold leading-[1.2] tracking-tight text-foreground text-balance mb-8">
-            {manifesto.headline}
-          </h2>
-          <div className="space-y-5 mb-10">
-            {manifesto.paragraphs.map((p) => (
-              <p key={p} className="text-base leading-[1.8] text-muted-foreground">
-                {p}
+
+        <MotionReveal delay={0.08} className="mt-3 grid gap-3 sm:grid-cols-3">
+          {manifesto.principles.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-xl border border-white/[0.08] bg-white/[0.04] p-4 backdrop-blur-md"
+            >
+              <h3 className="text-sm font-semibold tracking-tight text-white/90">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-xs leading-[1.7] text-white/45">
+                {item.description}
               </p>
-            ))}
-          </div>
-          <div className="space-y-6 pt-8 border-t border-border">
-            {manifesto.principles.map((item) => (
-              <div key={item.title}>
-                <h3 className="text-base font-medium text-foreground mb-1.5">
-                  {item.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">{item.description}</p>
-              </div>
-            ))}
-          </div>
+            </div>
+          ))}
+        </MotionReveal>
+
+        <MotionReveal delay={0.12} className="mt-6">
+          <Link
+            href="/about/manifesto"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-white/55 transition-colors hover:text-white"
+          >
+            선언문 전문 읽기
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </Link>
         </MotionReveal>
       </div>
     </section>

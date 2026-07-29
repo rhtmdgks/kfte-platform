@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { BlogThumbnailField } from "@/components/admin/blog-thumbnail-field"
+import { EventPosterField } from "@/components/admin/event-poster-field"
 import { PinToggleField } from "@/components/admin/pin-toggle-field"
 import { eventCategoryOptions } from "@/lib/events-content"
 import { parseEventPostMetadata, toDatetimeLocalValue } from "@/lib/event-metadata"
@@ -107,6 +108,12 @@ export function EventPostForm({ post, contentType, action }: EventPostFormProps)
       </div>
 
       <BlogThumbnailField currentUrl={post?.thumbnail_url} required />
+
+      <EventPosterField
+        currentUrl={post?.detail_image_url}
+        currentWidth={metadata.detailImageWidth}
+        currentHeight={metadata.detailImageHeight}
+      />
 
       <PinToggleField defaultChecked={post?.is_pinned ?? false} />
 

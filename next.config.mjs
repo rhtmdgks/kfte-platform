@@ -18,6 +18,9 @@ const nextConfig = {
   turbopack: {
     root: __dirname,
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "motion"],
+  },
   images: {
     remotePatterns: [
       {

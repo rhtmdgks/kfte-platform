@@ -346,6 +346,7 @@ function ProgramsSection() {
           ))}
         </MotionStagger>
 
+        {/* HIDDEN: 전체 프로그램 보기 — 복구 시 주석 해제
         <MotionReveal delay={0.1} className="mt-10">
           <Button asChild variant="outline" className="rounded-none border-primary text-primary">
             <Link href="/activities/programs">
@@ -354,6 +355,7 @@ function ProgramsSection() {
             </Link>
           </Button>
         </MotionReveal>
+        */}
       </div>
     </section>
   )
@@ -396,6 +398,7 @@ function ProgramCard({
         <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
           {program.description}
         </p>
+        {/* HIDDEN: 프로그램 상세 링크 (/activities/programs) — 복구 시 주석 해제
         <Link
           href={program.href.startsWith("#") ? "/activities/programs" : program.href}
           className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-colors hover:text-primary/80"
@@ -403,6 +406,7 @@ function ProgramCard({
           {program.cta}
           <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
+        */}
       </div>
       </div>
     </MotionStaggerItem>
@@ -576,13 +580,15 @@ function CtaSection() {
               {cta.description}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
+              {/* HIDDEN: 프로그램·회원사 CTA — 복구 시 what-we-do-content primary/secondary와 함께 주석 해제
               <Button asChild className="rounded-none bg-primary hover:bg-primary/90">
                 <Link href={cta.primary.href}>{cta.primary.label}</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-none border-primary text-primary">
                 <Link href={cta.secondary.href}>{cta.secondary.label}</Link>
               </Button>
-              <Button asChild variant="ghost" className="rounded-none text-muted-foreground">
+              */}
+              <Button asChild className="rounded-none bg-primary hover:bg-primary/90">
                 <Link href={cta.tertiary.href}>{cta.tertiary.label}</Link>
               </Button>
             </div>

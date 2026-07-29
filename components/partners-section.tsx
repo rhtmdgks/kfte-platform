@@ -27,8 +27,8 @@ function PartnerTypeTag({
 
 export function PartnersSection() {
   return (
-    <section id="partners" className="px-6 py-28 md:px-12 lg:px-20 md:py-36 bg-secondary/40">
-      <MotionReveal className="mb-12 md:mb-20 pb-6 border-b border-border">
+    <section id="partners" className="px-5 py-14 sm:px-6 md:px-12 md:py-28 lg:px-20 lg:py-36 bg-secondary/40">
+      <MotionReveal className="mb-8 border-b border-border pb-4 md:mb-20 md:pb-6">
         <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
           {partnersContent.eyebrow}
         </p>

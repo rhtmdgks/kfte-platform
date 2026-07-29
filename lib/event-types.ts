@@ -18,6 +18,9 @@ export type EventPost = {
   registrationStart?: string
   registrationEnd?: string
   thumbnailUrl?: string
+  detailImageUrl?: string
+  detailImageWidth?: number
+  detailImageHeight?: number
   pinned?: boolean
   featured?: boolean
   views: number

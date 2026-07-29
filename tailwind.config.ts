@@ -18,6 +18,16 @@ const config: Config = {
   				'Paperlogy',
   				'system-ui',
   				'sans-serif'
+  			],
+  			unbounded: [
+  				'var(--font-unbounded)',
+  				'Unbounded',
+  				'sans-serif'
+  			],
+  			'instrument-serif': [
+  				'var(--font-instrument-serif)',
+  				'Instrument Serif',
+  				'serif'
   			]
   		},
   		colors: {
@@ -36,6 +46,11 @@ const config: Config = {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+  			'accent-blue': 'hsl(var(--accent-blue))',
+  			sage: 'hsl(var(--sage))',
+  			mist: 'hsl(var(--mist))',
+  			ink: 'hsl(var(--ink))',
+  			'ci-gray': 'hsl(var(--ci-gray))',
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'

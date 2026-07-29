@@ -126,7 +126,9 @@ export const aboutPage = {
   cta: {
     headline: "KFTE와 함께 다음 장을 써 보세요",
     description: "회원 가입, 프로그램 참여, 협력 제안 — 어떤 방식이든 환영합니다.",
-    primary: { label: "회원 가입 안내", href: "/members/join" },
+    // HIDDEN: 회원 가입 CTA — 복구 시 primary를 아래로 되돌리고 secondary 버튼 주석 해제
+    // primary: { label: "회원 가입 안내", href: "/members/join" },
+    primary: { label: "우리가 하는 일", href: "/about/what-we-do" },
     secondary: { label: "우리가 하는 일", href: "/about/what-we-do" },
   },
 } as const

@@ -1,13 +1,16 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { useEffect, useRef, useState, type ReactNode } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import {
   ArrowLeft,
   CalendarDays,
+  Check,
+  Copy,
   Eye,
+  Link2,
   MapPin,
   Share2,
   Ticket,
@@ -22,7 +25,8 @@ import {
   type EventPost,
   type EventsPageConfig,
 } from "@/lib/event-types"
-import { sharePageLink } from "@/lib/share-page-link"
+import { copyTextToClipboard, sharePageLink, shouldUseNativeShare } from "@/lib/share-page-link"
+import { createShortLink } from "@/lib/short-link"
 import { site } from "@/lib/kfte-content"
 import { pageMainClassName } from "@/lib/page-layout"
 import { springGentle } from "@/lib/animation-presets"
@@ -81,6 +85,224 @@ function EventHeroImage({ post, archive = false }: { post: EventPost; archive?: 
   )
 }
 
+function EventDetailPoster({ post }: { post: EventPost }) {
+  if (!post.detailImageUrl) return null
+
+  const hasSize =
+    typeof post.detailImageWidth === "number" &&
+    typeof post.detailImageHeight === "number" &&
+    post.detailImageWidth > 0 &&
+    post.detailImageHeight > 0
+
+  return (
+    <MotionReveal delay={0.2}>
+      <section className="mt-10 border-t border-border pt-10">
+        <h2 className="mb-6 text-xl font-bold text-foreground">상세 포스터</h2>
+        <div className="mx-auto max-w-[560px]">
+          <div className="overflow-hidden rounded-[16px] border border-primary/15 bg-white shadow-[0_12px_40px_-16px_rgba(0,32,101,0.18)]">
+            {hasSize ? (
+              <Image
+                src={post.detailImageUrl}
+                alt={`${post.title} 상세 포스터`}
+                width={post.detailImageWidth}
+                height={post.detailImageHeight}
+                className="h-auto w-full"
+                sizes="(max-width: 640px) 100vw, 560px"
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.detailImageUrl}
+                alt={`${post.title} 상세 포스터`}
+                className="h-auto w-full"
+              />
+            )}
+          </div>
+          <a
+            href={post.detailImageUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
+          >
+            원본 크게 보기 →
+          </a>
+        </div>
+      </section>
+    </MotionReveal>
+  )
+}
+
+function EventShareMenu({ post }: { post: EventPost }) {
+  const reduceMotion = useReducedMotion()
+  const rootRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [copyState, setCopyState] = useState<"idle" | "loading" | "copied" | "failed">("idle")
+  const [supportsNative, setSupportsNative] = useState(false)
+
+  useEffect(() => {
+    setSupportsNative(shouldUseNativeShare())
+  }, [])
+
+  useEffect(() => {
+    if (!open) return
+
+    const onPointerDown = (event: MouseEvent | TouchEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setOpen(false)
+      }
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false)
+    }
+
+    document.addEventListener("mousedown", onPointerDown)
+    document.addEventListener("touchstart", onPointerDown)
+    document.addEventListener("keydown", onKeyDown)
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown)
+      document.removeEventListener("touchstart", onPointerDown)
+      document.removeEventListener("keydown", onKeyDown)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (copyState !== "copied") return
+    const timer = window.setTimeout(() => setCopyState("idle"), 2200)
+    return () => window.clearTimeout(timer)
+  }, [copyState])
+
+  const handleCopyShortLink = async () => {
+    if (copyState === "loading") return
+    setCopyState("loading")
+
+    const path = `${window.location.pathname}${window.location.search}`
+    const result = await createShortLink(path)
+
+    if (!result.ok) {
+      setCopyState("failed")
+      window.alert(result.error)
+      return
+    }
+
+    const shortUrl = `${window.location.origin}/s/${result.code}`
+    const copied = await copyTextToClipboard(shortUrl)
+    if (!copied) {
+      setCopyState("failed")
+      window.alert("링크를 복사하지 못했습니다. 주소창 URL을 직접 복사해 주세요.")
+      return
+    }
+
+    setCopyState("copied")
+  }
+
+  const handleNativeShare = async () => {
+    const path = `${window.location.pathname}${window.location.search}`
+    const short = await createShortLink(path)
+    const url = short.ok
+      ? `${window.location.origin}/s/${short.code}`
+      : window.location.href
+
+    const result = await sharePageLink({ url, title: post.title })
+    if (result === "failed") {
+      window.alert("공유에 실패했습니다. 링크 복사를 이용해 주세요.")
+    }
+    if (result === "shared" || result === "copied") {
+      setOpen(false)
+    }
+  }
+
+  return (
+    <div ref={rootRef} className="relative">
+      <motion.button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        whileHover={reduceMotion ? undefined : { scale: 1.01 }}
+        whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+        transition={springGentle}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        className="flex w-full items-center justify-center gap-2 bg-primary/5 py-3.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
+      >
+        <Share2 className="h-4 w-4" />
+        공유하기
+      </motion.button>
+
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            key="share-menu"
+            role="menu"
+            initial={reduceMotion ? false : { opacity: 0, y: 8, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: 6, scale: 0.98 }}
+            transition={springGentle}
+            className="absolute bottom-[calc(100%+0.5rem)] left-0 right-0 z-20 overflow-hidden rounded-2xl border border-border/70 bg-background p-1.5 shadow-[0_16px_40px_-12px_rgba(0,32,101,0.22)]"
+          >
+            <button
+              type="button"
+              role="menuitem"
+              onClick={handleCopyShortLink}
+              disabled={copyState === "loading"}
+              className="flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-primary/5 disabled:opacity-60"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/8 text-primary">
+                <AnimatePresence mode="wait" initial={false}>
+                  {copyState === "copied" ? (
+                    <motion.span
+                      key="check"
+                      initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={reduceMotion ? undefined : { scale: 0.6, opacity: 0 }}
+                      transition={springGentle}
+                    >
+                      <Check className="h-4 w-4" />
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="copy"
+                      initial={reduceMotion ? false : { scale: 0.6, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={reduceMotion ? undefined : { scale: 0.6, opacity: 0 }}
+                      transition={springGentle}
+                    >
+                      {copyState === "loading" ? (
+                        <Link2 className="h-4 w-4 animate-pulse" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </span>
+              <span className="flex-1">
+                {copyState === "copied"
+                  ? "복사됨"
+                  : copyState === "loading"
+                    ? "단축링크 생성 중…"
+                    : "링크 복사"}
+              </span>
+            </button>
+
+            {supportsNative ? (
+              <button
+                type="button"
+                role="menuitem"
+                onClick={handleNativeShare}
+                className="flex w-full items-center gap-3 rounded-xl px-3.5 py-3 text-left text-sm font-medium text-foreground transition-colors hover:bg-primary/5"
+              >
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/8 text-primary">
+                  <Share2 className="h-4 w-4" />
+                </span>
+                <span className="flex-1">기기 공유</span>
+              </button>
+            ) : null}
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  )
+}
+
 export function EventDetailPageContent({
   config,
   post,
@@ -91,22 +313,6 @@ export function EventDetailPageContent({
   const status = getEventRegistrationStatus(post)
   const canRegister =
     !isArchive && status === "open" && post.registrationUrl && post.registrationUrl !== "#"
-
-  const handleShare = async () => {
-    const result = await sharePageLink({
-      url: window.location.href,
-      title: post.title,
-    })
-
-    if (result === "copied") {
-      window.alert("링크가 복사되었습니다.")
-      return
-    }
-
-    if (result === "failed") {
-      window.alert("링크를 복사하지 못했습니다. 주소창 URL을 직접 복사해 주세요.")
-    }
-  }
 
   const handleRegister = () => {
     if (!post.registrationUrl || post.registrationUrl === "#") {
@@ -189,6 +395,8 @@ export function EventDetailPageContent({
                   </div>
                 </div>
               </MotionReveal>
+
+              <EventDetailPoster post={post} />
             </div>
 
             <div className="lg:col-span-1">
@@ -281,17 +489,7 @@ export function EventDetailPageContent({
                     </motion.button>
                   )}
 
-                  <motion.button
-                    type="button"
-                    onClick={handleShare}
-                    whileHover={reduceMotion ? undefined : { scale: 1.01 }}
-                    whileTap={reduceMotion ? undefined : { scale: 0.99 }}
-                    transition={springGentle}
-                    className="flex w-full items-center justify-center gap-2 bg-primary/5 py-3.5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    공유하기
-                  </motion.button>
+                  <EventShareMenu post={post} />
                 </div>
               </motion.aside>
             </div>

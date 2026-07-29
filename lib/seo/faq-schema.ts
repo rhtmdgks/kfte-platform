@@ -41,7 +41,9 @@ export const homepageFaqSchema = {
       name: 'KFTE 회원사 가입 방법은 무엇인가요?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: `KFTE 회원사 가입 안내와 혜택은 ${siteUrl}/members/join 에서 확인할 수 있습니다. 기업, 기관, 개인 등 다양한 형태의 파트너십을 제안받습니다. 가입 문의는 이메일(yun@seongyong.com)로 하실 수 있습니다.`,
+        // HIDDEN: members/join URL 제거 — 복구 시 아래 원문 사용
+        // text: `KFTE 회원사 가입 안내와 혜택은 ${siteUrl}/members/join 에서 확인할 수 있습니다. 기업, 기관, 개인 등 다양한 형태의 파트너십을 제안받습니다. 가입 문의는 이메일(yun@seongyong.com)로 하실 수 있습니다.`,
+        text: 'KFTE는 기업, 기관, 개인 등 다양한 형태의 파트너십을 제안받습니다. 가입·협력 문의는 이메일(yun@seongyong.com)로 하실 수 있습니다.',
       },
     },
   ],

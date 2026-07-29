@@ -15,45 +15,42 @@ function PillarCard({
   return (
     <MotionStaggerItem
       index={index}
-      className="bg-background p-8 md:p-12 group"
+      className="group rounded-xl border border-ink/8 bg-white p-5 md:p-6"
     >
-      <span className="text-sm tracking-[0.12em] text-muted-foreground/40">
-        ({pillar.number})
+      <span className="text-[0.65rem] font-semibold tracking-[0.16em] text-ci-gray tabular-nums">
+        {pillar.number}
       </span>
-      <h3 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground mb-5 mt-10 group-hover:translate-x-1 transition-transform duration-500">
+      <h3 className="mt-3 text-lg font-bold tracking-tight text-ink md:text-xl">
         {pillar.title}
       </h3>
-      <div className="w-8 h-px bg-border mb-5 group-hover:w-12 transition-all duration-500" />
-      <p className="text-base leading-[1.75] text-muted-foreground max-w-sm">
-        {pillar.description}
-      </p>
+      <p className="mt-2 text-sm leading-[1.65] text-ci-gray">{pillar.description}</p>
     </MotionStaggerItem>
   )
 }
 
 export function WhatWeDoSection() {
   return (
-    <section id="what-we-do" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <MotionReveal className="mb-12 md:mb-20 pb-6 border-b border-border">
-        <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
+    <section id="what-we-do" className="bg-mist px-5 py-12 sm:px-6 md:px-12 md:py-20 lg:px-20">
+      <MotionReveal className="mb-8 max-w-2xl md:mb-10">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-ci-gray md:text-sm">
           {whatWeDo.eyebrow}
         </p>
-        <h2 className="text-3xl md:text-4xl lg:text-[3rem] font-semibold tracking-tight text-foreground mb-6">
+        <h2 className="text-display-ko text-[clamp(1.5rem,3vw,2.25rem)] text-ink">
           {whatWeDo.headline}
         </h2>
-        <p className="text-base leading-[1.8] text-muted-foreground max-w-3xl">
+        <p className="mt-3 text-sm leading-[1.65] text-ci-gray md:text-base">
           {whatWeDo.description}
         </p>
         <Link
           href="/about/what-we-do"
-          className="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-primary hover:underline"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-ink/60 transition-colors hover:text-ink"
         >
           자세히 보기
           <ArrowUpRight className="h-3.5 w-3.5" />
         </Link>
       </MotionReveal>
 
-      <MotionStagger className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+      <MotionStagger className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {whatWeDo.pillars.map((pillar, index) => (
           <PillarCard key={pillar.title} pillar={pillar} index={index} />
         ))}

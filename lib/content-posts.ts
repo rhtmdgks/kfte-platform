@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { isSupabaseConfigured } from "@/lib/supabase/config"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import { sortByPinnedThenDate } from "@/lib/content-post-pin"
 import {
@@ -66,6 +67,10 @@ export function mapContentPostToNewsPost(
 export async function getPublishedNewsPosts(
   contentType: NewsContentType,
 ): Promise<NewsPost[]> {
+  if (!isSupabaseConfigured()) {
+    return []
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -90,6 +95,10 @@ export async function getPublishedNewsPostBySlug(
   contentType: NewsContentType,
   slug: string,
 ): Promise<NewsPost | null> {
+  if (!isSupabaseConfigured()) {
+    return null
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -114,6 +123,10 @@ export async function recordContentPostView(
     | EventArchiveContentType,
   slug: string,
 ): Promise<number> {
+  if (!isSupabaseConfigured()) {
+    return 0
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase.rpc("record_content_post_view", {
     p_slug: slug,
@@ -164,6 +177,10 @@ export function mapContentPostToBlogPost(row: ContentPostRow): BlogPost {
 }
 
 export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
+  if (!isSupabaseConfigured()) {
+    return []
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -183,6 +200,10 @@ export async function getPublishedBlogPosts(): Promise<BlogPost[]> {
 }
 
 export async function getPublishedBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  if (!isSupabaseConfigured()) {
+    return null
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -246,6 +267,9 @@ export function mapContentPostToEventPost(row: ContentPostRow): EventPost {
     registrationStart: meta.registrationStart,
     registrationEnd: meta.registrationEnd,
     thumbnailUrl: row.thumbnail_url ?? undefined,
+    detailImageUrl: row.detail_image_url ?? undefined,
+    detailImageWidth: meta.detailImageWidth,
+    detailImageHeight: meta.detailImageHeight,
     pinned: row.is_pinned,
     featured: meta.featured,
     views: meta.views ?? 0,
@@ -253,6 +277,10 @@ export function mapContentPostToEventPost(row: ContentPostRow): EventPost {
 }
 
 export async function getPublishedEvents(): Promise<EventPost[]> {
+  if (!isSupabaseConfigured()) {
+    return []
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -273,6 +301,10 @@ export async function getPublishedEvents(): Promise<EventPost[]> {
 }
 
 export async function getPublishedEventBySlug(slug: string): Promise<EventPost | null> {
+  if (!isSupabaseConfigured()) {
+    return null
+  }
+
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("content_posts")
@@ -307,6 +339,10 @@ export async function getPublishedEventWithView(slug: string): Promise<EventPost
 export const mapContentPostToEventArchivePost = mapContentPostToEventPost
 
 async function fetchPublishedEventArchiveRows() {
+  if (!isSupabaseConfigured()) {
+    return { manualArchives: [], events: [] }
+  }
+
   const supabase = await createClient()
 
   const [{ data: archiveRows, error: archiveError }, { data: eventRows, error: eventError }] =
@@ -348,6 +384,10 @@ export async function getPublishedEventArchives(): Promise<EventArchiveEntry[]> 
 async function resolvePublishedEventArchiveEntry(
   slug: string,
 ): Promise<EventArchiveEntry | null> {
+  if (!isSupabaseConfigured()) {
+    return null
+  }
+
   const supabase = await createClient()
 
   const { data: archiveRow } = await supabase

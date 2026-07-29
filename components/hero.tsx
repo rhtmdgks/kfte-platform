@@ -4,13 +4,14 @@ import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
 import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { fadeUpHero, springGentle, tweenSmooth } from "@/lib/animation-presets"
+import { PrismStack } from "@/components/prism-stack"
+import { fadeUpHero, springGentle } from "@/lib/animation-presets"
 import { site } from "@/lib/kfte-content"
 
 const heroStagger = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.12, delayChildren: 0.2 },
+    transition: { staggerChildren: 0.08, delayChildren: 0.12 },
   },
 }
 
@@ -20,100 +21,63 @@ export function Hero() {
   return (
     <section
       data-hero-section
-      className="relative min-h-screen flex flex-col justify-end overflow-hidden"
+      className="relative flex min-h-[85svh] items-end overflow-hidden bg-primary text-primary-foreground"
     >
-      <div className="absolute inset-0 z-0">
-        <motion.img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80"
-          alt="청년 창업가들의 협업과 네트워킹"
-          className="h-full w-full object-cover"
-          initial={reduceMotion ? false : { scale: 1.08 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 2, ease: [0.16, 1, 0.3, 1] }}
-        />
-        <div className="absolute inset-0 bg-primary/75" />
-      </div>
+      <PrismStack />
 
       <motion.div
-        className="relative z-10 px-6 pb-16 md:px-12 lg:px-20 md:pb-24"
+        className="relative z-10 w-full px-5 pb-10 pt-28 sm:px-6 md:px-12 md:pb-14 md:pt-32 lg:px-20"
         variants={reduceMotion ? undefined : heroStagger}
         initial={reduceMotion ? false : "hidden"}
         animate="visible"
       >
-        <div className="max-w-6xl">
-          <motion.div className="mb-6" variants={fadeUpHero} transition={springGentle}>
-            <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-primary-foreground/60">
-              {site.fullName}
-            </p>
-          </motion.div>
+        <motion.div
+          className="relative max-w-xl overflow-hidden rounded-xl border border-white/12 bg-white/[0.07] p-6 backdrop-blur-xl md:max-w-2xl md:p-8"
+          variants={fadeUpHero}
+          transition={springGentle}
+        >
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/45 md:text-sm">
+            {site.fullName}
+          </p>
 
-          <motion.div variants={fadeUpHero} transition={springGentle}>
-            <h1 className="text-[clamp(2.25rem,6vw,5rem)] font-bold leading-[1.1] tracking-[-0.03em] text-primary-foreground">
-              {site.tagline.split("\n").map((line, index) => (
-                <span key={line}>
-                  {index > 0 && <br />}
-                  {line}
-                </span>
-              ))}
-            </h1>
-            <p className="mt-8 text-base md:text-lg leading-[1.8] text-primary-foreground/75 max-w-2xl">
-              {site.description}
-            </p>
-          </motion.div>
+          <h1 className="break-keep text-[clamp(1.75rem,4.2vw,3.25rem)] font-extrabold leading-[1.35] tracking-tight text-white">
+            청소년과 청년의 기술창업을 현실로 연결합니다
+          </h1>
 
-          <motion.p
-            className="mt-6 text-xs tracking-[0.12em] text-primary-foreground/40 font-medium"
-            variants={fadeUpHero}
-            transition={springGentle}
-          >
-            민간 비영리 재단 · 고유번호 316-82-77638
-          </motion.p>
+          <p className="mt-4 max-w-md text-sm leading-[1.65] text-white/65 md:text-base">
+            교육·멘토링·네트워크·커뮤니티로, 기술이 창업이 되는 순간을 만듭니다.
+          </p>
 
-          <motion.div
-            className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3"
-            variants={fadeUpHero}
-            transition={springGentle}
-          >
+          <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap">
             <Button
               asChild
-              size="lg"
-              variant="secondary"
-              className="rounded-none bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+              size="default"
+              className="rounded-lg bg-white text-primary hover:bg-white/90"
             >
               <Link href="/activities/events">
-                행사·프로그램 보기
+                행사 보기
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
             </Button>
             <Button
               asChild
-              size="lg"
+              size="default"
               variant="outline"
-              className="rounded-none border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+              className="rounded-lg border-white/25 bg-transparent text-white hover:bg-white/10 hover:text-white"
             >
-              <Link href="#programs">프로그램 둘러보기</Link>
+              <Link href="/about">재단 소개</Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="ghost"
-              className="rounded-none text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
-            >
-              <Link href="/about">재단 소개 보기</Link>
-            </Button>
-          </motion.div>
-        </div>
-
-        <motion.div
-          className="mt-16 md:mt-20 flex items-center gap-6"
-          variants={fadeUpHero}
-          transition={tweenSmooth}
-        >
-          <div className="w-12 h-px bg-primary-foreground/30" />
-          <span className="text-sm tracking-[0.15em] uppercase font-semibold text-primary-foreground/50">
-            {site.concept}
-          </span>
+          </div>
         </motion.div>
+
+        <motion.p
+          className="mt-8 text-xs font-extralight tracking-[0.18em] text-white/25 md:text-sm"
+          variants={fadeUpHero}
+          transition={springGentle}
+          aria-hidden
+        >
+          {site.concept.toUpperCase()}
+        </motion.p>
       </motion.div>
     </section>
   )

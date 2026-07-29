@@ -28,8 +28,8 @@ function DivisionCard({
 
 export function DivisionsSection() {
   return (
-    <section id="divisions" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <MotionReveal className="mb-20 pb-6 border-b border-border">
+    <section id="divisions" className="px-5 py-14 sm:px-6 md:px-12 md:py-28 lg:px-20 lg:py-36">
+      <MotionReveal className="mb-8 pb-4 md:mb-20 md:pb-6 border-b border-border">
         <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
           {divisions.eyebrow}
         </p>

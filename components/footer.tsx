@@ -7,8 +7,8 @@ export function Footer() {
   const org = footerContent.organization
 
   return (
-    <footer className="px-6 py-16 md:px-12 lg:px-20 border-t border-border">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 mb-20">
+    <footer className="border-t border-border px-5 py-10 sm:px-6 md:px-12 md:py-16 lg:px-20">
+      <div className="mb-10 grid grid-cols-1 gap-8 md:mb-20 md:grid-cols-12 md:gap-8">
         <div className="md:col-span-4">
           <Link href="/" className="inline-block mb-5">
             <KfteLogo variant="blue" />

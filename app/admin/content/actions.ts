@@ -8,6 +8,7 @@ import {
   parseContentPostMetadata,
 } from "@/lib/content-post-metadata"
 import { uploadBlogThumbnail } from "@/lib/blog-thumbnail"
+import { uploadEventPoster } from "@/lib/event-poster"
 import { parseIsPinnedFromFormData } from "@/lib/content-post-pin"
 import {
   buildEventPostMetadata,
@@ -71,6 +72,12 @@ function parseEventMetadataFromFormData(
     (formData.get("metadata_registration_end") as string) || "",
   )
   const featured = formData.get("metadata_featured") === "1"
+  const removeDetailImage = formData.get("remove_detail_image") === "1"
+
+  const widthRaw = ((formData.get("detail_image_w") as string) || "").trim()
+  const heightRaw = ((formData.get("detail_image_h") as string) || "").trim()
+  const parsedWidth = widthRaw ? Number(widthRaw) : NaN
+  const parsedHeight = heightRaw ? Number(heightRaw) : NaN
 
   if (!eventDate) {
     throw new Error("행사 시작 일시를 입력해 주세요.")
@@ -92,6 +99,16 @@ function parseEventMetadataFromFormData(
       registrationStart,
       registrationEnd,
       featured,
+      detailImageWidth: removeDetailImage
+        ? null
+        : Number.isFinite(parsedWidth)
+          ? parsedWidth
+          : undefined,
+      detailImageHeight: removeDetailImage
+        ? null
+        : Number.isFinite(parsedHeight)
+          ? parsedHeight
+          : undefined,
     },
     existingMetadata,
   )
@@ -149,6 +166,27 @@ async function resolveThumbnailUrl(
   return existing || currentThumbnailUrl || null
 }
 
+async function resolveDetailImageUrl(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  formData: FormData,
+  userId: string,
+  currentDetailImageUrl?: string | null,
+) {
+  const removeDetail = formData.get("remove_detail_image") === "1"
+  const detailFile = formData.get("detail_image")
+
+  if (detailFile instanceof File && detailFile.size > 0) {
+    return uploadEventPoster(supabase, detailFile, userId)
+  }
+
+  if (removeDetail) {
+    return null
+  }
+
+  const existing = ((formData.get("existing_detail_image_url") as string) || "").trim()
+  return existing || currentDetailImageUrl || null
+}
+
 export async function createPost(formData: FormData) {
   const supabase = await createClient()
   const {
@@ -171,6 +209,11 @@ export async function createPost(formData: FormData) {
   const thumbnailUrl = contentTypeUsesThumbnail(contentType)
     ? await resolveThumbnailUrl(supabase, formData, user.id)
     : null
+
+  const detailImageUrl =
+    contentType === "event"
+      ? await resolveDetailImageUrl(supabase, formData, user.id)
+      : null
 
   assertThumbnailRequired(contentType, thumbnailUrl)
 
@@ -196,6 +239,7 @@ export async function createPost(formData: FormData) {
     author_id: user.id,
     metadata,
     thumbnail_url: thumbnailUrl,
+    detail_image_url: detailImageUrl,
     is_pinned: isPinned,
   })
 
@@ -221,7 +265,7 @@ export async function updatePost(id: string, formData: FormData) {
 
   const { data: current } = await supabase
     .from("content_posts")
-    .select("status, published_at, metadata, slug, thumbnail_url")
+    .select("status, published_at, metadata, slug, thumbnail_url, detail_image_url")
     .eq("id", id)
     .single()
 
@@ -246,6 +290,11 @@ export async function updatePost(id: string, formData: FormData) {
     ? await resolveThumbnailUrl(supabase, formData, user.id, current?.thumbnail_url)
     : current?.thumbnail_url ?? null
 
+  const detailImageUrl =
+    contentType === "event"
+      ? await resolveDetailImageUrl(supabase, formData, user.id, current?.detail_image_url)
+      : current?.detail_image_url ?? null
+
   assertThumbnailRequired(contentType, thumbnailUrl)
 
   const { error } = await supabase
@@ -260,6 +309,7 @@ export async function updatePost(id: string, formData: FormData) {
       published_at: publishedAt,
       metadata,
       thumbnail_url: thumbnailUrl,
+      detail_image_url: detailImageUrl,
       is_pinned: isPinned,
     })
     .eq("id", id)

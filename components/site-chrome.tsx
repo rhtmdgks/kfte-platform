@@ -20,6 +20,12 @@ function isNoScroll(pathname: string) {
 
 function isNoChrome(pathname: string) {
   if (pathname.startsWith("/admin")) return true
+  if (
+    pathname === "/bonlipdosaeng" ||
+    pathname.startsWith("/bonlipdosaeng/")
+  ) {
+    return true
+  }
   return NO_SCROLL_PATHS.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   )

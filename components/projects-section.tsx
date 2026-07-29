@@ -18,45 +18,44 @@ function ProgramCard({
   const [hovered, setHovered] = useState(false)
 
   return (
-    <MotionStaggerItem index={index} className="bg-background group">
-      <div className="overflow-hidden">
+    <MotionStaggerItem
+      index={index}
+      className="group overflow-hidden rounded-xl border border-ink/8 bg-white"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="relative overflow-hidden">
         <motion.img
           src={program.image}
           alt={program.title}
-          className="aspect-[4/3] w-full object-cover"
+          className="aspect-[16/9] w-full object-cover"
           animate={{ scale: hovered ? 1.04 : 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         />
+        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-primary/70 to-transparent p-4 pt-12">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white/70">
+            {program.category}
+          </p>
+        </div>
       </div>
-      <div
-        className="p-6 md:p-8"
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="flex items-start justify-between gap-4 mb-4">
-          <div className="flex items-start gap-4 flex-1">
-            <span className="text-sm tracking-[0.12em] text-muted-foreground/50 mt-1.5 tabular-nums">
-              {String(index + 1).padStart(2, "0")}
-            </span>
-            <div>
-              <p className="text-sm tracking-[0.08em] uppercase font-semibold text-primary mb-2">
-                {program.category}
-              </p>
-              <h3 className="text-xl md:text-2xl font-semibold tracking-tight text-foreground">
-                {program.title}
-              </h3>
-            </div>
-          </div>
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-lg font-bold tracking-tight text-ink md:text-xl">
+            {program.title}
+          </h3>
           <ArrowUpRight
-            className={`h-4 w-4 text-muted-foreground/40 shrink-0 transition-all duration-300 mt-1.5 ${
-              hovered ? "translate-x-0.5 -translate-y-0.5 text-primary" : ""
+            className={`mt-0.5 h-4 w-4 shrink-0 text-ci-gray transition-all duration-300 ${
+              hovered ? "translate-x-0.5 -translate-y-0.5 text-ink" : ""
             }`}
           />
         </div>
-        <p className="text-base leading-[1.75] text-muted-foreground mb-6 pl-10">
-          {program.description}
-        </p>
-        <Button asChild variant="outline" size="sm" className="rounded-none ml-10">
+        <p className="mt-2 text-sm leading-[1.65] text-ci-gray">{program.description}</p>
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="mt-4 rounded-lg border-ink/15 text-ink hover:bg-ink/5"
+        >
           <Link href={program.href}>{program.cta}</Link>
         </Button>
       </div>
@@ -66,20 +65,20 @@ function ProgramCard({
 
 export function ProgramsSection() {
   return (
-    <section id="programs" className="px-6 py-28 md:px-12 lg:px-20 md:py-36">
-      <MotionReveal className="mb-12 md:mb-20 pb-6 border-b border-border">
-        <p className="text-sm md:text-base tracking-[0.2em] uppercase font-semibold text-muted-foreground mb-3">
+    <section id="programs" className="bg-mist px-5 py-12 sm:px-6 md:px-12 md:py-20 lg:px-20">
+      <MotionReveal className="mb-8 max-w-2xl md:mb-10">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.2em] text-ci-gray md:text-sm">
           {programsContent.eyebrow}
         </p>
-        <h2 className="text-3xl md:text-4xl lg:text-[3rem] font-semibold tracking-tight text-foreground mb-6">
+        <h2 className="text-display-ko text-[clamp(1.5rem,3vw,2.25rem)] text-ink">
           {programsContent.headline}
         </h2>
-        <p className="text-base leading-[1.8] text-muted-foreground max-w-3xl">
+        <p className="mt-3 text-sm leading-[1.65] text-ci-gray md:text-base">
           {programsContent.description}
         </p>
       </MotionReveal>
 
-      <MotionStagger className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
+      <MotionStagger className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
         {programsContent.items.map((program, index) => (
           <ProgramCard key={program.title} program={program} index={index} />
         ))}

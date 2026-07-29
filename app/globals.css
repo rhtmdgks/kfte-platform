@@ -10,6 +10,32 @@
   .text-eyebrow {
     @apply text-sm md:text-base tracking-[0.2em] uppercase font-semibold;
   }
+
+  /* Korean display — avoid glyph collision (Paperlogy extrabold) */
+  .text-display-ko {
+    @apply break-keep font-extrabold tracking-tight;
+    line-height: 1.4;
+  }
+
+  /* Seongsu Prism — glass panes (navy/mist, not purple frosted) */
+  .glass-pane {
+    @apply border border-white/40 bg-white/55 shadow-[0_8px_32px_-12px_rgba(0,32,101,0.18)] backdrop-blur-xl;
+    border-radius: 0.75rem;
+  }
+
+  .glass-pane-dark {
+    @apply border border-white/15 bg-white/[0.08] shadow-[0_12px_40px_-16px_rgba(0,0,0,0.45)] backdrop-blur-xl;
+    border-radius: 0.75rem;
+  }
+
+  .glass-edge {
+    @apply border-l-2 border-l-ink/15;
+  }
+
+  .glass-strip {
+    @apply border border-white/50 bg-white/40 shadow-sm backdrop-blur-md;
+    border-radius: 0.5rem;
+  }
 }
 
 @layer base {
@@ -29,15 +55,24 @@
 
 @layer base {
   :root {
-    --surface: 223 100% 98.6%; /* #F8FAFF */
+    --surface: 216 33% 97%; /* #F5F7FA mist (CI) */
     --background: var(--surface);
-    --foreground: 0 0% 5%;
+    --foreground: 345 5% 13%; /* #231F20 ink (CI) */
     --card: var(--surface);
     --card-foreground: 0 0% 5%;
     --popover: var(--surface);
     --popover-foreground: 0 0% 5%;
-    --primary: 221 100% 20%;
+    --primary: 221 100% 20%; /* #002065 navy */
     --primary-foreground: var(--surface);
+    /* CI accent blue #3366FF — CTA / horn line only */
+    --accent-blue: 224 100% 60%;
+    /* CI sage #E1E6E1 — section band */
+    --sage: 100 9% 89%;
+    /* CI mist #F5F7FA — page base */
+    --mist: 216 33% 97%;
+    /* CI ink #231F20 / gray #818381 */
+    --ink: 345 5% 13%;
+    --ci-gray: 120 1% 51%;
     --secondary: 0 0% 94%;
     --secondary-foreground: 0 0% 5%;
     --muted: 0 0% 94%;
@@ -74,5 +109,246 @@
   ::selection {
     background-color: hsl(221 100% 20%);
     color: hsl(var(--surface));
+  }
+}
+
+/* ── 본립도생 (BIZCOOL 2026) ── */
+.bonlip {
+  --neon: #c6ff3a;
+  --neon-soft: #d8ffa0;
+  --neon-deep: #a8e822;
+  --green-deep: #0c483e;
+  --green-mid: #2e8c6b;
+  --bonlip-ink: #07231c;
+  --bg-darkest: #04150f;
+  --bg-mid: #0c483e;
+  --bg-end: #083229;
+  --paper: #f2ffe8;
+  --frost: #eff4e4;
+  color: var(--paper);
+  word-break: keep-all;
+  background:
+    radial-gradient(55% 30% at 88% -6%, rgba(198, 255, 58, 0.3), transparent 60%),
+    radial-gradient(50% 25% at -10% 60%, rgba(46, 140, 107, 0.55), transparent 64%),
+    linear-gradient(178deg, #04150f 0%, #0c483e 52%, #083229 100%);
+}
+
+.bonlip-scanlines {
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.02) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.bonlip-shimmer {
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(198, 255, 58, 0.06) 44%,
+    transparent 55%
+  );
+}
+
+.bonlip-glow {
+  border-radius: 9999px;
+  filter: blur(36px);
+  pointer-events: none;
+  background: radial-gradient(circle, var(--neon) 0%, transparent 62%);
+  opacity: 0.4;
+  animation: bonlip-drift 12s ease-in-out infinite;
+}
+
+.bonlip-glow--mid {
+  background: radial-gradient(circle, var(--green-mid) 0%, transparent 62%);
+  opacity: 0.78;
+  filter: blur(40px);
+  animation-duration: 15s;
+  animation-direction: reverse;
+}
+
+.bonlip-glass {
+  background: linear-gradient(
+    130deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0.05) 48%,
+    rgba(198, 255, 58, 0.1) 100%
+  );
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  border-radius: 24px;
+  backdrop-filter: blur(28px) saturate(1.7);
+  -webkit-backdrop-filter: blur(28px) saturate(1.7);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    0 20px 44px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 스펙큘러 스트릭 — 유리 표면 위, 본문 텍스트 아래 */
+.bonlip-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.2) 48%,
+    transparent 56%
+  );
+}
+
+.bonlip-glass > * {
+  position: relative;
+  z-index: 2;
+}
+
+.bonlip-echo {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(198, 255, 58, 0.12);
+}
+
+.bonlip-title-stroke {
+  color: transparent;
+  -webkit-text-stroke: 2.5px #c6ff3a;
+}
+
+.bonlip-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: bonlip-marquee 28s linear infinite;
+}
+
+.bonlip-barcode span {
+  display: inline-block;
+  height: 100%;
+  background: var(--bonlip-ink);
+  opacity: 0.85;
+}
+
+@keyframes bonlip-drift {
+  50% {
+    transform: translate(30px, -40px) scale(1.08);
+  }
+}
+
+@keyframes bonlip-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.bonlip-glass--neon {
+  background: linear-gradient(
+    130deg,
+    rgba(198, 255, 58, 0.16) 0%,
+    rgba(198, 255, 58, 0.06) 55%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  border-color: rgba(198, 255, 58, 0.45);
+}
+
+/* 라이트(프로스트) 변형 — 컬러 원판 위 전면 시트 */
+.bonlip-frost {
+  background: var(--frost);
+  color: var(--green-deep);
+  position: relative;
+  overflow: hidden;
+}
+
+.bonlip-disc {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+.bonlip-frost-sheet {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: rgba(250, 255, 242, 0.32);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.95);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(34px) saturate(1.2);
+  -webkit-backdrop-filter: blur(34px) saturate(1.2);
+}
+
+/* 스탬프 — 점선 원 (티켓/증서 무드) */
+.bonlip-stamp {
+  border: 2.5px dashed rgba(198, 255, 58, 0.75);
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+
+.bonlip-stamp--ink {
+  border-color: rgba(12, 72, 62, 0.5);
+}
+
+/* 다크 티커 변형 */
+.bonlip-ticker--dark {
+  background: var(--bonlip-ink);
+  color: var(--neon);
+}
+
+/* 방향 화살표 (안내판) — 스크롤 큐 */
+.bonlip-arrow-down {
+  width: 16px;
+  height: 24px;
+  clip-path: polygon(
+    50% 100%,
+    0 46%,
+    30% 46%,
+    30% 0,
+    70% 0,
+    70% 46%,
+    100% 46%
+  );
+  background: linear-gradient(
+    180deg,
+    rgba(242, 255, 232, 0.95) 0%,
+    rgba(242, 255, 232, 0.5) 100%
+  );
+  animation: bonlip-bob 2.4s ease-in-out infinite;
+}
+
+.bonlip-arrow-down--trail {
+  animation-delay: 0.18s;
+}
+
+.bonlip-stroke-neon {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--neon);
+}
+
+.bonlip-stroke-ink {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(12, 72, 62, 0.45);
+}
+
+.bonlip-echo--ink {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(7, 35, 28, 0.14);
+}
+
+@keyframes bonlip-bob {
+  50% {
+    transform: translateY(6px);
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bonlip-glow,
+  .bonlip-glow--mid,
+  .bonlip-ticker-track,
+  .bonlip-arrow-down {
+    animation: none;
   }
 }

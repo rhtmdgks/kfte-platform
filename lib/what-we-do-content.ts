@@ -95,8 +95,11 @@ export const whatWeDoPage = {
   cta: {
     headline: "다음 창업가는 바로 당신일 수 있습니다",
     description: "프로그램 참여, 회원 가입, 협력 제안 — KFTE와 연결되는 방법은 다양합니다.",
-    primary: { label: "프로그램 보기", href: "/activities/programs" },
-    secondary: { label: "회원 가입 안내", href: "/members/join" },
+    // HIDDEN: 프로그램·회원사 CTA — 복구 시 주석 해제 (컴포넌트 버튼도 함께)
+    // primary: { label: "프로그램 보기", href: "/activities/programs" },
+    // secondary: { label: "회원 가입 안내", href: "/members/join" },
+    primary: { label: "선언문 읽기", href: "/about/manifesto" },
+    secondary: { label: "선언문 읽기", href: "/about/manifesto" },
     tertiary: { label: "선언문 읽기", href: "/about/manifesto" },
   },
 } as const

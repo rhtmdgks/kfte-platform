@@ -6,9 +6,9 @@ export type ViewTrendPoint = {
   label: string
 }
 
-type NewsContentType = Extract<
+type TrendContentType = Extract<
   Database["public"]["Enums"]["content_type"],
-  "notice" | "press"
+  "notice" | "press" | "event"
 >
 
 function formatDayLabel(day: string) {
@@ -39,9 +39,14 @@ export function fillViewTrendSeries(
 }
 
 export async function getContentViewTrends(
-  contentType: NewsContentType,
+  contentType: TrendContentType,
   days = 30,
 ): Promise<ViewTrendPoint[]> {
+  const { isSupabaseConfigured } = await import("@/lib/supabase/config")
+  if (!isSupabaseConfigured()) {
+    return fillViewTrendSeries([], days)
+  }
+
   const { createClient } = await import("@/lib/supabase/server")
   const supabase = await createClient()
 

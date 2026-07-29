@@ -4,15 +4,19 @@ import { homepageFaqSchema } from "@/lib/seo/faq-schema"
 import { Hero } from "@/components/hero"
 import { WhatWeDoSection } from "@/components/approach-section"
 import { WhoWeServeSection } from "@/components/who-we-serve-section"
-import { ImpactSection } from "@/components/studio-section"
+// HIDDEN: Impact placeholders (—) — restore when real metrics ready
+// import { ImpactSection } from "@/components/studio-section"
 import { ProgramsSection } from "@/components/projects-section"
-import { DivisionsSection } from "@/components/divisions-section"
+// HIDDEN: Divisions — restore with nav programs if needed
+// import { DivisionsSection } from "@/components/divisions-section"
 import { ManifestoSection } from "@/components/editorial-break"
-import { PartnersSection } from "@/components/partners-section"
+// HIDDEN: Partners — restore when partner logos ready
+// import { PartnersSection } from "@/components/partners-section"
 import { NewsSection } from "@/components/journal-section"
 import { FaqSection } from "@/components/faq-section"
 import { NewsletterSection } from "@/components/newsletter-section"
-import { FinalCtaSection } from "@/components/contact-section"
+// HIDDEN: FinalCta absorbed into NewsletterSection
+// import { FinalCtaSection } from "@/components/contact-section"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kfte.kr'
 
@@ -55,15 +59,15 @@ export default function Page() {
       <Hero />
       <WhatWeDoSection />
       <WhoWeServeSection />
-      <ImpactSection />
+      {/* HIDDEN: <ImpactSection /> */}
       <ProgramsSection />
-      <DivisionsSection />
+      {/* HIDDEN: <DivisionsSection /> */}
       <ManifestoSection />
-      <PartnersSection />
+      {/* HIDDEN: <PartnersSection /> */}
       <NewsSection />
       <FaqSection />
       <NewsletterSection />
-      <FinalCtaSection />
+      {/* HIDDEN: <FinalCtaSection /> — merged into NewsletterSection */}
     </main>
   )
 }

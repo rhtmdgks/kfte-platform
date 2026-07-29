@@ -23,7 +23,6 @@ import {
 } from "lucide-react"
 import {
   MotionEnter,
-  MotionPage,
   MotionReveal,
   MotionStagger,
   MotionStaggerItem,
@@ -301,7 +300,7 @@ export function EventArchivePageContent({ config }: { config: EventArchivePageCo
   }, [config.categories, config.posts, selectedYear])
 
   return (
-    <MotionPage className="min-h-screen overflow-x-clip bg-[#F4F7FF] pb-20 md:pb-28">
+    <div className="min-h-screen overflow-x-clip bg-[#F4F7FF] pb-20 md:pb-28">
       <section
         ref={heroRef}
         className="relative overflow-hidden border-b border-primary/10 bg-primary pt-24 text-primary-foreground"
@@ -510,6 +509,6 @@ export function EventArchivePageContent({ config }: { config: EventArchivePageCo
           </div>
         </MotionEnter>
       </div>
-    </MotionPage>
+    </div>
   )
 }

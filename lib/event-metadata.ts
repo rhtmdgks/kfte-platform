@@ -11,6 +11,9 @@ export type EventPostMetadata = {
   registrationEnd?: string
   subcategory?: string
   featured?: boolean
+  /** null clears stored dimensions (e.g. poster removed) */
+  detailImageWidth?: number | null
+  detailImageHeight?: number | null
 }
 
 export function parseEventPostMetadata(metadata: Json | null) {
@@ -34,6 +37,14 @@ export function parseEventPostMetadata(metadata: Json | null) {
       typeof record.registrationEnd === "string" ? record.registrationEnd : undefined,
     subcategory: typeof record.subcategory === "string" ? record.subcategory : undefined,
     featured: typeof record.featured === "boolean" ? record.featured : undefined,
+    detailImageWidth:
+      typeof record.detailImageWidth === "number" && Number.isFinite(record.detailImageWidth)
+        ? record.detailImageWidth
+        : undefined,
+    detailImageHeight:
+      typeof record.detailImageHeight === "number" && Number.isFinite(record.detailImageHeight)
+        ? record.detailImageHeight
+        : undefined,
   }
 }
 
@@ -58,6 +69,14 @@ export function buildEventPostMetadata(
     registrationEnd: input.registrationEnd ?? existing?.registrationEnd,
     subcategory: input.subcategory ?? existing?.subcategory,
     featured: input.featured ?? existing?.featured ?? false,
+    detailImageWidth:
+      input.detailImageWidth === null
+        ? undefined
+        : (input.detailImageWidth ?? existing?.detailImageWidth),
+    detailImageHeight:
+      input.detailImageHeight === null
+        ? undefined
+        : (input.detailImageHeight ?? existing?.detailImageHeight),
   }
 }
 

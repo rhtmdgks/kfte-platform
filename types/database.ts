@@ -46,6 +46,7 @@ export type Database = {
           body: string | null
           content_type: Database["public"]["Enums"]["content_type"]
           created_at: string
+          detail_image_url: string | null
           external_url: string | null
           id: string
           is_pinned: boolean
@@ -63,6 +64,7 @@ export type Database = {
           body?: string | null
           content_type: Database["public"]["Enums"]["content_type"]
           created_at?: string
+          detail_image_url?: string | null
           external_url?: string | null
           id?: string
           is_pinned?: boolean
@@ -80,6 +82,7 @@ export type Database = {
           body?: string | null
           content_type?: Database["public"]["Enums"]["content_type"]
           created_at?: string
+          detail_image_url?: string | null
           external_url?: string | null
           id?: string
           is_pinned?: boolean
@@ -182,11 +185,36 @@ export type Database = {
         }
         Relationships: []
       }
+      short_links: {
+        Row: {
+          click_count: number
+          code: string
+          created_at: string
+          id: string
+          target_path: string
+        }
+        Insert: {
+          click_count?: number
+          code: string
+          created_at?: string
+          id?: string
+          target_path: string
+        }
+        Update: {
+          click_count?: number
+          code?: string
+          created_at?: string
+          id?: string
+          target_path?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      create_short_link: { Args: { p_target: string }; Returns: string }
       get_content_view_trends: {
         Args: {
           p_content_type: Database["public"]["Enums"]["content_type"]
@@ -205,6 +233,7 @@ export type Database = {
         }
         Returns: number
       }
+      resolve_short_link: { Args: { p_code: string }; Returns: string }
     }
     Enums: {
       application_status: "pending" | "reviewing" | "approved" | "rejected"
@@ -322,6 +351,23 @@ export type Enums<
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
