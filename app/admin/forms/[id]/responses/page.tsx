@@ -24,6 +24,7 @@ export default async function AdminFormResponsesPage({ params }: PageProps) {
       <main className="flex-1 p-6">
         <FormResponsesPanel
           formId={form.id}
+          formTitle={form.title}
           schema={parseFormSchema(form.schema)}
           responses={responses}
         />

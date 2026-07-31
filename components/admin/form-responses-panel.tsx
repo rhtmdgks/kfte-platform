@@ -22,6 +22,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  buildResponsesCsv,
+  buildResponsesExcelXml,
+  downloadBlob,
+  formatAnswerForExport,
+} from "@/lib/application-forms/export-responses"
 import { flattenQuestions } from "@/lib/application-forms/parse"
 import type { FormSchema } from "@/lib/application-forms/types"
 import type { Tables } from "@/types/database"
@@ -30,29 +36,21 @@ type ResponseRow = Tables<"application_form_responses">
 
 type FormResponsesPanelProps = {
   formId: string
+  formTitle?: string
   schema: FormSchema
   responses: ResponseRow[]
 }
 
-function answerToText(value: unknown): string {
-  if (value == null) return ""
-  if (typeof value === "string" || typeof value === "number") return String(value)
-  if (Array.isArray(value)) return value.map(String).join(", ")
-  try {
-    return JSON.stringify(value)
-  } catch {
-    return String(value)
-  }
-}
-
 export function FormResponsesPanel({
   formId,
+  formTitle,
   schema,
   responses,
 }: FormResponsesPanelProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const questions = flattenQuestions(schema)
+  const fileStem = `form-${(formTitle || formId).replace(/[^\w가-힣-]+/g, "-").slice(0, 40)}-responses`
 
   const summary = useMemo(() => {
     return questions
@@ -89,33 +87,27 @@ export function FormResponsesPanel({
       })
   }, [questions, responses])
 
+  const exportExcel = () => {
+    if (responses.length === 0) {
+      toast.message("내보낼 응답이 없습니다.")
+      return
+    }
+    const xml = buildResponsesExcelXml(schema, responses)
+    downloadBlob(
+      `${fileStem}.xls`,
+      new Blob([xml], { type: "application/vnd.ms-excel;charset=utf-8" }),
+    )
+    toast.success("엑셀 파일을 내려받았습니다.")
+  }
+
   const exportCsv = () => {
-    const headers = [
-      "submitted_at",
-      "email",
-      "score",
-      ...questions.map((q) => q.title || q.id),
-    ]
-    const rows = responses.map((response) => {
-      const answers = (response.answers ?? {}) as Record<string, unknown>
-      return [
-        response.submitted_at,
-        response.respondent_email ?? "",
-        response.score ?? "",
-        ...questions.map((q) => answerToText(answers[q.id])),
-      ]
-        .map((cell) => `"${String(cell).replaceAll('"', '""')}"`)
-        .join(",")
-    })
-    const blob = new Blob([[headers.join(","), ...rows].join("\n")], {
-      type: "text/csv;charset=utf-8",
-    })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = `form-${formId}-responses.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    if (responses.length === 0) {
+      toast.message("내보낼 응답이 없습니다.")
+      return
+    }
+    const csv = buildResponsesCsv(schema, responses)
+    downloadBlob(`${fileStem}.csv`, new Blob([csv], { type: "text/csv;charset=utf-8" }))
+    toast.success("CSV 파일을 내려받았습니다.")
   }
 
   return (
@@ -124,7 +116,14 @@ export function FormResponsesPanel({
         <Button asChild variant="outline">
           <Link href={`/admin/forms/${formId}/edit`}>폼 편집</Link>
         </Button>
-        <Button type="button" onClick={exportCsv} className="bg-[#002065] hover:bg-[#002065]/90">
+        <Button
+          type="button"
+          onClick={exportExcel}
+          className="bg-[#002065] hover:bg-[#002065]/90"
+        >
+          엑셀 내보내기
+        </Button>
+        <Button type="button" variant="outline" onClick={exportCsv}>
           CSV 내보내기
         </Button>
       </div>
@@ -179,7 +178,7 @@ export function FormResponsesPanel({
                 const answers = (response.answers ?? {}) as Record<string, unknown>
                 const preview = questions
                   .slice(0, 2)
-                  .map((q) => answerToText(answers[q.id]))
+                  .map((q) => formatAnswerForExport(q, answers[q.id]))
                   .filter(Boolean)
                   .join(" · ")
                 return (
