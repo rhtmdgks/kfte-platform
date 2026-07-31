@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   CalendarDays,
   Check,
+  ChevronDown,
   Copy,
   Eye,
   Link2,
@@ -85,50 +86,73 @@ function EventHeroImage({ post, archive = false }: { post: EventPost; archive?: 
   )
 }
 
-function EventDetailPoster({ post }: { post: EventPost }) {
-  if (!post.detailImageUrl) return null
-
-  const hasSize =
-    typeof post.detailImageWidth === "number" &&
-    typeof post.detailImageHeight === "number" &&
-    post.detailImageWidth > 0 &&
-    post.detailImageHeight > 0
+function EventProgramSection({ post }: { post: EventPost }) {
+  if (!post.content?.trim()) return null
 
   return (
-    <MotionReveal delay={0.2}>
-      <section className="mt-10 border-t border-border pt-10">
-        <h2 className="mb-6 text-xl font-bold text-foreground">상세 포스터</h2>
-        <div className="mx-auto max-w-[560px]">
-          <div className="overflow-hidden rounded-[16px] border border-primary/15 bg-white shadow-[0_12px_40px_-16px_rgba(0,32,101,0.18)]">
-            {hasSize ? (
-              <Image
-                src={post.detailImageUrl}
-                alt={`${post.title} 상세 포스터`}
-                width={post.detailImageWidth}
-                height={post.detailImageHeight}
-                className="h-auto w-full"
-                sizes="(max-width: 640px) 100vw, 560px"
-              />
-            ) : (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={post.detailImageUrl}
-                alt={`${post.title} 상세 포스터`}
-                className="h-auto w-full"
-              />
-            )}
-          </div>
-          <a
-            href={post.detailImageUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-block text-sm font-semibold text-primary hover:underline"
-          >
-            원본 크게 보기 →
-          </a>
+    <section className="mt-10 border-t border-border pt-10">
+      <h2 className="mb-6 text-xl font-bold text-foreground">프로그램 안내</h2>
+      <div className="whitespace-pre-wrap text-base leading-[2] text-muted-foreground">
+        {post.content}
+      </div>
+    </section>
+  )
+}
+
+/** 상세 이미지 — 왼쪽 행사 정보 컬럼 너비에 꽉 채움 */
+function EventDetailImageSection({ post }: { post: EventPost }) {
+  const reduceMotion = useReducedMotion()
+  const [expanded, setExpanded] = useState(false)
+
+  if (!post.detailImageUrl) return null
+
+  return (
+    <section className="mt-10 border-t border-border pt-10">
+      <h2 className="mb-4 text-xl font-bold text-foreground">행사 소개</h2>
+
+      <div className="relative w-full min-w-0">
+        <div
+          className={cn(
+            "w-full overflow-hidden transition-[max-height] duration-500 ease-out",
+            expanded ? "max-h-none" : "max-h-[min(90vh,1100px)]",
+          )}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- tall poster; avoid next/image size limits */}
+          <img
+            src={post.detailImageUrl}
+            alt={`${post.title} 행사 소개`}
+            className="block h-auto w-full max-w-none object-contain object-top"
+          />
         </div>
-      </section>
-    </MotionReveal>
+
+        {!expanded ? (
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#FBFCFF] via-[#FBFCFF]/90 to-transparent"
+          />
+        ) : null}
+      </div>
+
+      <div className="mt-4 flex justify-center">
+        <motion.button
+          type="button"
+          onClick={() => setExpanded((value) => !value)}
+          whileHover={reduceMotion ? undefined : { y: 1 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+          transition={springGentle}
+          aria-expanded={expanded}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-200 bg-transparent px-5 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:border-neutral-300 hover:bg-neutral-50/80"
+        >
+          {expanded ? "행사 소개 접기" : "행사 소개 더보기"}
+          <ChevronDown
+            className={cn(
+              "h-4 w-4 text-neutral-500 transition-transform duration-300",
+              expanded && "rotate-180",
+            )}
+          />
+        </motion.button>
+      </div>
+    </section>
   )
 }
 
@@ -343,8 +367,8 @@ export function EventDetailPageContent({
           <MotionReveal delay={0.03}>
             <h1 className="sr-only">{post.title}</h1>
           </MotionReveal>
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3 lg:gap-12">
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_400px]">
+            <div className="min-w-0">
               <MotionReveal delay={0.05}>
                 <EventHeroImage post={post} archive={isArchive} />
               </MotionReveal>
@@ -388,18 +412,15 @@ export function EventDetailPageContent({
               </MotionReveal>
 
               <MotionReveal delay={0.18}>
-                <div className="mt-10 border-t border-border pt-10">
-                  <h2 className="mb-6 text-xl font-bold text-foreground">프로그램 안내</h2>
-                  <div className="whitespace-pre-wrap text-base leading-[2] text-muted-foreground">
-                    {post.content}
-                  </div>
-                </div>
+                <EventProgramSection post={post} />
               </MotionReveal>
 
-              <EventDetailPoster post={post} />
+              <MotionReveal delay={0.2}>
+                <EventDetailImageSection post={post} />
+              </MotionReveal>
             </div>
 
-            <div className="lg:col-span-1">
+            <div className="min-w-0">
               <motion.aside
                 initial={reduceMotion ? false : { opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -458,8 +479,24 @@ export function EventDetailPageContent({
                   <h3 className="mb-4 text-base font-semibold text-foreground">문의</h3>
                   <div className="space-y-1 text-sm text-foreground">
                     <p className="font-medium">{site.fullName}</p>
-                    <p className="text-muted-foreground">T. {site.phone}</p>
-                    <p className="text-muted-foreground">E. {site.email}</p>
+                    <p className="text-muted-foreground">
+                      T.{" "}
+                      <a
+                        href={`tel:${(post.contactPhone || site.phone).replace(/-/g, "")}`}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {post.contactPhone || site.phone}
+                      </a>
+                    </p>
+                    <p className="text-muted-foreground">
+                      E.{" "}
+                      <a
+                        href={`mailto:${post.contactEmail || site.email}`}
+                        className="hover:text-primary hover:underline"
+                      >
+                        {post.contactEmail || site.email}
+                      </a>
+                    </p>
                   </div>
                 </div>
 
