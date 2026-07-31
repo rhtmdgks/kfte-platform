@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2, Upload } from "lucide-react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { submitFormResponse } from "@/app/apply/actions"
 import { MotionChoice, MotionField } from "@/components/apply/motion-field"
+import { MarkdownText } from "@/components/markdown-text"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -235,9 +236,9 @@ export function PublicForm({
                   {title}
                 </h1>
                 {description ? (
-                  <p className="whitespace-pre-line text-[15px] leading-[1.75] text-slate-500 md:text-base">
+                  <MarkdownText className="text-[15px] leading-[1.75] md:text-base">
                     {description}
-                  </p>
+                  </MarkdownText>
                 ) : null}
               </>
             ) : (
@@ -256,9 +257,7 @@ export function PublicForm({
               </h2>
             ) : null}
             {section.description ? (
-              <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate-500">
-                {section.description}
-              </p>
+              <MarkdownText>{section.description}</MarkdownText>
             ) : null}
           </header>
 
@@ -366,9 +365,9 @@ function QuestionField({
           {question.required ? <span className="text-red-500"> *</span> : null}
         </h3>
         {question.description ? (
-          <p className="whitespace-pre-line text-sm leading-relaxed text-slate-500 md:text-[15px]">
+          <MarkdownText className="text-sm md:text-[15px]">
             {question.description}
-          </p>
+          </MarkdownText>
         ) : null}
       </div>
 
