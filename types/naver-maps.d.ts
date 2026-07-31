@@ -5,8 +5,21 @@ declare namespace naver {
     }
 
     class Map {
-      constructor(element: HTMLElement, options: { center: LatLng; zoom: number })
+      constructor(
+        element: string | HTMLElement,
+        options?: {
+          center?: LatLng
+          zoom?: number
+          size?: Size
+        },
+      )
       setCenter(center: LatLng): void
+      setSize(size: Size): void
+      destroy?: () => void
+    }
+
+    class Size {
+      constructor(width: number, height: number)
     }
 
     class Marker {
@@ -25,13 +38,21 @@ declare namespace naver {
       }
 
       function geocode(
-        options: { address: string },
+        options: { query: string } | { address: string },
         callback: (
           status: Service.Status,
           response: {
-            result: {
-              items: Array<{
-                point: { x: number; y: number }
+            v2?: {
+              addresses?: Array<{
+                x: string
+                y: string
+                roadAddress?: string
+                jibunAddress?: string
+              }>
+            }
+            result?: {
+              items?: Array<{
+                point?: { x: number; y: number }
               }>
             }
           },
@@ -43,4 +64,5 @@ declare namespace naver {
 
 interface Window {
   naver?: typeof naver
+  navermap_authFailure?: () => void
 }

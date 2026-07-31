@@ -14,25 +14,28 @@ type NaverMapProps = {
   className?: string
 }
 
+/** @see https://navermaps.github.io/maps.js.ncp/docs/tutorial-2-Getting-Started.html */
 const NAVER_SDK_URL = "https://oapi.map.naver.com/openapi/v3/maps.js"
 
-function loadNaverMaps(clientId: string): Promise<void> {
+function getNaverMapKeyId() {
+  return (
+    process.env.NEXT_PUBLIC_NAVER_MAP_NCP_KEY_ID?.trim() ||
+    process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID?.trim() ||
+    ""
+  )
+}
+
+function loadNaverMaps(ncpKeyId: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined") {
       reject(new Error("Naver Maps is only available in the browser"))
       return
     }
 
-    const init = () => {
-      if (!window.naver?.maps?.Service) {
-        reject(new Error("Naver Maps SDK is unavailable"))
-        return
-      }
-      resolve()
-    }
+    const ready = () => Boolean(window.naver?.maps?.Map && window.naver?.maps?.Service)
 
-    if (window.naver?.maps?.Service) {
-      init()
+    if (ready()) {
+      resolve()
       return
     }
 
@@ -40,12 +43,20 @@ function loadNaverMaps(clientId: string): Promise<void> {
       'script[data-naver-maps-sdk="true"]',
     )
 
-    if (existing) {
-      if (window.naver?.maps?.Service) {
-        init()
+    const onLoad = () => {
+      if (ready()) {
+        resolve()
         return
       }
-      existing.addEventListener("load", init, { once: true })
+      reject(new Error("Naver Maps SDK is unavailable"))
+    }
+
+    if (existing) {
+      if (ready()) {
+        resolve()
+        return
+      }
+      existing.addEventListener("load", onLoad, { once: true })
       existing.addEventListener(
         "error",
         () => reject(new Error("Naver Maps SDK load failed")),
@@ -54,11 +65,17 @@ function loadNaverMaps(clientId: string): Promise<void> {
       return
     }
 
+    // 인증 실패 시 Maps SDK가 호출하는 전역 훅
+    window.navermap_authFailure = () => {
+      reject(new Error("Naver Maps authentication failed"))
+    }
+
     const script = document.createElement("script")
-    script.src = `${NAVER_SDK_URL}?ncpKeyId=${clientId}&submodules=geocoder`
+    // 신규 통합 키: ncpKeyId (구 ncpClientId 대체)
+    script.src = `${NAVER_SDK_URL}?ncpKeyId=${encodeURIComponent(ncpKeyId)}&submodules=geocoder`
     script.async = true
     script.dataset.naverMapsSdk = "true"
-    script.onload = init
+    script.onload = onLoad
     script.onerror = () => reject(new Error("Naver Maps SDK load failed"))
     document.head.appendChild(script)
   })
@@ -72,7 +89,17 @@ function renderMap(
   markerTitle?: string,
 ) {
   const center = new naver.maps.LatLng(lat, lng)
-  const map = new naver.maps.Map(container, { center, zoom })
+  const map = new naver.maps.Map(container, {
+    center,
+    zoom,
+  })
+
+  // 컨테이너 크기가 늦게 잡히는 경우 보정
+  const { clientWidth, clientHeight } = container
+  if (clientWidth > 0 && clientHeight > 0) {
+    map.setSize(new naver.maps.Size(clientWidth, clientHeight))
+  }
+
   const marker = new naver.maps.Marker({
     map,
     position: center,
@@ -89,24 +116,32 @@ function renderMap(
   return map
 }
 
-function searchAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+function searchAddress(query: string): Promise<{ lat: number; lng: number } | null> {
   return new Promise((resolve) => {
-    naver.maps.Service.geocode({ address }, (status, response) => {
+    naver.maps.Service.geocode({ query }, (status, response) => {
       if (status !== naver.maps.Service.Status.OK) {
         resolve(null)
         return
       }
 
-      const item = response.result.items?.[0]
-      if (!item?.point) {
-        resolve(null)
+      // 신규 geocoder 응답: response.v2.addresses[].x/y
+      const modern = response.v2?.addresses?.[0]
+      if (modern?.x && modern?.y) {
+        resolve({
+          lat: Number(modern.y),
+          lng: Number(modern.x),
+        })
         return
       }
 
-      resolve({
-        lat: item.point.y,
-        lng: item.point.x,
-      })
+      // 구형 응답 호환
+      const legacy = response.result?.items?.[0]?.point
+      if (legacy) {
+        resolve({ lat: legacy.y, lng: legacy.x })
+        return
+      }
+
+      resolve(null)
     })
   })
 }
@@ -122,14 +157,17 @@ export function NaverMap({
   className,
 }: NaverMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const mapRef = useRef<naver.maps.Map | null>(null)
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
   const [errorDetail, setErrorDetail] = useState<string | null>(null)
-  const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID
+  const ncpKeyId = getNaverMapKeyId()
 
   useEffect(() => {
-    if (!clientId) {
+    if (!ncpKeyId) {
       setStatus("error")
-      setErrorDetail("네이버 지도 API 키가 설정되지 않았습니다.")
+      setErrorDetail(
+        "네이버 지도 API 키가 없습니다. .env.local에 NEXT_PUBLIC_NAVER_MAP_NCP_KEY_ID를 설정한 뒤 개발 서버를 재시작해 주세요.",
+      )
       return
     }
 
@@ -137,7 +175,7 @@ export function NaverMap({
 
     const initMap = async () => {
       try {
-        await loadNaverMaps(clientId)
+        await loadNaverMaps(ncpKeyId)
         if (cancelled || !containerRef.current) return
 
         let coords: { lat: number; lng: number } | null = null
@@ -168,12 +206,22 @@ export function NaverMap({
           return
         }
 
-        renderMap(containerRef.current, coords.lat, coords.lng, zoom, markerTitle)
+        mapRef.current = renderMap(
+          containerRef.current,
+          coords.lat,
+          coords.lng,
+          zoom,
+          markerTitle,
+        )
         setStatus("ready")
-      } catch {
+      } catch (error) {
         if (!cancelled) {
+          const authFailed =
+            error instanceof Error && /authentication failed/i.test(error.message)
           setErrorDetail(
-            "네이버 지도 SDK를 불러오지 못했습니다. Naver Cloud Platform에서 Client ID와 Web 서비스 URL(localhost:3000 등) 등록을 확인해 주세요.",
+            authFailed
+              ? "네이버 지도 인증에 실패했습니다. ncpKeyId와 Web 서비스 URL(localhost:3000, kfte.kr 등) 등록을 확인해 주세요."
+              : "네이버 지도 SDK를 불러오지 못했습니다. Naver Cloud Platform Maps의 ncpKeyId와 Web 서비스 URL 등록을 확인해 주세요.",
           )
           setStatus("error")
         }
@@ -184,10 +232,11 @@ export function NaverMap({
 
     return () => {
       cancelled = true
+      mapRef.current = null
     }
   }, [
     address,
-    clientId,
+    ncpKeyId,
     fallbackLat,
     fallbackLng,
     latitude,
@@ -195,6 +244,25 @@ export function NaverMap({
     markerTitle,
     zoom,
   ])
+
+  useEffect(() => {
+    if (status !== "ready" || !containerRef.current || !mapRef.current) return
+
+    const container = containerRef.current
+    const map = mapRef.current
+
+    const resize = () => {
+      const { clientWidth, clientHeight } = container
+      if (clientWidth > 0 && clientHeight > 0) {
+        map.setSize(new naver.maps.Size(clientWidth, clientHeight))
+      }
+    }
+
+    resize()
+    const observer = new ResizeObserver(resize)
+    observer.observe(container)
+    return () => observer.disconnect()
+  }, [status])
 
   return (
     <div
