@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils"
 
 type NavItem = { label: string; href: string }
+type NavAuthItem = { label: string; href: string }
 
 /** Fluid header — desktop keeps air; mobile stays short */
 const HEADER_H = "h-[clamp(3.75rem,3.4rem+1vw,6rem)]"
@@ -24,7 +25,7 @@ const GUTTER = "gap-x-[clamp(0.75rem,2.5vw,2.75rem)]"
 const NAV_GAP = "gap-x-[clamp(0.35rem,1.2vw,1.5rem)]"
 const NAV_LABEL =
   "text-[clamp(0.8125rem,0.7rem+0.35vw,1.0625rem)] font-semibold leading-snug tracking-[-0.01em]"
-const LOGO_SIZE = "h-[clamp(2rem,1.75rem+0.9vw,3.5rem)] w-auto max-w-[min(40vw,11rem)]"
+const LOGO_SIZE = "h-[clamp(2.5rem,2.1rem+1.1vw,4.25rem)] w-auto max-w-[min(44vw,13rem)]"
 
 function isGroupActive(pathname: string, group: { href: string; items: readonly NavItem[] }) {
   if (pathname === group.href || pathname.startsWith(`${group.href}/`)) return true
@@ -87,7 +88,7 @@ function AuthLinks({
         className,
       )}
     >
-      {navAuth.map((link, index) => (
+      {(navAuth as unknown as NavAuthItem[]).map((link, index) => (
         <span key={link.href} className={cn("flex items-center", stacked ? "w-full" : "gap-2.5")}>
           {!stacked && index > 0 && (
             <span
@@ -257,11 +258,9 @@ export function Navigation() {
             />
           </Link>
 
-          <nav
-            className={cn("grid min-w-0 flex-1 grid-cols-4", NAV_GAP)}
-            aria-label="메인 메뉴"
-          >
-            {navMenu.map((group, index) => {
+          <nav className="min-w-0 flex-1" aria-label="메인 메뉴">
+            <div className={cn("mx-auto grid max-w-[44rem] grid-cols-4 xl:max-w-[52rem]", NAV_GAP)}>
+              {navMenu.map((group, index) => {
               const isActive = isGroupActive(pathname, group)
               const isHighlighted = megaOpen && openGroup === index
               const underlineActive = isActive || isHighlighted
@@ -346,6 +345,7 @@ export function Navigation() {
                 </div>
               )
             })}
+            </div>
           </nav>
 
           <div className={cn("flex shrink-0 items-center gap-3", HEADER_H)}>
