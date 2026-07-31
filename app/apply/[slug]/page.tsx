@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import { PublicForm } from "@/components/apply/public-form"
 import { parseFormSchema, parseFormSettings } from "@/lib/application-forms/parse"
-import { getFormBySlug } from "@/lib/application-forms/queries"
+import { getEventPathForForm, getFormBySlug } from "@/lib/application-forms/queries"
 import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
 
@@ -19,17 +19,19 @@ export default async function ApplyFormPage({ params, searchParams }: PageProps)
 
   if (form.status === "closed") {
     return (
-      <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
-        <div className="mx-auto max-w-2xl px-6 py-20">
-          <h1 className="text-2xl font-bold text-[#002065]">{form.title}</h1>
-          <p className="mt-4 text-muted-foreground">이 폼은 마감되었습니다.</p>
+      <main className={cn(pageMainClassName, "bg-white")}>
+        <div className="mx-auto max-w-4xl px-5 py-20 md:px-8">
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">{form.title}</h1>
+          <p className="mt-4 text-base text-slate-500">이 폼은 마감되었습니다.</p>
         </div>
       </main>
     )
   }
 
+  const eventHref = await getEventPathForForm(form.id)
+
   return (
-    <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
+    <main className={cn(pageMainClassName, "bg-white")}>
       <PublicForm
         formId={form.id}
         title={form.title}
@@ -37,6 +39,7 @@ export default async function ApplyFormPage({ params, searchParams }: PageProps)
         schema={parseFormSchema(form.schema)}
         settings={parseFormSettings(form.settings)}
         initialEditToken={edit}
+        eventHref={eventHref}
       />
     </main>
   )

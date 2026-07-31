@@ -55,6 +55,21 @@ export async function getFormBySlug(slug: string) {
   return data
 }
 
+/** 이 폼을 신청 링크로 쓰는 행사 상세 경로. 없으면 행사 목록. */
+export async function getEventPathForForm(formId: string) {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("content_posts")
+    .select("slug")
+    .eq("content_type", "event")
+    .filter("metadata->>applicationFormId", "eq", formId)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  return data?.slug ? `/activities/events/${data.slug}` : "/activities/events"
+}
+
 export async function listResponses(formId: string) {
   const supabase = await createClient()
   const { data, error } = await supabase
