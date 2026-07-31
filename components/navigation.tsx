@@ -34,38 +34,6 @@ function isGroupActive(pathname: string, group: { href: string; items: readonly 
   )
 }
 
-function BonlipNavButton({
-  className,
-  onNavigate,
-  stacked,
-}: {
-  className?: string
-  onNavigate?: () => void
-  stacked?: boolean
-}) {
-  return (
-    <Link
-      href="/bonlipdosaeng"
-      onClick={onNavigate}
-      className={cn(
-        "group inline-flex items-center justify-center gap-1.5 rounded-full bg-[#C6FF3A] font-bold text-[#07231C]",
-        "shadow-[0_8px_22px_rgba(198,255,58,0.35)] transition-[transform,box-shadow] duration-200",
-        "hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(198,255,58,0.45)]",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C6FF3A] focus-visible:ring-offset-2",
-        stacked
-          ? "min-h-11 w-full px-4 text-[0.9375rem]"
-          : "h-9 shrink-0 whitespace-nowrap px-3.5 text-[clamp(0.75rem,0.7rem+0.15vw,0.875rem)]",
-        className,
-      )}
-    >
-      <span aria-hidden className="text-[0.65em] opacity-80">
-        ✦
-      </span>
-      <span>본립도생</span>
-    </Link>
-  )
-}
-
 function AuthLinks({
   className,
   light,
@@ -349,7 +317,6 @@ export function Navigation() {
           </nav>
 
           <div className={cn("flex shrink-0 items-center gap-3", HEADER_H)}>
-            <BonlipNavButton />
             <AuthLinks light={light} className="items-center" />
           </div>
         </div>
@@ -523,7 +490,6 @@ export function Navigation() {
                   light ? "border-border/40" : "border-primary-foreground/10",
                 )}
               >
-                <BonlipNavButton stacked onNavigate={closeMobile} />
                 <AuthLinks light={light} onNavigate={closeMobile} className="justify-start gap-3" />
               </div>
             </motion.nav>

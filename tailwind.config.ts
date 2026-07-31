@@ -19,16 +19,6 @@ const config: Config = {
   				'system-ui',
   				'sans-serif'
   			],
-  			unbounded: [
-  				'var(--font-unbounded)',
-  				'Unbounded',
-  				'sans-serif'
-  			],
-  			'instrument-serif': [
-  				'var(--font-instrument-serif)',
-  				'Instrument Serif',
-  				'serif'
-  			]
   		},
   		colors: {
   			surface: 'hsl(var(--surface))',

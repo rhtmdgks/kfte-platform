@@ -1,4 +1,3 @@
-import { Instrument_Serif, Unbounded } from 'next/font/google'
 import localFont from 'next/font/local'
 
 export const paperlogy = localFont({
@@ -50,20 +49,5 @@ export const paperlogy = localFont({
     },
   ],
   variable: '--font-paperlogy',
-  display: 'swap',
-})
-
-export const unbounded = Unbounded({
-  subsets: ['latin'],
-  weight: ['400', '600', '700', '800'],
-  variable: '--font-unbounded',
-  display: 'swap',
-})
-
-export const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
   display: 'swap',
 })
