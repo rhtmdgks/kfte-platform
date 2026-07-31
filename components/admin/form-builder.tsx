@@ -82,6 +82,7 @@ export function FormBuilder({
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [formDescOpen, setFormDescOpen] = useState(Boolean(form.description))
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [confirmMsgOpen, setConfirmMsgOpen] = useState(false)
   const [sectionMetaOpen, setSectionMetaOpen] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(
       initialSchema.sections.map((s) => [s.id, Boolean(s.description)]),
@@ -551,29 +552,68 @@ export function FormBuilder({
                 </label>
               ))}
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">확인 메시지</Label>
-                <Input
-                  value={settings.confirmationMessage ?? ""}
-                  onChange={(e) =>
-                    setSettings((s) => ({ ...s, confirmationMessage: e.target.value }))
-                  }
-                  className={controlClass}
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">새 응답 알림 이메일</Label>
+              <Input
+                type="email"
+                value={settings.notifyEmail ?? ""}
+                onChange={(e) =>
+                  setSettings((s) => ({ ...s, notifyEmail: e.target.value }))
+                }
+                placeholder="admin@kfte.kr"
+                className={cn(controlClass, "max-w-md")}
+              />
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={() => setConfirmMsgOpen((v) => !v)}
+                className="flex w-full items-center justify-between gap-2 rounded-xl border border-slate-100 bg-slate-50/70 px-3 py-2.5 text-left text-sm text-slate-700 transition-colors hover:bg-slate-100/80"
+                aria-expanded={confirmMsgOpen}
+              >
+                <span>
+                  확인 메시지
+                  {!confirmMsgOpen && (settings.confirmationMessage ?? "").trim() ? (
+                    <span className="ml-2 text-xs text-muted-foreground">작성됨</span>
+                  ) : null}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 shrink-0 text-slate-400 transition-transform duration-200",
+                    confirmMsgOpen && "rotate-180",
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">새 응답 알림 이메일</Label>
-                <Input
-                  type="email"
-                  value={settings.notifyEmail ?? ""}
-                  onChange={(e) =>
-                    setSettings((s) => ({ ...s, notifyEmail: e.target.value }))
-                  }
-                  placeholder="admin@kfte.kr"
-                  className={controlClass}
-                />
-              </div>
+              </button>
+              {confirmMsgOpen ? (
+                <div className="space-y-3 rounded-xl border border-slate-100 bg-slate-50/40 p-4">
+                  <Label className="text-xs text-muted-foreground">
+                    제출 완료 화면 메시지 (마크다운 · URL 자동 링크)
+                  </Label>
+                  <Textarea
+                    value={settings.confirmationMessage ?? ""}
+                    onChange={(e) =>
+                      setSettings((s) => ({
+                        ...s,
+                        confirmationMessage: e.target.value,
+                      }))
+                    }
+                    placeholder={
+                      "예: 신청이 완료되었습니다.\n자세한 안내는 https://kfte.kr 또는 [여기](https://kfte.kr)"
+                    }
+                    rows={6}
+                    className="min-h-[140px] resize-y rounded-xl border-slate-200/80 bg-white text-sm shadow-none focus-visible:ring-[#002065]/25"
+                  />
+                  {(settings.confirmationMessage ?? "").trim() ? (
+                    <div className="rounded-xl border border-slate-100 bg-white p-3">
+                      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                        미리보기
+                      </p>
+                      <MarkdownText>{settings.confirmationMessage ?? ""}</MarkdownText>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
         ) : null}

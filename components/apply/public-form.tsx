@@ -167,7 +167,9 @@ export function PublicForm({
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
               {title}
             </h1>
-            <p className="text-lg leading-relaxed text-slate-600">{done.message}</p>
+            <MarkdownText className="text-lg leading-relaxed text-slate-600">
+              {done.message}
+            </MarkdownText>
           </div>
           {typeof done.score === "number" ? (
             <p className="text-base text-slate-500">점수 · {done.score}</p>
