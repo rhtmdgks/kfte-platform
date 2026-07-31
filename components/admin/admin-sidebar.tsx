@@ -10,6 +10,7 @@ import {
   ChevronDown,
   ClipboardList,
   ImageIcon,
+  KeyRound,
   LayoutDashboard,
   LogOut,
   Megaphone,
@@ -179,6 +180,12 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/admin/account/password">
+                    <KeyRound className="mr-2 h-4 w-4" />
+                    비밀번호 변경
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
                   로그아웃
