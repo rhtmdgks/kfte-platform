@@ -25,7 +25,7 @@ import {
   type EventsPageConfig,
 } from "@/lib/event-types"
 import { EventStatusBadge } from "@/components/events/event-status-badge"
-import { pageMainClassName } from "@/lib/page-layout"
+import { EventBannerCarousel } from "@/components/events/event-banner-carousel"
 import { fadeUpHero, listItem, springGentle, tweenSmooth } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
 
@@ -334,10 +334,18 @@ export function EventsPageContent({ config }: { config: EventsPageConfig }) {
     currentPage * itemsPerPage,
   )
 
+  const banners = config.banners ?? []
+
   return (
-    <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
-      <section className="border-b border-border bg-surface">
-        <div className="mx-auto max-w-[1280px] px-6 pb-14 pt-28 md:px-10 md:pb-16 md:pt-32 lg:px-16 xl:px-20">
+    <main className="min-h-screen bg-[#FBFCFF] pb-20 md:pb-28">
+      {/* 헤더와 동일 bg-surface로 이어 붙여 헤더 아래 이질적인 빈 띠 제거 */}
+      <section
+        className={cn(
+          "bg-surface pt-[calc(clamp(3.75rem,3.4rem+1vw,6rem)+3.5rem)] md:pt-[calc(clamp(3.75rem,3.4rem+1vw,6rem)+4.5rem)]",
+          banners.length === 0 && "border-b border-border",
+        )}
+      >
+        <div className="mx-auto max-w-[1280px] px-6 pb-10 md:px-10 md:pb-12 lg:px-16 xl:px-20">
           <motion.div
             variants={reduceMotion ? undefined : heroStagger}
             initial={reduceMotion ? false : "hidden"}
@@ -353,7 +361,7 @@ export function EventsPageContent({ config }: { config: EventsPageConfig }) {
             <motion.h1
               variants={fadeUpHero}
               transition={springGentle}
-              className="mt-8 text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-foreground"
+              className="mt-6 text-[clamp(2rem,4vw,3rem)] font-bold tracking-tight text-foreground"
             >
               {isOverviewMode ? config.pageHeading : selectedCategory}
             </motion.h1>
@@ -369,6 +377,12 @@ export function EventsPageContent({ config }: { config: EventsPageConfig }) {
           </motion.div>
         </div>
       </section>
+
+      {banners.length > 0 ? (
+        <div className="border-b border-border">
+          <EventBannerCarousel banners={banners} />
+        </div>
+      ) : null}
 
       <div className="mx-auto max-w-[1280px] px-6 pb-20 md:px-10 lg:px-16 xl:px-20">
         <MotionReveal className="mt-10 md:mt-12">
