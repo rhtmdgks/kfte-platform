@@ -346,9 +346,9 @@ export function EventDetailPageContent({
     window.open(post.registrationUrl, "_blank", "noopener,noreferrer")
   }
 
-  const mapQuery = encodeURIComponent(
-    `${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`,
-  )
+  const mapAddress = `${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`
+  const mapQuery = encodeURIComponent(mapAddress)
+  const isDaejeonConventionCenter = /대전컨벤션|DCC/i.test(mapAddress)
 
   return (
     <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
@@ -396,8 +396,10 @@ export function EventDetailPageContent({
                 <section className="mt-10">
                   <h3 className="mb-4 text-lg font-semibold text-foreground">위치</h3>
                   <NaverMap
-                    address={`${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`}
+                    address={mapAddress}
                     markerTitle={post.title}
+                    fallbackLat={isDaejeonConventionCenter ? 36.3752 : undefined}
+                    fallbackLng={isDaejeonConventionCenter ? 127.3818 : undefined}
                     className="aspect-[21/9] h-auto min-h-[240px] overflow-hidden rounded-[16px] md:min-h-[320px] md:rounded-[20px]"
                   />
                   <a
