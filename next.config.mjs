@@ -20,6 +20,10 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "motion"],
+    // 행사 상세 이미지 업로드(최대 15MB) + multipart 오버헤드
+    serverActions: {
+      bodySizeLimit: '20mb',
+    },
   },
   images: {
     remotePatterns: [

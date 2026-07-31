@@ -17,6 +17,10 @@ export type EventPost = {
   registrationUrl?: string
   registrationStart?: string
   registrationEnd?: string
+  /** 문의 전화 (없으면 사이트 기본값) */
+  contactPhone?: string
+  /** 문의 이메일 (없으면 사이트 기본값) */
+  contactEmail?: string
   thumbnailUrl?: string
   detailImageUrl?: string
   detailImageWidth?: number
@@ -24,6 +28,15 @@ export type EventPost = {
   pinned?: boolean
   featured?: boolean
   views: number
+}
+
+export type EventsPageBanner = {
+  id: string
+  title: string
+  description: string
+  imageUrl: string
+  linkUrl: string
+  metaText: string
 }
 
 export type EventsPageConfig = {
@@ -34,6 +47,7 @@ export type EventsPageConfig = {
   archivePath: string
   categories: readonly EventCategory[]
   posts: readonly EventPost[]
+  banners?: readonly EventsPageBanner[]
 }
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"] as const

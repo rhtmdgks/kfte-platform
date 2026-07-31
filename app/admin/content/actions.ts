@@ -9,6 +9,7 @@ import {
 } from "@/lib/content-post-metadata"
 import { uploadBlogThumbnail } from "@/lib/blog-thumbnail"
 import { uploadEventPoster } from "@/lib/event-poster"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { parseIsPinnedFromFormData } from "@/lib/content-post-pin"
 import {
   buildEventPostMetadata,
@@ -72,6 +73,8 @@ function parseEventMetadataFromFormData(
     (formData.get("metadata_registration_end") as string) || "",
   )
   const featured = formData.get("metadata_featured") === "1"
+  const contactPhone = ((formData.get("metadata_contact_phone") as string) || "").trim()
+  const contactEmail = ((formData.get("metadata_contact_email") as string) || "").trim()
   const removeDetailImage = formData.get("remove_detail_image") === "1"
 
   const widthRaw = ((formData.get("detail_image_w") as string) || "").trim()
@@ -99,6 +102,8 @@ function parseEventMetadataFromFormData(
       registrationStart,
       registrationEnd,
       featured,
+      contactPhone,
+      contactEmail,
       detailImageWidth: removeDetailImage
         ? null
         : Number.isFinite(parsedWidth)
@@ -167,16 +172,22 @@ async function resolveThumbnailUrl(
 }
 
 async function resolveDetailImageUrl(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createClient>>,
   formData: FormData,
   userId: string,
   currentDetailImageUrl?: string | null,
 ) {
   const removeDetail = formData.get("remove_detail_image") === "1"
-  const detailFile = formData.get("detail_image")
+  // 클라이언트에서 미리 업로드된 URL (대용량 multipart Server Action 파싱 오류 방지)
+  const preUploaded = ((formData.get("detail_image_url") as string) || "").trim()
+  if (preUploaded) {
+    return preUploaded
+  }
 
+  const detailFile = formData.get("detail_image")
   if (detailFile instanceof File && detailFile.size > 0) {
-    return uploadEventPoster(supabase, detailFile, userId)
+    // Storage RLS와 무관하게 인증된 관리자 업로드만 service role로 처리
+    return uploadEventPoster(createAdminClient(), detailFile, userId)
   }
 
   if (removeDetail) {

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useState } from "react"
+import { useActionState, useRef, useState } from "react"
 import { useFormStatus } from "react-dom"
 import { Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -44,14 +44,21 @@ function SubmitButton() {
 export function EventPostForm({ post, contentType, action }: EventPostFormProps) {
   const metadata = parseEventPostMetadata(post?.metadata ?? null)
   const [featured, setFeatured] = useState(metadata.featured ?? false)
+  const [detailImageUrl, setDetailImageUrl] = useState("")
+  const detailImageUrlRef = useRef("")
   const [, formAction] = useActionState(async (_: void | null, formData: FormData) => {
+    const uploaded = detailImageUrlRef.current.trim()
+    if (uploaded) {
+      formData.set("detail_image_url", uploaded)
+    }
     await action(formData)
     return null
   }, null)
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="space-y-6">
+    <form action={formAction} className="space-y-6">
       <input type="hidden" name="content_type" value={contentType} />
+      <input type="hidden" name="detail_image_url" value={detailImageUrl} />
 
       <div className="space-y-2">
         <Label htmlFor="title">행사명 *</Label>
@@ -107,13 +114,20 @@ export function EventPostForm({ post, contentType, action }: EventPostFormProps)
         />
       </div>
 
-      <BlogThumbnailField currentUrl={post?.thumbnail_url} required />
-
-      <EventPosterField
-        currentUrl={post?.detail_image_url}
-        currentWidth={metadata.detailImageWidth}
-        currentHeight={metadata.detailImageHeight}
-      />
+      <div className="space-y-4 rounded-lg border border-border bg-muted/10 p-5">
+        <h3 className="text-sm font-semibold text-[#002065]">이미지</h3>
+        <BlogThumbnailField currentUrl={post?.thumbnail_url} required />
+        <EventPosterField
+          currentUrl={post?.detail_image_url}
+          currentWidth={metadata.detailImageWidth}
+          currentHeight={metadata.detailImageHeight}
+          onUploadedUrlChange={(url) => {
+            const next = url ?? ""
+            detailImageUrlRef.current = next
+            setDetailImageUrl(next)
+          }}
+        />
+      </div>
 
       <PinToggleField defaultChecked={post?.is_pinned ?? false} />
 
@@ -208,11 +222,41 @@ export function EventPostForm({ post, contentType, action }: EventPostFormProps)
           <Input
             id="external_url"
             name="external_url"
-            type="url"
+            type="text"
+            inputMode="url"
             defaultValue={post?.external_url ?? ""}
-            placeholder="https://forms.example.com/..."
+            placeholder="https://forms.example.com/... 또는 mailto:email@example.com"
           />
+          <p className="text-xs text-muted-foreground">
+            참가 신청 버튼에 연결됩니다. 문의 연락처(T/E)와는 별개입니다.
+          </p>
         </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="metadata_contact_phone">문의 전화 (T)</Label>
+            <Input
+              id="metadata_contact_phone"
+              name="metadata_contact_phone"
+              type="tel"
+              defaultValue={metadata.contactPhone ?? ""}
+              placeholder="070-7954-8795"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="metadata_contact_email">문의 이메일 (E)</Label>
+            <Input
+              id="metadata_contact_email"
+              name="metadata_contact_email"
+              type="email"
+              defaultValue={metadata.contactEmail ?? ""}
+              placeholder="yun@seongyong.com"
+            />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">
+          비워 두면 사이트 기본 문의처가 표시됩니다.
+        </p>
 
         <div className="flex items-center gap-2">
           <Checkbox

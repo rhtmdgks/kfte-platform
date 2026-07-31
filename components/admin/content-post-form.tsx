@@ -64,7 +64,7 @@ export function ContentPostForm({
   }, null)
 
   return (
-    <form action={formAction} encType="multipart/form-data" className="space-y-6">
+    <form action={formAction} className="space-y-6">
       <input type="hidden" name="content_type" value={contentType} />
 
       <div className="space-y-2">

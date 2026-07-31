@@ -266,6 +266,8 @@ export function mapContentPostToEventPost(row: ContentPostRow): EventPost {
     registrationUrl: row.external_url ?? undefined,
     registrationStart: meta.registrationStart,
     registrationEnd: meta.registrationEnd,
+    contactPhone: meta.contactPhone,
+    contactEmail: meta.contactEmail,
     thumbnailUrl: row.thumbnail_url ?? undefined,
     detailImageUrl: row.detail_image_url ?? undefined,
     detailImageWidth: meta.detailImageWidth ?? undefined,

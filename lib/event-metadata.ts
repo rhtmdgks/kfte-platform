@@ -11,6 +11,10 @@ export type EventPostMetadata = {
   registrationEnd?: string
   subcategory?: string
   featured?: boolean
+  /** 행사 상세 사이드바 문의 전화 (미입력 시 사이트 기본값) */
+  contactPhone?: string
+  /** 행사 상세 사이드바 문의 이메일 (미입력 시 사이트 기본값) */
+  contactEmail?: string
   /** null clears stored dimensions (e.g. poster removed) */
   detailImageWidth?: number | null
   detailImageHeight?: number | null
@@ -37,6 +41,8 @@ export function parseEventPostMetadata(metadata: Json | null) {
       typeof record.registrationEnd === "string" ? record.registrationEnd : undefined,
     subcategory: typeof record.subcategory === "string" ? record.subcategory : undefined,
     featured: typeof record.featured === "boolean" ? record.featured : undefined,
+    contactPhone: typeof record.contactPhone === "string" ? record.contactPhone : undefined,
+    contactEmail: typeof record.contactEmail === "string" ? record.contactEmail : undefined,
     detailImageWidth:
       typeof record.detailImageWidth === "number" && Number.isFinite(record.detailImageWidth)
         ? record.detailImageWidth
@@ -69,6 +75,14 @@ export function buildEventPostMetadata(
     registrationEnd: input.registrationEnd ?? existing?.registrationEnd,
     subcategory: input.subcategory ?? existing?.subcategory,
     featured: input.featured ?? existing?.featured ?? false,
+    contactPhone:
+      input.contactPhone !== undefined
+        ? input.contactPhone || undefined
+        : existing?.contactPhone,
+    contactEmail:
+      input.contactEmail !== undefined
+        ? input.contactEmail || undefined
+        : existing?.contactEmail,
     detailImageWidth:
       input.detailImageWidth === null
         ? undefined
