@@ -8,6 +8,7 @@ import {
   Building2,
   Calendar,
   ChevronDown,
+  ClipboardList,
   ImageIcon,
   LayoutDashboard,
   LogOut,
@@ -51,6 +52,7 @@ const contentNavItems = [
   { href: "/admin/event-banners", label: "행사 배너", icon: ImageIcon },
   { href: "/admin/event-archives", label: "행사 아카이브", icon: BookOpen },
   { href: "/admin/blog", label: "블로그", icon: Megaphone },
+  { href: "/admin/forms", label: "신청 폼", icon: ClipboardList },
 ]
 
 const accountNavItems = [
