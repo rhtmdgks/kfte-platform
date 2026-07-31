@@ -151,6 +151,21 @@ export function slugifyFormTitle(title: string) {
   return base || `form-${Date.now().toString(36)}`
 }
 
+/** Next.js dynamic params may arrive still percent-encoded (esp. Korean). */
+export function normalizeFormSlug(slug: string) {
+  let current = slug.trim()
+  for (let i = 0; i < 3; i += 1) {
+    try {
+      const next = decodeURIComponent(current)
+      if (next === current) break
+      current = next
+    } catch {
+      break
+    }
+  }
+  return current.normalize("NFC")
+}
+
 export function flattenQuestions(schema: FormSchema): FormQuestion[] {
   return schema.sections.flatMap((section) => section.items)
 }

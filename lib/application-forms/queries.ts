@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server"
-import { parseFormSchema, parseFormSettings } from "@/lib/application-forms/parse"
+import {
+  normalizeFormSlug,
+  parseFormSchema,
+  parseFormSettings,
+} from "@/lib/application-forms/parse"
 import type { Tables } from "@/types/database"
 
 export type ApplicationFormRow = Tables<"application_forms">
@@ -28,10 +32,11 @@ export async function getFormById(id: string) {
 
 export async function getPublishedFormBySlug(slug: string) {
   const supabase = await createClient()
+  const normalized = normalizeFormSlug(slug)
   const { data, error } = await supabase
     .from("application_forms")
     .select("*")
-    .eq("slug", slug)
+    .eq("slug", normalized)
     .eq("status", "published")
     .maybeSingle()
   if (error) throw new Error(error.message)
@@ -40,10 +45,11 @@ export async function getPublishedFormBySlug(slug: string) {
 
 export async function getFormBySlug(slug: string) {
   const supabase = await createClient()
+  const normalized = normalizeFormSlug(slug)
   const { data, error } = await supabase
     .from("application_forms")
     .select("*")
-    .eq("slug", slug)
+    .eq("slug", normalized)
     .maybeSingle()
   if (error) throw new Error(error.message)
   return data
