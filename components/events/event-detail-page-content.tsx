@@ -347,7 +347,7 @@ export function EventDetailPageContent({
   }
 
   const mapAddress = `${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`
-  const mapQuery = encodeURIComponent(mapAddress)
+  const mapQuery = encodeURIComponent(post.location)
   const isDaejeonConventionCenter = /대전컨벤션|DCC/i.test(mapAddress)
 
   return (
