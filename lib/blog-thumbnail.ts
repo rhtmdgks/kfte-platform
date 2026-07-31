@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/types/database"
 
 const BUCKET = "blog-thumbnails"
-const MAX_BYTES = 5 * 1024 * 1024
+const MAX_BYTES = 15 * 1024 * 1024
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
 
 export async function uploadBlogThumbnail(
@@ -15,7 +15,7 @@ export async function uploadBlogThumbnail(
   }
 
   if (file.size > MAX_BYTES) {
-    throw new Error("썸네일은 5MB 이하만 업로드할 수 있습니다.")
+    throw new Error("썸네일은 15MB 이하만 업로드할 수 있습니다.")
   }
 
   if (!ALLOWED_TYPES.has(file.type)) {

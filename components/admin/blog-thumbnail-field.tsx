@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
 import { ImageIcon, X } from "lucide-react"
+import { toast } from "sonner"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -23,6 +24,13 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
+
+    if (file.size > 15 * 1024 * 1024) {
+      event.target.value = ""
+      setFileName(null)
+      toast.error("썸네일은 15MB 이하만 업로드할 수 있습니다.")
+      return
+    }
 
     setRemoved(false)
     setFileName(file.name)
@@ -78,7 +86,7 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
             <p className="text-center text-sm text-muted-foreground">
               목록에 표시될 대표 이미지를 첨부하세요
               <br />
-              JPEG, PNG, WebP, GIF · 최대 5MB
+              JPEG, PNG, WebP, GIF · 최대 15MB
             </p>
           </>
         )}

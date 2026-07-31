@@ -20,9 +20,11 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ["lucide-react", "motion"],
-    // 행사 상세 이미지 업로드(최대 15MB) + multipart 오버헤드
+    // 행사 폼 multipart(썸네일·본문) — proxy가 body를 버퍼링하므로 한도 맞춤
+    // https://nextjs.org/docs/app/api-reference/config/next-config-js/middlewareClientMaxBodySize
+    proxyClientMaxBodySize: "25mb",
     serverActions: {
-      bodySizeLimit: '20mb',
+      bodySizeLimit: "25mb",
     },
   },
   images: {
