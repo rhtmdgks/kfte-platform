@@ -1,8 +1,19 @@
 "use client"
 
 import { useActionState, useRef, useState } from "react"
+import Link from "next/link"
 import { useFormStatus } from "react-dom"
-import { CalendarDays, ImageIcon, Loader2, Megaphone, NotebookPen } from "lucide-react"
+import { toast } from "sonner"
+import {
+  CalendarDays,
+  ClipboardList,
+  ExternalLink,
+  ImageIcon,
+  Loader2,
+  Megaphone,
+  NotebookPen,
+} from "lucide-react"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -103,7 +114,13 @@ function Field({
 const controlClass =
   "h-11 rounded-xl border-slate-200/80 bg-white/70 shadow-none backdrop-blur-sm focus-visible:ring-[#002065]/25"
 
-function SubmitButton() {
+const statusLabel = {
+  draft: "초안",
+  published: "공개",
+  archived: "보관",
+} as const
+
+function SubmitButton({ isEdit }: { isEdit: boolean }) {
   const { pending } = useFormStatus()
   return (
     <Button
@@ -112,7 +129,7 @@ function SubmitButton() {
       className="h-11 rounded-full bg-[#002065] px-6 font-semibold hover:bg-[#002065]/90"
     >
       {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {pending ? "저장 중…" : "행사 저장"}
+      {pending ? "저장 중…" : isEdit ? "변경 사항 저장" : "행사 저장"}
     </Button>
   )
 }
@@ -124,7 +141,10 @@ export function EventPostForm({
   applicationForms = [],
 }: EventPostFormProps) {
   const metadata = parseEventPostMetadata(post?.metadata ?? null)
+  const isEdit = Boolean(post)
   const [featured, setFeatured] = useState(metadata.featured ?? false)
+  const [category, setCategory] = useState(metadata.category ?? eventCategoryOptions[0])
+  const [status, setStatus] = useState(post?.status ?? "draft")
   const [detailImageUrl, setDetailImageUrl] = useState("")
   const detailImageUrlRef = useRef("")
   const [, formAction] = useActionState(async (_: void | null, formData: FormData) => {
@@ -132,14 +152,71 @@ export function EventPostForm({
     if (uploaded) {
       formData.set("detail_image_url", uploaded)
     }
-    await action(formData)
+    try {
+      await action(formData)
+    } catch (error) {
+      // redirect() throws; only surface real failures
+      const digest =
+        error && typeof error === "object" && "digest" in error
+          ? String((error as { digest?: unknown }).digest)
+          : ""
+      if (digest.startsWith("NEXT_REDIRECT")) throw error
+      toast.error(error instanceof Error ? error.message : "저장에 실패했습니다.")
+    }
     return null
   }, null)
 
   return (
-    <form action={formAction} className="space-y-4 pb-20">
+    <form action={formAction} className="mx-auto max-w-4xl space-y-5 pb-24">
       <input type="hidden" name="content_type" value={contentType} />
       <input type="hidden" name="detail_image_url" value={detailImageUrl} />
+      {/* Radix Select options unmount when closed — use hidden inputs for submit */}
+      <input type="hidden" name="metadata_category" value={category} />
+      <input type="hidden" name="status" value={status} />
+
+      {post ? (
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+          <div className="h-2.5 bg-[#002065]" />
+          <div className="flex flex-wrap items-start justify-between gap-4 px-5 py-5 md:px-6">
+            <div className="min-w-0 space-y-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                Edit event
+              </p>
+              <h2 className="text-xl font-bold tracking-tight text-[#002065] md:text-2xl">
+                {post.title}
+              </h2>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant={post.status === "published" ? "default" : "secondary"}>
+                  {statusLabel[post.status]}
+                </Badge>
+                {post.is_pinned ? <Badge variant="outline">상단 고정</Badge> : null}
+                {metadata.featured ? <Badge variant="outline">Featured</Badge> : null}
+                <span className="font-mono text-xs text-muted-foreground">/{post.slug}</span>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {metadata.applicationFormId ? (
+                <Button asChild type="button" variant="outline" className="h-10 rounded-full">
+                  <Link href={`/admin/forms/${metadata.applicationFormId}/responses`}>
+                    <ClipboardList className="mr-2 h-4 w-4" />
+                    모집 현황
+                  </Link>
+                </Button>
+              ) : null}
+              <Button asChild type="button" variant="outline" className="h-10 rounded-full">
+                <Link
+                  href={`/activities/events/${post.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  공개 페이지
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       <FormSection icon={NotebookPen} title="기본 정보" description="목록과 상세에 공통으로 쓰입니다.">
         <Field label="행사명" htmlFor="title" required>
@@ -155,18 +232,14 @@ export function EventPostForm({
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="카테고리" htmlFor="metadata_category" required>
-            <Select
-              name="metadata_category"
-              defaultValue={metadata.category ?? eventCategoryOptions[0]}
-              required
-            >
+            <Select value={category} onValueChange={setCategory}>
               <SelectTrigger id="metadata_category" className={controlClass}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {eventCategoryOptions.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+                {eventCategoryOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -362,7 +435,7 @@ export function EventPostForm({
         </Field>
 
         <Field label="게시 상태" htmlFor="status">
-          <Select name="status" defaultValue={post?.status ?? "draft"}>
+          <Select value={status} onValueChange={(value) => setStatus(value as typeof status)}>
             <SelectTrigger id="status" className={cn(controlClass, "w-44")}>
               <SelectValue />
             </SelectTrigger>
@@ -377,9 +450,11 @@ export function EventPostForm({
 
       <div className="glass-pane sticky bottom-3 z-20 flex items-center justify-between gap-3 rounded-2xl border border-white/60 px-4 py-3 shadow-[0_12px_40px_-20px_rgba(0,32,101,0.35)] md:px-5">
         <p className="hidden text-sm text-muted-foreground sm:block">
-          입력한 내용으로 행사를 저장합니다.
+          {isEdit
+            ? "변경 사항을 저장해야 공개 페이지에 반영됩니다."
+            : "입력한 내용으로 행사를 저장합니다."}
         </p>
-        <SubmitButton />
+        <SubmitButton isEdit={isEdit} />
       </div>
     </form>
   )

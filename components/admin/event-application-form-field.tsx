@@ -54,18 +54,21 @@ export function EventApplicationFormField({
   const resolvedExternalUrl =
     mode === "internal" && selected ? publicFormPath(selected.slug) : externalUrl
 
+  const controlClass =
+    "h-11 rounded-xl border-slate-200/80 bg-white shadow-none focus-visible:ring-[#002065]/25"
+
   return (
-    <div className="space-y-4 rounded-md border bg-background p-4">
+    <div className="space-y-4 rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 md:p-5">
       <input type="hidden" name="metadata_application_form_id" value={mode === "internal" ? formId : ""} />
       <input type="hidden" name="external_url" value={resolvedExternalUrl} />
 
       <div className="space-y-2">
-        <Label>신청 방식</Label>
+        <Label className="text-sm font-medium text-slate-700">신청 방식</Label>
         <Select
           value={mode}
           onValueChange={(value) => setMode(value as "internal" | "external")}
         >
-          <SelectTrigger>
+          <SelectTrigger className={controlClass}>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -78,9 +81,9 @@ export function EventApplicationFormField({
       {mode === "internal" ? (
         <div className="space-y-3">
           <div className="space-y-2">
-            <Label>내부 폼 선택</Label>
+            <Label className="text-sm font-medium text-slate-700">내부 폼 선택</Label>
             <Select value={formId || undefined} onValueChange={setFormId}>
-              <SelectTrigger>
+              <SelectTrigger className={controlClass}>
                 <SelectValue placeholder="폼을 선택하세요" />
               </SelectTrigger>
               <SelectContent>
@@ -97,7 +100,7 @@ export function EventApplicationFormField({
             <Button
               type="button"
               variant="outline"
-              size="sm"
+              className="h-10 rounded-full border-[#002065]/20 text-[#002065] hover:bg-[#002065]/5"
               disabled={isPending}
               onClick={() =>
                 startTransition(async () => {
@@ -125,11 +128,18 @@ export function EventApplicationFormField({
               {isPending ? "생성 중…" : "새 내부 폼 만들기"}
             </Button>
             {selected ? (
-              <Button asChild type="button" variant="secondary" size="sm">
-                <Link href={`/admin/forms/${selected.id}/edit`} target="_blank">
-                  폼 편집 열기
-                </Link>
-              </Button>
+              <>
+                <Button asChild type="button" variant="secondary" className="h-10 rounded-full">
+                  <Link href={`/admin/forms/${selected.id}/edit`} target="_blank">
+                    폼 편집 열기
+                  </Link>
+                </Button>
+                <Button asChild type="button" variant="outline" className="h-10 rounded-full">
+                  <Link href={`/admin/forms/${selected.id}/responses`}>
+                    모집 현황
+                  </Link>
+                </Button>
+              </>
             ) : null}
           </div>
 
@@ -145,7 +155,9 @@ export function EventApplicationFormField({
         </div>
       ) : (
         <div className="space-y-2">
-          <Label htmlFor="external_url_visible">외부 신청 링크</Label>
+          <Label htmlFor="external_url_visible" className="text-sm font-medium text-slate-700">
+            외부 신청 링크
+          </Label>
           <Input
             id="external_url_visible"
             type="text"
@@ -153,6 +165,7 @@ export function EventApplicationFormField({
             value={externalUrl}
             onChange={(e) => setExternalUrl(e.target.value)}
             placeholder="https://forms.google.com/..."
+            className={controlClass}
           />
         </div>
       )}
