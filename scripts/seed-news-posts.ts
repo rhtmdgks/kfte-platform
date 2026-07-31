@@ -132,6 +132,10 @@ async function main() {
         created_at: post.eventDate,
         author_id: authorId,
         external_url: post.registrationUrl ?? null,
+        thumbnail_url:
+          "thumbnailUrl" in post && typeof post.thumbnailUrl === "string"
+            ? post.thumbnailUrl
+            : null,
         metadata: {
           category: post.category,
           views: post.views,
@@ -152,32 +156,8 @@ async function main() {
     else console.log("Seeded event:", post.slug)
   }
 
-  for (const post of eventArchivesSeedPosts) {
-    const { error } = await supabase.from("content_posts").upsert(
-      {
-        title: post.title,
-        slug: post.slug,
-        content_type: "event_archive",
-        summary: post.summary,
-        body: post.content,
-        status: "published",
-        published_at: post.eventDate,
-        created_at: post.eventDate,
-        author_id: authorId,
-        metadata: {
-          category: post.category,
-          views: post.views,
-          eventDate: post.eventDate,
-          eventEndDate: post.eventEndDate,
-          location: post.location,
-          locationDetail: post.locationDetail,
-          subcategory: post.subcategory,
-        },
-      },
-      { onConflict: "content_type,slug" },
-    )
-    if (error) console.error("event_archive", post.slug, error.message)
-    else console.log("Seeded event archive:", post.slug)
+  if (eventArchivesSeedPosts.length === 0) {
+    console.log("No event archive seeds to upsert")
   }
 }
 

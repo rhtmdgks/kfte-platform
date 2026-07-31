@@ -1,6 +1,6 @@
 import type { EventsPageConfig } from "@/lib/event-types"
 
-export const eventCategoryOptions = ["프로그램", "네트워킹", "데모데이", "포럼", "워크숍"] as const
+export const eventCategoryOptions = ["프로그램", "네트워킹", "데모데이", "포럼", "컨퍼런스"] as const
 
 export const eventsPageConfig: Omit<EventsPageConfig, "posts"> = {
   pageTitle: "행사",
@@ -12,82 +12,177 @@ export const eventsPageConfig: Omit<EventsPageConfig, "posts"> = {
   categories: ["전체", ...eventCategoryOptions],
 }
 
+const bizcoolConferenceBody = `본립도생(本立道生) — 『논어』 학이편 ‘본립이도생(本立而道生)’에서 유래. 근본이 서면 길이 생긴다는 뜻.
+
+2026학년도 비즈쿨 본립도생 프로젝트의 비즈쿨 컨퍼런스에 전국 청소년·청년 창업가와 정부·창업 유관기관 관계자를 모집합니다.
+
+■ 참가 주제
+바로 지금, 근본을 세우며 나아가는 Youth 창업가
+
+■ 주최
+중소벤처기업부, 창업진흥원
+
+■ 주관
+대전대신고등학교, 천안제일고등학교, 한국기술창업진흥재단(KFTE)
+
+■ 모집 규모
+전국 청소년·청년 창업가 및 정부·창업 유관기관 관계자 250명 내외
+
+■ 모집 방법
+- KFTE 홈페이지 신청 폼을 통한 온라인 참가 신청
+- 이벤터스(Event-Us) 플랫폼을 통한 온라인 참가 신청
+- 당일 현장 등록 (정원이 모두 찬 경우 진행하지 않음)
+
+■ 프로그램 하이라이트
+1) 인사이트 세션
+대전 향토기업 선양소주 조웅래 회장 등 선배 창업가의 사례와 인사이트를 듣습니다.
+(골프존 홀딩스 김영찬 회장 초청 예정 — TODO_CONFIRM)
+
+2) 본선 발표·청중 평가
+비즈쿨 창업톤 본선 8팀의 아이디어 발표를 보고, 현장 청중 평가에 참여합니다.
+심사 비율: 외부 심사위원 60% · 현장 청중 평가 40%
+시상: 고득점순 3팀 (별도의 수상금은 없음)
+
+3) 네트워킹 파티
+전국 청소년·청년 창업가, 정부·창업 유관기관과 자율 네트워킹(다과·케이터링)
+
+■ 컨퍼런스 일정 (안)
+12:30–13:00  등록
+13:00–13:30  개회 (이사장 인사말, 심사위원 소개, 프로그램 안내)
+13:30–14:00  연사 1 — 선양소주 조웅래 회장
+14:00–14:10  휴식
+14:10–14:40  연사 2 — TODO_CONFIRM
+14:40–14:50  휴식
+14:50–15:50  본선 발표 1–4팀 (팀당 10분 발표, 3분 질의응답)
+15:50–16:00  휴식
+16:00–17:00  본선 발표 5–8팀
+17:00–17:20  휴식 및 청중 투표 (KFTE 전자 투표)
+17:20–17:50  연사 3 · 심사 집계 — Tapple 강성모 대표
+17:50–18:10  시상 및 단체사진
+18:10–18:30  만족도 조사·해산
+18:30–20:30  네트워킹 파티
+20:30–21:00  귀가 (DCC 21:30 폐쇄)
+
+※ 프로그램 세부 내용·연사 구성은 변동될 수 있습니다.
+
+■ 같은 날 운영: 비즈쿨 창업톤
+대전·충남 중·고등학생 창업팀 15팀 내외가 오전에 강의·멘토링·예선을 진행하고, 본선 8팀이 컨퍼런스 무대에서 발표합니다.
+창업톤 모집 마감: 2026. 08. 10.(월) 17:00
+
+■ 참가 문의
+이메일: yun@seongyong.com
+전화: 070-7954-8795
+(온라인 신청 폼 URL — TODO_CONFIRM: Event-Us / KFTE Form)`
+
+const bizcoolStartupthonBody = `본립도생(本立道生) — 『논어』 학이편 ‘본립이도생(本立而道生)’에서 유래. 근본이 서면 길이 생긴다는 뜻.
+
+2026학년도 비즈쿨 본립도생 프로젝트의 비즈쿨 창업톤에 대전·충남 지역 중·고등학생 창업팀을 모집합니다.
+
+■ 참가 주제
+바로 지금, 근본을 세우며 나아가는 Youth 창업가
+
+■ 주최
+중소벤처기업부, 창업진흥원
+
+■ 주관
+대전대신고등학교, 천안제일고등학교, 한국기술창업진흥재단(KFTE)
+
+■ 모집 규모
+15개 팀 내외 (2~3인 1팀 구성, 타 학교 학생과 연합 가능)
+
+■ 참가 대상
+창업 활동 중이거나 창업에 관심 있는 대전·충남 지역 중·고등학생
+
+■ 모집 방법
+- 한국기술창업진흥재단(KFTE) 홈페이지 신청 폼을 통한 참가신청서 제출
+- 참가신청서, 제3자 개인정보 제공 수집·이용 동의서 제출
+- 15개 팀 초과 시 참가신청서 제출 순서(선착순)에 따라 선정
+
+■ 프로그램 내용
+1) 창업 강의
+청소년 창업가 사례를 통한 기업가정신 함양, PSST(Problem·Solution·Scale-up·Team) 사업계획서 고도화, 피치 덱 작성 방법 강의
+
+2) 멘토링
+아이디어 고도화 및 사업계획서 작성 현장 멘토링
+(고승한 PM, 윤성용 이사장, 손채호 이사)
+
+3) 예선 발표·본선 선정
+팀별 3분 발표, 1분 질의응답 → 15팀 중 본선 8팀 선정
+본선 팀은 오후 비즈쿨 컨퍼런스 무대에서 발표
+
+■ 창업톤 일정 (안)
+08:30–09:00  등록
+09:00–09:15  오리엔테이션
+09:15–09:55  특강 1
+09:55–10:05  휴식
+10:05–10:45  특강 2
+10:45–12:00  사업계획서 작성·아이디어 고도화 멘토링
+12:00–12:30  점심
+12:30–13:00  1–7팀 발표
+13:00–13:30  8–15팀 발표
+13:30–14:00  심사·결과 발표 (본선 8팀 선정)
+14:10–14:40  발표 준비 (본선 팀은 컨퍼런스홀로 이동)
+
+※ 프로그램 세부 내용은 변동될 수 있습니다.
+
+■ 참가 특전
+- 식사를 포함한 간식 제공(중식 포함)
+- 참가자 전원 수료증 지급(한국기술창업진흥재단 이사장 명의)
+- 창의적 체험활동상황 특기사항 제공(생활기록부 활용 가능)
+
+■ 유의사항
+- 신청 등록 이후 학생 변경 불가(부득이한 사유 시 개최 3일 전까지 변경 가능)
+- 신청에 등록되지 않은 팀원이 참가하거나 팀 외부 인원이 발표하는 경우 부정행위로 0점 처리
+
+■ 같은 날 운영: 비즈쿨 컨퍼런스
+본선 8팀은 오후 컨퍼런스홀에서 발표하며, 전국 청소년·청년 창업가·유관기관 관계자가 청중 평가에 참여합니다.
+상세: /activities/events/bizcool-conference
+
+■ 참가 문의
+이메일: yun@seongyong.com
+전화: 070-7954-8795
+(온라인 신청 폼 URL — TODO_CONFIRM: KFTE Form)`
+
+/** 시드·리셋 스크립트용 */
 export const eventsSeedPosts = [
   {
-    slug: "event-kfte-networking-2026-summer",
-    title: "KFTE 청년 창업가 네트워킹 데이 2026 Summer",
+    slug: "bizcool-startupthon",
+    title: "2026 비즈쿨 창업톤 참가 모집",
     summary:
-      "회원사·멘토·투자자·청년 창업가가 한자리에 모이는 여름 네트워킹. 1:1 미팅과 라이트닝 피치가 함께합니다.",
-    content:
-      "KFTE 청년 창업가 네트워킹 데이는 회원사와 멘토, 투자자, 예비 창업가가 자유롭게 교류하는 오프라인 행사입니다.\n\n■ 프로그램\n- 오프닝 & KFTE 소개\n- 라이트닝 피치 (5분 × 8팀)\n- 1:1 네트워킹 세션\n- 간단한 리셉션\n\n■ 대상\n청년 창업가, KFTE 회원사, 관심 있는 예비 창업가\n\n■ 준비물\n명함 또는 소개 자료(선택)",
-    category: "네트워킹",
-    subcategory: "오프라인",
-    eventDate: "2026-07-18T14:00:00+09:00",
-    eventEndDate: "2026-07-18T18:00:00+09:00",
-    location: "서울 강남구",
-    locationDetail: "KFTE 프로그램센터 2층",
+      "대전·충남 중·고등학생 창업팀 15팀 내외 모집. 강의·멘토링·예선 발표 후 본선 8팀이 비즈쿨 컨퍼런스 무대에 오릅니다.",
+    content: bizcoolStartupthonBody,
+    category: "프로그램",
+    subcategory: "비즈쿨",
+    eventDate: "2026-08-17T09:00:00+09:00",
+    eventEndDate: "2026-08-17T14:40:00+09:00",
+    location: "대전컨벤션센터(DCC) 제1전시장 중회의실(204·205호)",
+    locationDetail: "대전컨벤션센터(DCC) 제1전시장 중회의실(204·205호)",
     cost: "무료",
-    registrationStart: "2026-06-01T09:00:00+09:00",
-    registrationEnd: "2026-07-10T23:59:00+09:00",
-    registrationUrl: "#",
+    registrationStart: "2026-07-31T00:00:00+09:00",
+    registrationEnd: "2026-08-10T17:00:00+09:00",
+    registrationUrl: "mailto:yun@seongyong.com", // TODO_CONFIRM: KFTE Form URL
+    thumbnailUrl: "/events/bizcool-startupthon.jpg",
     featured: true,
-    views: 142,
+    views: 0,
   },
   {
-    slug: "event-youth-tech-demo-day",
-    title: "2026 청소년 Tech Demo Day",
+    slug: "bizcool-conference",
+    title: "2026 비즈쿨 컨퍼런스 참가 모집",
     summary:
-      "청소년 창업팀의 프로토타입과 아이디어를 무대에 올리는 데모데이. 심사위원 피드백과 시상이 진행됩니다.",
-    content:
-      "청소년 Tech Demo Day는 KFTE 청소년 분과 참여 팀이 한 학기 동안 준비한 결과물을 발표하는 행사입니다.\n\n■ 발표 형식\n팀당 7분 발표 + 3분 Q&A\n\n■ 심사 기준\n문제 정의, 기술 구현, 팀 실행력, 확장 가능성\n\n■ 시상\n대상 / 우수상 / 특별상",
-    category: "데모데이",
-    subcategory: "청소년",
-    eventDate: "2026-08-23T13:00:00+09:00",
-    eventEndDate: "2026-08-23T17:30:00+09:00",
-    location: "서울 역삼동",
-    locationDetail: "성곡빌딩 세미나실",
-    cost: "무료",
-    registrationStart: "2026-07-01T09:00:00+09:00",
-    registrationEnd: "2026-08-15T23:59:00+09:00",
-    registrationUrl: "#",
-    views: 98,
-  },
-  {
-    slug: "event-founder-forum-2026",
-    title: "Next Tech Founders Forum 2026",
-    summary:
-      "기술창업 생태계의 선배·동료·후배 창업가가 모여 트렌드와 협력 방향을 나누는 연례 포럼.",
-    content:
-      "Next Tech Founders Forum은 KFTE의 대표 연례 포럼으로, 기술창업 생태계의 현재와 미래를 함께 논의합니다.\n\n■ 주요 세션\n- 키노트: 2026 기술창업 트렌드\n- 패널: AI 시대 청년 창업\n- 파트너 세션: 생태계 협력 사례",
+      "전국 청소년·청년 창업가와 정부·창업 유관기관 관계자가 모이는 비즈쿨 컨퍼런스. 인사이트 세션, 본선 발표·청중 평가, 네트워킹 파티.",
+    content: bizcoolConferenceBody,
     category: "포럼",
-    subcategory: "연례",
-    eventDate: "2026-09-12T10:00:00+09:00",
-    eventEndDate: "2026-09-12T16:00:00+09:00",
-    location: "서울 강남구",
-    locationDetail: "외부 컨퍼런스 센터",
-    cost: "50,000원",
-    registrationStart: "2026-08-01T09:00:00+09:00",
-    registrationEnd: "2026-09-05T23:59:00+09:00",
-    registrationUrl: "#",
-    views: 76,
-  },
-  {
-    slug: "event-mentoring-bootcamp",
-    title: "KFTE 1-Day 멘토링 부트캠프",
-    summary:
-      "현직 창업가·멘토와 함께 IR deck, GTM, 팀 빌딩을 하루 만에 점검하는 집중 워크숍.",
-    content:
-      "1-Day 멘토링 부트캠프는 초기 창업팀을 위한 실전 워크숍입니다.\n\n■ 트랙\n- IR deck 클리닉\n- Go-to-market 설계\n- 팀 빌딩 & 역할 분담\n\n■ 규모\n선착순 30명 (팀 단위 신청 가능)",
-    category: "워크숍",
-    subcategory: "멘토링",
-    eventDate: "2026-06-14T11:00:00+09:00",
-    eventEndDate: "2026-06-14T17:00:00+09:00",
-    location: "서울 강남구",
-    locationDetail: "KFTE 프로그램센터",
-    cost: "30,000원",
-    registrationStart: "2026-05-15T09:00:00+09:00",
-    registrationEnd: "2026-06-10T23:59:00+09:00",
-    registrationUrl: "#",
-    views: 54,
+    subcategory: "비즈쿨",
+    eventDate: "2026-08-17T13:00:00+09:00",
+    eventEndDate: "2026-08-17T21:00:00+09:00",
+    location: "대전컨벤션센터(DCC) 제1전시장 컨퍼런스홀(301호)",
+    locationDetail: "대전컨벤션센터(DCC) 제1전시장 컨퍼런스홀(301호)",
+    cost: "무료",
+    registrationStart: "2026-07-31T00:00:00+09:00",
+    registrationEnd: "2026-08-16T21:00:00+09:00",
+    registrationUrl: "mailto:yun@seongyong.com", // TODO_CONFIRM: Event-Us / KFTE Form URL
+    thumbnailUrl: "/events/bizcool-conference.jpg",
+    featured: true,
+    views: 0,
   },
 ] as const
