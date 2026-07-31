@@ -75,8 +75,11 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
   }
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="flex h-14 shrink-0 flex-row items-center gap-0 border-b border-border p-0">
+    <Sidebar
+      collapsible="icon"
+      className="border-r border-white/45 bg-white/55 backdrop-blur-xl supports-[backdrop-filter]:bg-white/45"
+    >
+      <SidebarHeader className="flex h-14 shrink-0 flex-row items-center gap-0 border-b border-white/50 bg-white/40 p-0 backdrop-blur-md">
         {isCollapsed ? (
           <div className="flex h-full w-full items-center justify-center">
             <Link
@@ -164,12 +167,12 @@ export function AdminSidebar({ profile }: AdminSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border">
+      <SidebarFooter className="border-t border-white/50 bg-white/35 backdrop-blur-md">
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
+                <SidebarMenuButton className="data-[state=open]:bg-white/50">
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#002065] text-xs text-primary-foreground">
                     {profile?.display_name?.[0] ?? profile?.email?.[0] ?? "A"}
                   </div>

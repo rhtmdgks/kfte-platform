@@ -7,7 +7,7 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="flex h-14 items-center gap-3 border-b px-3 md:px-4">
+      <header className="flex h-14 items-center gap-3 px-3 md:px-4">
         <AdminSidebarTrigger />
         <div>
           <h1 className="text-xl font-semibold text-[#002065]">대시보드</h1>
@@ -15,7 +15,7 @@ export default async function AdminDashboardPage() {
         </div>
       </header>
 
-      <main className="flex-1 bg-[#F5F7FA]/60 px-3 py-4 md:px-4 md:py-5">
+      <main className="flex-1 px-3 py-4 md:px-4 md:py-5">
         <AdminDashboard data={data} />
       </main>
     </div>

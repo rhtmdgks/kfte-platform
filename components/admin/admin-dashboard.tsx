@@ -146,8 +146,8 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                   className={cn(
                     "block rounded-xl border px-4 py-4 transition-colors",
                     isHot
-                      ? "border-[#002065]/25 bg-[#002065]/[0.04]"
-                      : "border-border/70 bg-white hover:border-[#002065]/20",
+                      ? "border-[#002065]/25 bg-[#002065]/[0.06] backdrop-blur-md"
+                      : "glass-pane hover:border-[#002065]/25",
                   )}
                 >
                   <div className="flex items-baseline justify-between gap-2">

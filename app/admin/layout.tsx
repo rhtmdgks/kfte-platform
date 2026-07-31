@@ -41,7 +41,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <AdminSidebar profile={profile} />
-      <SidebarInset>
+      <SidebarInset className="bg-transparent">
         <AdminContentShell>{children}</AdminContentShell>
       </SidebarInset>
       <Toaster richColors />
