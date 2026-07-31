@@ -40,6 +40,91 @@ export type Database = {
           },
         ]
       }
+      application_form_responses: {
+        Row: {
+          answers: Json
+          edit_token: string | null
+          form_id: string
+          id: string
+          respondent_email: string | null
+          score: number | null
+          submitted_at: string
+        }
+        Insert: {
+          answers?: Json
+          edit_token?: string | null
+          form_id: string
+          id?: string
+          respondent_email?: string | null
+          score?: number | null
+          submitted_at?: string
+        }
+        Update: {
+          answers?: Json
+          edit_token?: string | null
+          form_id?: string
+          id?: string
+          respondent_email?: string | null
+          score?: number | null
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_form_responses_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "application_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      application_forms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          schema: Json
+          settings: Json
+          slug: string
+          status: Database["public"]["Enums"]["application_form_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          schema?: Json
+          settings?: Json
+          slug: string
+          status?: Database["public"]["Enums"]["application_form_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          schema?: Json
+          settings?: Json
+          slug?: string
+          status?: Database["public"]["Enums"]["application_form_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_forms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_posts: {
         Row: {
           author_id: string | null
@@ -236,6 +321,7 @@ export type Database = {
       resolve_short_link: { Args: { p_code: string }; Returns: string }
     }
     Enums: {
+      application_form_status: "draft" | "published" | "closed"
       application_status: "pending" | "reviewing" | "approved" | "rejected"
       content_type:
         | "notice"
@@ -373,6 +459,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      application_form_status: ["draft", "published", "closed"],
       application_status: ["pending", "reviewing", "approved", "rejected"],
       content_type: [
         "notice",
