@@ -80,15 +80,15 @@ function SectionHeading({
   return (
     <div className="mb-4 flex items-end justify-between gap-3">
       <div>
-        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
           {eyebrow}
         </p>
-        <h2 className="mt-1 text-lg font-bold tracking-tight text-[#002065]">{title}</h2>
+        <h2 className="mt-1 text-xl font-bold tracking-tight text-[#002065]">{title}</h2>
       </div>
       {href && hrefLabel ? (
         <Link
           href={href}
-          className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-[#002065]"
+          className="inline-flex items-center gap-1 text-base font-medium text-muted-foreground transition-colors hover:text-[#002065]"
         >
           {hrefLabel}
           <ArrowUpRight className="h-3.5 w-3.5" />
@@ -112,14 +112,14 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             className="flex items-center justify-between gap-4 rounded-xl border border-[#002065]/15 bg-[#002065] px-5 py-4 text-primary-foreground transition-opacity hover:opacity-95"
           >
             <div>
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-white/55">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/55">
                 확인 필요
               </p>
-              <p className="mt-1 text-base font-semibold">
+              <p className="mt-1 text-lg font-semibold">
                 가입 신청 대기 {pending}건 — 검토가 필요합니다
               </p>
             </div>
-            <span className="inline-flex items-center gap-1 text-sm font-medium text-white/80">
+            <span className="inline-flex items-center gap-1 text-base font-medium text-white/80">
               바로가기
               <ArrowUpRight className="h-4 w-4" />
             </span>
@@ -151,14 +151,14 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                   )}
                 >
                   <div className="flex items-baseline justify-between gap-2">
-                    <span className="text-[0.65rem] font-semibold tracking-[0.16em] text-muted-foreground tabular-nums">
+                    <span className="text-xs font-semibold tracking-[0.14em] text-muted-foreground tabular-nums">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="text-[0.65rem] text-muted-foreground">{step.hint}</span>
+                    <span className="text-xs text-muted-foreground">{step.hint}</span>
                   </div>
-                  <p className="mt-3 text-sm font-medium text-muted-foreground">{step.label}</p>
+                  <p className="mt-3 text-base font-medium text-muted-foreground">{step.label}</p>
                   <motion.p
-                    className="mt-1 text-3xl font-bold tabular-nums text-[#002065]"
+                    className="mt-1 text-4xl font-bold tabular-nums text-[#002065]"
                     initial={reduceMotion ? false : { opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ ...springGentle, delay: 0.05 * index }}
@@ -170,7 +170,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             )
           })}
         </MotionStagger>
-        <p className="mt-2 text-xs text-muted-foreground">
+        <p className="mt-2 text-sm text-muted-foreground">
           총 {data.membershipTotal}건 · 계정 admin {data.accounts.admin} / user {data.accounts.user}{" "}
           / partner {data.accounts.partner}
         </p>
@@ -194,8 +194,8 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             ].map((item, index) => (
               <MotionStaggerItem key={item.label} index={index}>
                 <div className="rounded-xl border border-border/70 bg-white px-3 py-3">
-                  <p className="text-xs text-muted-foreground">{item.label}</p>
-                  <p className="mt-1 text-2xl font-bold tabular-nums text-[#002065]">
+                  <p className="text-sm text-muted-foreground">{item.label}</p>
+                  <p className="mt-1 text-3xl font-bold tabular-nums text-[#002065]">
                     {item.value}
                   </p>
                 </div>
@@ -205,7 +205,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
 
           <div className="overflow-hidden rounded-xl border border-border/70 bg-white">
             {data.events.recent.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+              <p className="px-4 py-8 text-center text-base text-muted-foreground">
                 공개된 행사가 없습니다.
               </p>
             ) : (
@@ -217,16 +217,16 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                       className="flex items-start justify-between gap-3 px-4 py-3 transition-colors hover:bg-muted/40"
                     >
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">
+                        <p className="truncate text-base font-semibold text-foreground">
                           {event.title}
                         </p>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           {formatDate(event.eventDate)} · 조회 {event.views}
                         </p>
                       </div>
                       <span
                         className={cn(
-                          "shrink-0 rounded-full px-2 py-0.5 text-[0.65rem] font-semibold",
+                          "shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold",
                           eventStatusTone[event.status],
                         )}
                       >
@@ -239,7 +239,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
             )}
           </div>
           {data.events.archive > 0 ? (
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-sm text-muted-foreground">
               아카이브 {data.events.archive}건
             </p>
           ) : null}
@@ -255,7 +255,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
           />
           <div className="overflow-hidden rounded-xl border border-border/70 bg-white">
             {data.recentApplications.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-muted-foreground">
+              <p className="px-4 py-8 text-center text-base text-muted-foreground">
                 신청 내역이 없습니다.
               </p>
             ) : (
@@ -266,10 +266,10 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                     className="flex items-start justify-between gap-3 px-4 py-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold text-foreground">
+                      <p className="truncate text-base font-semibold text-foreground">
                         {app.applicantName}
                       </p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                      <p className="mt-0.5 truncate text-sm text-muted-foreground">
                         {app.companyName} · {formatDate(app.submittedAt)}
                       </p>
                     </div>
@@ -327,11 +327,11 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
                   <item.icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0">
-                  <span className="block text-sm font-semibold text-foreground">{item.label}</span>
-                  <span className="mt-0.5 block text-lg font-bold tabular-nums text-[#002065]">
+                  <span className="block text-base font-semibold text-foreground">{item.label}</span>
+                  <span className="mt-0.5 block text-xl font-bold tabular-nums text-[#002065]">
                     {item.primary}
                   </span>
-                  <span className="text-xs text-muted-foreground">{item.secondary}</span>
+                  <span className="text-sm text-muted-foreground">{item.secondary}</span>
                 </span>
               </Link>
             </MotionStaggerItem>
@@ -365,7 +365,7 @@ export function AdminDashboard({ data }: { data: AdminDashboardData }) {
       </section>
 
       <MotionReveal delay={0.06}>
-        <div className="flex flex-wrap gap-3 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-sm text-muted-foreground">
+        <div className="flex flex-wrap gap-3 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-3 text-base text-muted-foreground">
           <Users className="mt-0.5 h-4 w-4 shrink-0 text-[#002065]/70" />
           <p>
             행사 신청자·뉴스레터 구독자 DB는 아직 없습니다. 현재 참여자 현황은{" "}

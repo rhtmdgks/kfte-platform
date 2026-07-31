@@ -41,13 +41,15 @@ export function ContentViewsChart({
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
           <div>
-            <CardTitle className="text-base text-[#002065]">{title}</CardTitle>
-            {description ? <CardDescription>{description}</CardDescription> : null}
+            <CardTitle className="text-lg text-[#002065]">{title}</CardTitle>
+            {description ? (
+              <CardDescription className="text-sm">{description}</CardDescription>
+            ) : null}
           </div>
           <div className="text-right">
-            <p className="text-xs text-muted-foreground">최근 30일 합계</p>
+            <p className="text-sm text-muted-foreground">최근 30일 합계</p>
             <motion.p
-              className="text-2xl font-bold tabular-nums text-[#002065]"
+              className="text-3xl font-bold tabular-nums text-[#002065]"
               initial={reduceMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={springGentle}
