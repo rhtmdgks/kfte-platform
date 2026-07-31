@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { MoreHorizontal, Pencil, Pin, Plus, Trash2 } from "lucide-react"
+import { ClipboardList, MoreHorizontal, Pencil, Pin, Plus, Trash2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -52,6 +52,8 @@ type ContentPostTableProps = {
   adminPath: string
   contentType: ContentType
   onDelete: (id: string, contentType: ContentType) => Promise<void>
+  createHref?: string
+  hideCreate?: boolean
 }
 
 export function ContentPostTable({
@@ -59,6 +61,8 @@ export function ContentPostTable({
   adminPath,
   contentType,
   onDelete,
+  createHref,
+  hideCreate = false,
 }: ContentPostTableProps) {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -104,16 +108,18 @@ export function ContentPostTable({
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
-        <Button asChild className="bg-[#002065] hover:bg-[#002065]/90">
-          <Link href={`${adminPath}/new`}>
-            <Plus className="mr-2 h-4 w-4" />
-            {contentType === "event" ? "새 행사 등록" : "새 글 작성"}
-          </Link>
-        </Button>
-      </div>
+      {!hideCreate ? (
+        <div className="mb-4 flex justify-end">
+          <Button asChild className="bg-[#002065] hover:bg-[#002065]/90">
+            <Link href={createHref ?? `${adminPath}/new`}>
+              <Plus className="mr-2 h-4 w-4" />
+              {contentType === "event" ? "새 행사 등록" : "새 글 작성"}
+            </Link>
+          </Button>
+        </div>
+      ) : null}
 
-      <div className="rounded-md border">
+      <div className="glass-pane overflow-hidden rounded-xl border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -138,8 +144,11 @@ export function ContentPostTable({
             ) : (
               sortedPosts.map((post) => {
                 const views = parseContentPostMetadata(post.metadata).views ?? 0
+                const eventMeta =
+                  contentType === "event" ? parseEventPostMetadata(post.metadata) : null
                 const registrationLabel =
                   contentType === "event" ? getEventRegistrationStatusLabel(post) : null
+                const applicationFormId = eventMeta?.applicationFormId
 
                 return (
                 <TableRow key={post.id}>
@@ -200,6 +209,21 @@ export function ContentPostTable({
                             수정
                           </Link>
                         </DropdownMenuItem>
+                        {contentType === "event" ? (
+                          applicationFormId ? (
+                            <DropdownMenuItem asChild>
+                              <Link href={`/admin/forms/${applicationFormId}/responses`}>
+                                <ClipboardList className="mr-2 h-4 w-4" />
+                                폼 모집 현황
+                              </Link>
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem disabled>
+                              <ClipboardList className="mr-2 h-4 w-4" />
+                              폼 미연결
+                            </DropdownMenuItem>
+                          )
+                        ) : null}
                         <DropdownMenuItem
                           onClick={() => setDeleteTargetId(post.id)}
                           className="text-red-600"
