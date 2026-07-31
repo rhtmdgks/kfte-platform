@@ -38,7 +38,8 @@ export async function submitFormResponse(
   const email = settings.collectEmail ? payload.email?.trim() || null : null
 
   if (payload.editToken && settings.allowResponseEditing) {
-    const { data, error } = await supabase
+    // ponytail: no .select() — anon RLS has no SELECT on responses
+    const { error } = await supabase
       .from("application_form_responses")
       .update({
         answers,
@@ -48,45 +49,38 @@ export async function submitFormResponse(
       })
       .eq("form_id", formId)
       .eq("edit_token", payload.editToken)
-      .select("id, edit_token, score")
-      .maybeSingle()
 
-    if (error || !data) {
+    if (error) {
       return { ok: false as const, error: "응답을 수정할 수 없습니다." }
     }
 
     return {
       ok: true as const,
-      responseId: data.id,
-      editToken: data.edit_token ?? undefined,
-      score: data.score ?? undefined,
+      editToken: payload.editToken,
+      score: validation.score ?? undefined,
       confirmationMessage: settings.confirmationMessage,
     }
   }
 
   const editToken = settings.allowResponseEditing ? crypto.randomUUID() : null
 
-  const { data, error } = await supabase
-    .from("application_form_responses")
-    .insert({
-      form_id: formId,
-      answers,
-      respondent_email: email,
-      edit_token: editToken,
-      score: validation.score ?? null,
-    })
-    .select("id, edit_token, score")
-    .single()
+  // ponytail: insert without RETURNING — public SELECT on responses would leak data
+  const { error } = await supabase.from("application_form_responses").insert({
+    form_id: formId,
+    answers,
+    respondent_email: email,
+    edit_token: editToken,
+    score: validation.score ?? null,
+  })
 
-  if (error || !data) {
-    return { ok: false as const, error: error?.message || "제출에 실패했습니다." }
+  if (error) {
+    return { ok: false as const, error: error.message || "제출에 실패했습니다." }
   }
 
   return {
     ok: true as const,
-    responseId: data.id,
-    editToken: data.edit_token ?? undefined,
-    score: data.score ?? undefined,
+    editToken: editToken ?? undefined,
+    score: validation.score ?? undefined,
     confirmationMessage: settings.confirmationMessage,
   }
 }
