@@ -16,6 +16,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { BlogThumbnailField } from "@/components/admin/blog-thumbnail-field"
+import {
+  EventApplicationFormField,
+  type FormOption,
+} from "@/components/admin/event-application-form-field"
 import { EventPosterField } from "@/components/admin/event-poster-field"
 import { PinToggleField } from "@/components/admin/pin-toggle-field"
 import { eventCategoryOptions } from "@/lib/events-content"
@@ -29,6 +33,7 @@ type EventPostFormProps = {
   post?: ContentPost
   contentType: Extract<ContentType, "event">
   action: (formData: FormData) => Promise<void>
+  applicationForms?: FormOption[]
 }
 
 function SubmitButton() {
@@ -41,7 +46,12 @@ function SubmitButton() {
   )
 }
 
-export function EventPostForm({ post, contentType, action }: EventPostFormProps) {
+export function EventPostForm({
+  post,
+  contentType,
+  action,
+  applicationForms = [],
+}: EventPostFormProps) {
   const metadata = parseEventPostMetadata(post?.metadata ?? null)
   const [featured, setFeatured] = useState(metadata.featured ?? false)
   const [detailImageUrl, setDetailImageUrl] = useState("")
@@ -218,18 +228,13 @@ export function EventPostForm({ post, contentType, action }: EventPostFormProps)
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="external_url">신청 링크</Label>
-          <Input
-            id="external_url"
-            name="external_url"
-            type="text"
-            inputMode="url"
-            defaultValue={post?.external_url ?? ""}
-            placeholder="https://forms.example.com/... 또는 mailto:email@example.com"
+          <Label>신청 폼 / 링크</Label>
+          <EventApplicationFormField
+            forms={applicationForms}
+            initialFormId={metadata.applicationFormId}
+            initialExternalUrl={post?.external_url ?? ""}
+            eventTitle={post?.title}
           />
-          <p className="text-xs text-muted-foreground">
-            참가 신청 버튼에 연결됩니다. 문의 연락처(T/E)와는 별개입니다.
-          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

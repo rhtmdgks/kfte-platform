@@ -343,7 +343,10 @@ export function EventDetailPageContent({
       window.alert("신청 링크는 추후 연결 예정입니다.")
       return
     }
-    window.open(post.registrationUrl, "_blank", "noopener,noreferrer")
+    const url = post.registrationUrl.startsWith("/")
+      ? `${window.location.origin}${post.registrationUrl}`
+      : post.registrationUrl
+    window.open(url, "_blank", "noopener,noreferrer")
   }
 
   const mapAddress = `${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`

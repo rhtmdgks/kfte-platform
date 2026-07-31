@@ -75,6 +75,9 @@ function parseEventMetadataFromFormData(
   const featured = formData.get("metadata_featured") === "1"
   const contactPhone = ((formData.get("metadata_contact_phone") as string) || "").trim()
   const contactEmail = ((formData.get("metadata_contact_email") as string) || "").trim()
+  const applicationFormId = (
+    (formData.get("metadata_application_form_id") as string) || ""
+  ).trim()
   const removeDetailImage = formData.get("remove_detail_image") === "1"
 
   const widthRaw = ((formData.get("detail_image_w") as string) || "").trim()
@@ -104,6 +107,7 @@ function parseEventMetadataFromFormData(
       featured,
       contactPhone,
       contactEmail,
+      applicationFormId,
       detailImageWidth: removeDetailImage
         ? null
         : Number.isFinite(parsedWidth)

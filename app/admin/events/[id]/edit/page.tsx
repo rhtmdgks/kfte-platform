@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { AdminSidebarTrigger } from "@/components/admin/admin-sidebar-trigger"
 import { EventPostForm } from "@/components/admin/event-post-form"
+import { listForms } from "@/lib/application-forms/queries"
 import { createClient } from "@/lib/supabase/server"
 import { updatePost } from "@/app/admin/content/actions"
 
@@ -11,12 +12,15 @@ type PageProps = { params: Promise<{ id: string }> }
 export default async function EditEventPage({ params }: PageProps) {
   const { id } = await params
   const supabase = await createClient()
-  const { data: post } = await supabase
-    .from("content_posts")
-    .select("*")
-    .eq("id", id)
-    .eq("content_type", "event")
-    .single()
+  const [{ data: post }, forms] = await Promise.all([
+    supabase
+      .from("content_posts")
+      .select("*")
+      .eq("id", id)
+      .eq("content_type", "event")
+      .single(),
+    listForms().catch(() => []),
+  ])
 
   if (!post) notFound()
 
@@ -30,7 +34,17 @@ export default async function EditEventPage({ params }: PageProps) {
         <h1 className="text-lg font-semibold text-[#002065]">행사 수정</h1>
       </header>
       <main className="flex-1 p-6">
-        <EventPostForm post={post} contentType="event" action={updatePost.bind(null, id)} />
+        <EventPostForm
+          post={post}
+          contentType="event"
+          action={updatePost.bind(null, id)}
+          applicationForms={forms.map((form) => ({
+            id: form.id,
+            title: form.title,
+            slug: form.slug,
+            status: form.status,
+          }))}
+        />
       </main>
     </div>
   )

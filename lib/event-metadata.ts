@@ -18,6 +18,8 @@ export type EventPostMetadata = {
   /** null clears stored dimensions (e.g. poster removed) */
   detailImageWidth?: number | null
   detailImageHeight?: number | null
+  /** 내부 신청 폼 id (`application_forms.id`) */
+  applicationFormId?: string
 }
 
 export function parseEventPostMetadata(metadata: Json | null) {
@@ -51,6 +53,8 @@ export function parseEventPostMetadata(metadata: Json | null) {
       typeof record.detailImageHeight === "number" && Number.isFinite(record.detailImageHeight)
         ? record.detailImageHeight
         : undefined,
+    applicationFormId:
+      typeof record.applicationFormId === "string" ? record.applicationFormId : undefined,
   }
 }
 
@@ -91,6 +95,10 @@ export function buildEventPostMetadata(
       input.detailImageHeight === null
         ? undefined
         : (input.detailImageHeight ?? existing?.detailImageHeight),
+    applicationFormId:
+      input.applicationFormId !== undefined
+        ? input.applicationFormId || undefined
+        : existing?.applicationFormId,
   }
 }
 
