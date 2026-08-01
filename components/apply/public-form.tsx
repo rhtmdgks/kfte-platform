@@ -19,11 +19,14 @@ import {
 import { createClient } from "@/lib/supabase/client"
 import { springGentle } from "@/lib/animation-presets"
 import { cn } from "@/lib/utils"
+import {
+  findBranchTarget,
+  resolveNextSection,
+} from "@/lib/application-forms/section-path"
 import type {
   FormQuestion,
   FormSchema,
   FormSettings,
-  SectionNavTarget,
 } from "@/lib/application-forms/types"
 import type { AnswerMap } from "@/lib/application-forms/validate-answers"
 
@@ -35,19 +38,6 @@ type PublicFormProps = {
   settings: FormSettings
   initialEditToken?: string
   eventHref?: string
-}
-
-function resolveNext(
-  target: SectionNavTarget | undefined,
-  sections: FormSchema["sections"],
-  currentIndex: number,
-): number | "submit" {
-  if (!target || target === "next") {
-    return currentIndex + 1 < sections.length ? currentIndex + 1 : "submit"
-  }
-  if (target === "submit") return "submit"
-  const idx = sections.findIndex((s) => s.id === target)
-  return idx >= 0 ? idx : "submit"
 }
 
 export function PublicForm({
@@ -87,17 +77,6 @@ export function PublicForm({
     })
   }
 
-  const findBranchTarget = (): SectionNavTarget | undefined => {
-    for (const question of section.items) {
-      if (question.type !== "multiple_choice" && question.type !== "dropdown") continue
-      const value = answers[question.id]
-      if (typeof value !== "string" || !question.goToSectionByOption) continue
-      const target = question.goToSectionByOption[value]
-      if (target) return target
-    }
-    return section.nextSectionId
-  }
-
   const jumpToFirstError = (fieldErrors: Record<string, string>) => {
     const questionIds = new Set(Object.keys(fieldErrors).filter((k) => k !== "__form" && k !== "__email"))
     if (questionIds.size === 0) return
@@ -108,7 +87,11 @@ export function PublicForm({
   }
 
   const handleNextOrSubmit = async () => {
-    const next = resolveNext(findBranchTarget(), schema.sections, sectionIndex)
+    const next = resolveNextSection(
+      findBranchTarget(section, answers),
+      schema.sections,
+      sectionIndex,
+    )
     if (next !== "submit") {
       setSectionIndex(next)
       window.scrollTo({ top: 0, behavior: "smooth" })
@@ -199,7 +182,11 @@ export function PublicForm({
   }
 
   const isLastStep =
-    resolveNext(findBranchTarget(), schema.sections, sectionIndex) === "submit"
+    resolveNextSection(
+      findBranchTarget(section, answers),
+      schema.sections,
+      sectionIndex,
+    ) === "submit"
 
   return (
     <div className="relative mx-auto max-w-4xl px-5 pb-16 pt-8 md:px-8 md:pb-20 md:pt-12">

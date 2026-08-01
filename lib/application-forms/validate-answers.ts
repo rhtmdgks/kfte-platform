@@ -1,4 +1,4 @@
-import { flattenQuestions } from "@/lib/application-forms/parse"
+import { questionsOnPath } from "@/lib/application-forms/section-path"
 import type { FormQuestion, FormSchema, FormSettings } from "@/lib/application-forms/types"
 
 export type AnswerMap = Record<string, unknown>
@@ -93,14 +93,17 @@ export function validateAnswers(
     }
   }
 
-  for (const question of flattenQuestions(schema)) {
+  // 분기로 건너뛴 섹션의 필수는 검사하지 않음
+  const onPath = questionsOnPath(schema, answers)
+
+  for (const question of onPath) {
     const message = validateOne(question, answers[question.id])
     if (message) errors[question.id] = message
   }
 
   let score: number | undefined
   if (settings.isQuiz) {
-    score = flattenQuestions(schema).reduce(
+    score = onPath.reduce(
       (sum, question) => sum + scoreQuestion(question, answers[question.id]),
       0,
     )
@@ -144,6 +147,67 @@ export function runValidateAnswersSelfCheck() {
 
   const pass = validateAnswers(schema, { isQuiz: true }, { q1: "홍길동", q2: "a" })
   if (!pass.ok || pass.score !== 2) throw new Error("quiz score failed")
+
+  const branched: FormSchema = {
+    sections: [
+      {
+        id: "s1",
+        title: "1",
+        items: [{ id: "q1", type: "short_answer", title: "이름", required: true }],
+      },
+      {
+        id: "s2",
+        title: "2",
+        items: [
+          {
+            id: "q2",
+            type: "multiple_choice",
+            title: "경로",
+            required: true,
+            options: [
+              { id: "to3", label: "3으로" },
+              { id: "to4", label: "4로" },
+            ],
+            goToSectionByOption: { to3: "s3", to4: "s4" },
+          },
+        ],
+      },
+      {
+        id: "s3",
+        title: "3",
+        items: [{ id: "q3", type: "short_answer", title: "3번만", required: true }],
+        nextSectionId: "s5",
+      },
+      {
+        id: "s4",
+        title: "4",
+        items: [{ id: "q4", type: "short_answer", title: "4번만", required: true }],
+        nextSectionId: "s5",
+      },
+      {
+        id: "s5",
+        title: "5",
+        items: [{ id: "q5", type: "short_answer", title: "마지막", required: true }],
+      },
+    ],
+  }
+
+  const path245 = validateAnswers(
+    branched,
+    {},
+    { q1: "홍길동", q2: "to4", q4: "ok", q5: "끝" },
+  )
+  if (!path245.ok) throw new Error("skipped section should not be required")
+  if (path245.errors.q3) throw new Error("section 3 must be skipped")
+
+  const path245Missing = validateAnswers(
+    branched,
+    {},
+    { q1: "홍길동", q2: "to4", q5: "끝" },
+  )
+  if (path245Missing.ok || !path245Missing.errors.q4) {
+    throw new Error("visited section 4 should still be required")
+  }
 
   return true
 }
