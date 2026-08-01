@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   ChevronDown,
+  ChevronUp,
   Circle,
   ClipboardList,
   Copy,
@@ -65,6 +66,24 @@ const controlClass =
 const cardClass =
   "rounded-2xl border border-slate-200/80 bg-white shadow-sm"
 
+const SECTION_MIME = "application/x-kfte-section"
+const QUESTION_MIME = "application/x-kfte-question"
+
+function reorder<T>(list: T[], from: number, to: number): T[] {
+  if (from === to || from < 0 || to < 0 || from >= list.length || to >= list.length) {
+    return list
+  }
+  const next = [...list]
+  const [item] = next.splice(from, 1)
+  next.splice(to, 0, item)
+  return next
+}
+
+function hasDragType(types: DOMStringList | readonly string[], mime: string) {
+  const wanted = mime.toLowerCase()
+  return Array.from(types as ArrayLike<string>).some((t) => t.toLowerCase() === wanted)
+}
+
 export function FormBuilder({
   form,
   initialSchema,
@@ -88,6 +107,16 @@ export function FormBuilder({
       initialSchema.sections.map((s) => [s.id, Boolean(s.description)]),
     ),
   )
+  const [draggingSectionId, setDraggingSectionId] = useState<string | null>(null)
+  const [overSectionId, setOverSectionId] = useState<string | null>(null)
+  const [draggingQuestion, setDraggingQuestion] = useState<{
+    sectionId: string
+    questionId: string
+  } | null>(null)
+  const [overQuestion, setOverQuestion] = useState<{
+    sectionId: string
+    questionId: string
+  } | null>(null)
 
   const publicUrl = useMemo(() => {
     if (typeof window === "undefined") return publicFormPath(slug)
@@ -133,6 +162,58 @@ export function FormBuilder({
             },
       ),
     }))
+  }
+
+  const moveSection = (fromId: string, toId: string) => {
+    setSchema((prev) => {
+      const from = prev.sections.findIndex((s) => s.id === fromId)
+      const to = prev.sections.findIndex((s) => s.id === toId)
+      if (from < 0 || to < 0 || from === to) return prev
+      return { sections: reorder(prev.sections, from, to) }
+    })
+  }
+
+  const moveQuestion = (
+    fromSectionId: string,
+    questionId: string,
+    toSectionId: string,
+    toQuestionId: string,
+  ) => {
+    setSchema((prev) => {
+      const fromSection = prev.sections.find((s) => s.id === fromSectionId)
+      const toSection = prev.sections.find((s) => s.id === toSectionId)
+      if (!fromSection || !toSection) return prev
+
+      const fromIndex = fromSection.items.findIndex((q) => q.id === questionId)
+      const toIndex = toSection.items.findIndex((q) => q.id === toQuestionId)
+      if (fromIndex < 0 || toIndex < 0) return prev
+      if (fromSectionId === toSectionId && fromIndex === toIndex) return prev
+
+      if (fromSectionId === toSectionId) {
+        return {
+          sections: prev.sections.map((s) =>
+            s.id === fromSectionId
+              ? { ...s, items: reorder(s.items, fromIndex, toIndex) }
+              : s,
+          ),
+        }
+      }
+
+      const question = fromSection.items[fromIndex]
+      return {
+        sections: prev.sections.map((s) => {
+          if (s.id === fromSectionId) {
+            return { ...s, items: s.items.filter((q) => q.id !== questionId) }
+          }
+          if (s.id === toSectionId) {
+            const items = [...s.items]
+            items.splice(toIndex, 0, question)
+            return { ...s, items }
+          }
+          return s
+        }),
+      }
+    })
   }
 
   const handleSave = () => {
@@ -282,13 +363,97 @@ export function FormBuilder({
 
       {schema.sections.map((section, sectionIndex) => {
         const metaOpen = sectionMetaOpen[section.id] ?? false
+        const sectionDragging = draggingSectionId === section.id
+        const sectionOver =
+          overSectionId === section.id &&
+          draggingSectionId != null &&
+          draggingSectionId !== section.id
         return (
-        <section key={section.id} className="space-y-3">
+        <section
+          key={section.id}
+          className={cn(
+            "space-y-3 rounded-2xl transition-[box-shadow,opacity] duration-150",
+            sectionDragging && "opacity-50",
+            sectionOver && "ring-2 ring-[#002065]/35 ring-offset-2",
+          )}
+          onDragOver={(event) => {
+            if (!hasDragType(event.dataTransfer.types, SECTION_MIME)) return
+            event.preventDefault()
+            event.dataTransfer.dropEffect = "move"
+            setOverSectionId(section.id)
+          }}
+          onDragLeave={(event) => {
+            if (event.currentTarget.contains(event.relatedTarget as Node)) return
+            setOverSectionId((id) => (id === section.id ? null : id))
+          }}
+          onDrop={(event) => {
+            if (!hasDragType(event.dataTransfer.types, SECTION_MIME)) return
+            event.preventDefault()
+            const fromId = event.dataTransfer.getData(SECTION_MIME)
+            if (fromId) moveSection(fromId, section.id)
+            setDraggingSectionId(null)
+            setOverSectionId(null)
+          }}
+        >
           <div className={cn(cardClass, "overflow-hidden")}>
             <div className="flex items-stretch">
               <div className="w-1.5 shrink-0 bg-[#002065]/70" aria-hidden />
-              <div className="flex flex-1 items-start gap-3 p-5 md:p-6">
-                <GripVertical className="mt-3 h-4 w-4 shrink-0 text-slate-300" />
+              <div className="flex flex-1 items-start gap-2 p-5 md:gap-3 md:p-6">
+                <div className="mt-1 flex shrink-0 flex-col items-center gap-0.5">
+                  <button
+                    type="button"
+                    draggable={schema.sections.length > 1}
+                    onDragStart={(event) => {
+                      event.dataTransfer.setData(SECTION_MIME, section.id)
+                      event.dataTransfer.effectAllowed = "move"
+                      setDraggingSectionId(section.id)
+                    }}
+                    onDragEnd={() => {
+                      setDraggingSectionId(null)
+                      setOverSectionId(null)
+                    }}
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-lg text-slate-400",
+                      schema.sections.length > 1
+                        ? "cursor-grab hover:bg-slate-100 hover:text-[#002065] active:cursor-grabbing"
+                        : "cursor-default opacity-40",
+                    )}
+                    aria-label="섹션 끌어 순서 변경"
+                    title="끌어다 놓아 섹션 순서 변경"
+                  >
+                    <GripVertical className="h-4 w-4" />
+                  </button>
+                  {schema.sections.length > 1 ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-slate-400"
+                        disabled={sectionIndex === 0}
+                        onClick={() =>
+                          moveSection(section.id, schema.sections[sectionIndex - 1]!.id)
+                        }
+                        aria-label="섹션 위로"
+                      >
+                        <ChevronUp className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-slate-400"
+                        disabled={sectionIndex >= schema.sections.length - 1}
+                        onClick={() =>
+                          moveSection(section.id, schema.sections[sectionIndex + 1]!.id)
+                        }
+                        aria-label="섹션 아래로"
+                      >
+                        <ChevronDown className="h-3.5 w-3.5" />
+                      </Button>
+                    </>
+                  ) : null}
+                </div>
                 <div className="min-w-0 flex-1 space-y-3">
                   <div className="flex items-center justify-between gap-2">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -424,12 +589,95 @@ export function FormBuilder({
           </div>
 
           <div className="space-y-3">
-            {section.items.map((question) => (
-              <QuestionEditor
+            {section.items.map((question, questionIndex) => {
+              const qDragging =
+                draggingQuestion?.sectionId === section.id &&
+                draggingQuestion.questionId === question.id
+              const qOver =
+                overQuestion?.sectionId === section.id &&
+                overQuestion.questionId === question.id &&
+                draggingQuestion != null &&
+                !(
+                  draggingQuestion.sectionId === section.id &&
+                  draggingQuestion.questionId === question.id
+                )
+              return (
+              <div
                 key={question.id}
+                className={cn(
+                  "rounded-2xl transition-[box-shadow,opacity] duration-150",
+                  qDragging && "opacity-50",
+                  qOver && "ring-2 ring-[#002065]/35 ring-offset-2",
+                )}
+                onDragOver={(event) => {
+                  if (!hasDragType(event.dataTransfer.types, QUESTION_MIME)) return
+                  event.preventDefault()
+                  event.stopPropagation()
+                  event.dataTransfer.dropEffect = "move"
+                  setOverQuestion({ sectionId: section.id, questionId: question.id })
+                }}
+                onDragLeave={(event) => {
+                  if (event.currentTarget.contains(event.relatedTarget as Node)) return
+                  setOverQuestion((current) =>
+                    current?.questionId === question.id ? null : current,
+                  )
+                }}
+                onDrop={(event) => {
+                  if (!hasDragType(event.dataTransfer.types, QUESTION_MIME)) return
+                  event.preventDefault()
+                  event.stopPropagation()
+                  const payload = event.dataTransfer.getData(QUESTION_MIME)
+                  const [fromSectionId, fromQuestionId] = payload.split(":")
+                  if (fromSectionId && fromQuestionId) {
+                    moveQuestion(
+                      fromSectionId,
+                      fromQuestionId,
+                      section.id,
+                      question.id,
+                    )
+                  }
+                  setDraggingQuestion(null)
+                  setOverQuestion(null)
+                }}
+              >
+              <QuestionEditor
                 question={question}
                 sections={schema.sections}
                 isQuiz={Boolean(settings.isQuiz)}
+                canReorder={section.items.length > 1 || schema.sections.length > 1}
+                canMoveUp={questionIndex > 0}
+                canMoveDown={questionIndex < section.items.length - 1}
+                onMoveUp={() =>
+                  moveQuestion(
+                    section.id,
+                    question.id,
+                    section.id,
+                    section.items[questionIndex - 1]!.id,
+                  )
+                }
+                onMoveDown={() =>
+                  moveQuestion(
+                    section.id,
+                    question.id,
+                    section.id,
+                    section.items[questionIndex + 1]!.id,
+                  )
+                }
+                onDragHandleStart={(event) => {
+                  event.dataTransfer.setData(
+                    QUESTION_MIME,
+                    `${section.id}:${question.id}`,
+                  )
+                  event.dataTransfer.effectAllowed = "move"
+                  setDraggingQuestion({
+                    sectionId: section.id,
+                    questionId: question.id,
+                  })
+                }}
+                onDragHandleEnd={() => {
+                  setDraggingQuestion(null)
+                  setOverQuestion(null)
+                }}
                 onChange={(patch) => updateQuestion(section.id, question.id, patch)}
                 onTypeChange={(type) => replaceQuestionType(section.id, question.id, type)}
                 onDelete={() =>
@@ -464,7 +712,9 @@ export function FormBuilder({
                   }))
                 }
               />
-            ))}
+              </div>
+              )
+            })}
 
             <Button
               type="button"
@@ -656,6 +906,13 @@ function QuestionEditor({
   question,
   sections,
   isQuiz,
+  canReorder,
+  canMoveUp,
+  canMoveDown,
+  onMoveUp,
+  onMoveDown,
+  onDragHandleStart,
+  onDragHandleEnd,
   onChange,
   onTypeChange,
   onDelete,
@@ -664,6 +921,13 @@ function QuestionEditor({
   question: FormQuestion
   sections: FormSchema["sections"]
   isQuiz: boolean
+  canReorder: boolean
+  canMoveUp: boolean
+  canMoveDown: boolean
+  onMoveUp: () => void
+  onMoveDown: () => void
+  onDragHandleStart: (event: React.DragEvent) => void
+  onDragHandleEnd: () => void
   onChange: (patch: Partial<FormQuestion>) => void
   onTypeChange: (type: QuestionType) => void
   onDelete: () => void
@@ -681,7 +945,51 @@ function QuestionEditor({
     <div className={cn(cardClass, "overflow-hidden transition-shadow duration-200 hover:shadow-md")}>
       <div className="flex items-stretch">
         <div className="w-1.5 shrink-0 bg-slate-200" aria-hidden />
-        <div className="min-w-0 flex-1 space-y-4 p-4 md:p-5">
+        <div className="flex shrink-0 flex-col items-center gap-0.5 px-1.5 py-3 md:px-2">
+          <button
+            type="button"
+            draggable={canReorder}
+            onDragStart={onDragHandleStart}
+            onDragEnd={onDragHandleEnd}
+            className={cn(
+              "flex h-9 w-9 items-center justify-center rounded-lg text-slate-400",
+              canReorder
+                ? "cursor-grab hover:bg-slate-100 hover:text-[#002065] active:cursor-grabbing"
+                : "cursor-default opacity-40",
+            )}
+            aria-label="질문 끌어 순서 변경"
+            title="끌어다 놓아 질문 순서 변경"
+          >
+            <GripVertical className="h-4 w-4" />
+          </button>
+          {canReorder ? (
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-400"
+                disabled={!canMoveUp}
+                onClick={onMoveUp}
+                aria-label="질문 위로"
+              >
+                <ChevronUp className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-slate-400"
+                disabled={!canMoveDown}
+                onClick={onMoveDown}
+                aria-label="질문 아래로"
+              >
+                <ChevronDown className="h-3.5 w-3.5" />
+              </Button>
+            </>
+          ) : null}
+        </div>
+        <div className="min-w-0 flex-1 space-y-4 py-4 pr-4 md:py-5 md:pr-5">
           <div className="flex flex-wrap items-start gap-2">
             <Input
               className="min-w-[200px] flex-1 border-0 border-b border-transparent bg-transparent px-0 text-base font-medium shadow-none rounded-none focus-visible:border-[#002065] focus-visible:ring-0"
