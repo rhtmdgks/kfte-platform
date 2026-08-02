@@ -349,7 +349,8 @@ export function EventDetailPageContent({
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
-  const mapAddress = `${post.location}${post.locationDetail ? ` ${post.locationDetail}` : ""}`
+  // 지도·크게 보기 모두 장소명만 사용 (장소 상세는 텍스트 안내용)
+  const mapAddress = post.location
   const mapQuery = encodeURIComponent(post.location)
   const isDaejeonConventionCenter = /대전컨벤션|DCC/i.test(mapAddress)
 
