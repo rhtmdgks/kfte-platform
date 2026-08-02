@@ -341,7 +341,7 @@ export function FormResponsesPanel({
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white px-5 py-5 shadow-sm md:px-6">
+      <div className="glass-pane flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-white/55 px-5 py-5 shadow-sm md:px-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             Responses
