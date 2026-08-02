@@ -15,14 +15,20 @@ export default async function AdminNoticesPage() {
       .order("created_at", { ascending: false }),
     getContentViewTrends("notice", 30),
   ])
+  const list = posts ?? []
 
   return (
     <div className="flex flex-col">
-      <header className="flex h-14 items-center gap-4 border-b px-6">
+      <header className="flex h-14 items-center gap-3 px-3 md:px-4">
         <AdminSidebarTrigger />
-        <h1 className="text-lg font-semibold text-[#002065]">공지사항 관리</h1>
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold text-[#002065]">공지사항 관리</h1>
+          <p className="truncate text-sm text-muted-foreground">
+            공지 · 총 {list.length}개
+          </p>
+        </div>
       </header>
-      <main className="flex-1 space-y-6 p-6">
+      <main className="flex-1 space-y-5 px-3 py-5 md:px-5 md:py-6">
         <ContentViewsChart
           title="공지사항 조회 추이"
           description="최근 30일간 공개 공지사항 상세 페이지 조회수"
@@ -30,10 +36,12 @@ export default async function AdminNoticesPage() {
           totalViews={sumViewTrend(viewTrends)}
         />
         <ContentPostTable
-          posts={posts ?? []}
+          posts={list}
           adminPath="/admin/notices"
           contentType="notice"
           onDelete={deletePost}
+          sectionTitle="공지 관리"
+          sectionDescription="상단 고정·첨부·공개 상태를 관리합니다."
         />
       </main>
     </div>
