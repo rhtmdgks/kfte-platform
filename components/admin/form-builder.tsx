@@ -64,7 +64,7 @@ const controlClass =
   "h-11 rounded-xl border-slate-200/80 bg-white/80 shadow-none focus-visible:ring-[#002065]/25"
 
 const cardClass =
-  "rounded-2xl border border-slate-200/80 bg-white shadow-sm"
+  "glass-pane rounded-2xl border border-white/55 shadow-sm"
 
 const SECTION_MIME = "application/x-kfte-section"
 const QUESTION_MIME = "application/x-kfte-question"
@@ -238,11 +238,11 @@ export function FormBuilder({
 
   return (
     <div className="mx-auto max-w-3xl space-y-5 pb-24">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="glass-pane flex flex-wrap items-center gap-2 rounded-2xl border border-white/55 p-2.5 md:p-3">
         <Button
           asChild
           variant="outline"
-          className="h-10 rounded-full border-slate-200"
+          className="h-11 rounded-full border-slate-200/80"
         >
           <Link href={`/admin/forms/${form.id}/responses`}>
             <ClipboardList className="mr-2 h-4 w-4" />
@@ -252,7 +252,7 @@ export function FormBuilder({
         <Button
           variant="outline"
           type="button"
-          className="h-10 rounded-full border-slate-200"
+          className="h-11 rounded-full border-slate-200/80"
           onClick={() => {
             void navigator.clipboard.writeText(publicUrl)
             toast.success("공개 URL을 복사했습니다.")
@@ -261,7 +261,7 @@ export function FormBuilder({
           <Copy className="mr-2 h-4 w-4" />
           URL 복사
         </Button>
-        <Button asChild variant="outline" className="h-10 rounded-full border-slate-200">
+        <Button asChild variant="outline" className="h-11 rounded-full border-slate-200/80">
           <Link href={publicFormPath(slug)} target="_blank" rel="noreferrer">
             <ExternalLink className="mr-2 h-4 w-4" />
             미리보기
@@ -270,7 +270,7 @@ export function FormBuilder({
         <Button
           variant="ghost"
           type="button"
-          className="ml-auto h-10 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="ml-auto h-11 min-w-11 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"
           onClick={() => setDeleteOpen(true)}
         >
           <Trash2 className="mr-2 h-4 w-4" />
