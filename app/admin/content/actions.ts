@@ -124,7 +124,7 @@ function parseEventMetadataFromFormData(
 }
 
 function contentTypeUsesThumbnail(contentType: ContentType) {
-  return contentType === "blog" || contentType === "event"
+  return contentType === "blog" || contentType === "event" || contentType === "event_archive"
 }
 
 function assertThumbnailRequired(contentType: ContentType, thumbnailUrl: string | null) {
@@ -218,7 +218,7 @@ export async function createPost(formData: FormData) {
   const publishedAt = status === "published" ? new Date().toISOString() : null
   const isPinned = parseIsPinnedFromFormData(formData)
   const metadata =
-    contentType === "event"
+    contentType === "event" || contentType === "event_archive"
       ? parseEventMetadataFromFormData(formData)
       : parseMetadataFromFormData(formData)
   const thumbnailUrl = contentTypeUsesThumbnail(contentType)
@@ -290,7 +290,7 @@ export async function updatePost(id: string, formData: FormData) {
       : current?.published_at ?? null
 
   const metadata =
-    contentType === "event"
+    contentType === "event" || contentType === "event_archive"
       ? parseEventMetadataFromFormData(
           formData,
           parseEventPostMetadata(current?.metadata ?? null),

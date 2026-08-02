@@ -38,10 +38,13 @@ export function ContentViewsChart({
 
   return (
     <MotionReveal>
-      <Card>
+      <Card className="glass-pane overflow-hidden rounded-2xl border border-white/55 shadow-sm">
         <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
           <div>
-            <CardTitle className="text-lg text-[#002065]">{title}</CardTitle>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Analytics
+            </p>
+            <CardTitle className="mt-1 text-lg text-[#002065]">{title}</CardTitle>
             {description ? (
               <CardDescription className="text-sm">{description}</CardDescription>
             ) : null}

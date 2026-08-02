@@ -48,60 +48,67 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
 
   return (
     <div className="space-y-3">
-      <Label htmlFor="thumbnail">
-        썸네일 이미지{required ? " *" : ""}
+      <Label htmlFor="thumbnail" className="text-sm font-medium text-slate-700">
+        썸네일 이미지{required ? <span className="text-red-500"> *</span> : null}
       </Label>
       <input type="hidden" name="existing_thumbnail_url" value={currentUrl ?? ""} />
       <input type="hidden" name="remove_thumbnail" value={removed ? "1" : "0"} />
 
-      <div
+      <button
+        type="button"
+        onClick={() => inputRef.current?.click()}
         className={cn(
-          "relative overflow-hidden rounded-xl border border-dashed border-border bg-muted/30",
+          "relative w-full overflow-hidden rounded-xl border border-dashed border-slate-300 bg-slate-50/60 transition-colors",
+          "hover:border-[#002065]/40 hover:bg-[#002065]/[0.03]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002065]/30",
           displayUrl ? "aspect-[16/10]" : "flex min-h-[180px] flex-col items-center justify-center gap-3 p-6",
         )}
+        aria-label={displayUrl ? "썸네일 변경" : "썸네일 선택"}
       >
         {displayUrl ? (
-          <>
-            <Image
-              src={displayUrl}
-              alt="썸네일 미리보기"
-              fill
-              className="object-cover"
-              unoptimized={displayUrl.startsWith("blob:")}
-            />
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon"
-              className="absolute right-3 top-3 h-8 w-8 rounded-full bg-background/90 shadow-sm"
-              onClick={handleRemove}
-              aria-label="썸네일 제거"
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </>
+          <Image
+            src={displayUrl}
+            alt="썸네일 미리보기"
+            fill
+            className="object-cover"
+            unoptimized={displayUrl.startsWith("blob:")}
+          />
         ) : (
           <>
-            <ImageIcon className="h-10 w-10 text-muted-foreground/60" />
-            <p className="text-center text-sm text-muted-foreground">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#002065]/10 text-[#002065]">
+              <ImageIcon className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="text-center text-sm text-slate-700">
               목록에 표시될 대표 이미지를 첨부하세요
-              <br />
+            </p>
+            <p className="text-center text-xs text-muted-foreground">
               JPEG, PNG, WebP, GIF · 최대 15MB
             </p>
           </>
         )}
-      </div>
+      </button>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
         <Button
           type="button"
           variant="outline"
-          className="border-[#002065]/20 text-[#002065] hover:bg-[#002065]/5"
+          className="h-11 rounded-full border-slate-200/80"
           onClick={() => inputRef.current?.click()}
         >
           {displayUrl ? "이미지 변경" : "이미지 선택"}
         </Button>
-        {fileName && <span className="text-sm text-muted-foreground">{fileName}</span>}
+        {displayUrl ? (
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-11 rounded-full text-red-600 hover:bg-red-50 hover:text-red-700"
+            onClick={handleRemove}
+          >
+            <X className="mr-2 h-4 w-4" />
+            제거
+          </Button>
+        ) : null}
+        {fileName ? <span className="text-sm text-muted-foreground">{fileName}</span> : null}
       </div>
 
       <input
