@@ -119,7 +119,7 @@ export default async function AdminFormsPage() {
                   <TableHead className="w-28">상태</TableHead>
                   <TableHead className="hidden md:table-cell">공개 URL</TableHead>
                   <TableHead className="w-24 text-right">응답</TableHead>
-                  <TableHead className="hidden w-32 lg:table-cell">수정일</TableHead>
+                  <TableHead className="hidden w-40 lg:table-cell">수정일</TableHead>
                   <TableHead className="w-[1%] whitespace-nowrap text-right">작업</TableHead>
                 </TableRow>
               </TableHeader>

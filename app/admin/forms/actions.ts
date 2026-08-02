@@ -9,6 +9,10 @@ import {
   createEmptySchema,
   publicFormPath,
 } from "@/lib/application-forms/types"
+import {
+  validateAnswers,
+  type AnswerMap,
+} from "@/lib/application-forms/validate-answers"
 import type { Json } from "@/types/database"
 
 async function requireAdmin() {
@@ -142,6 +146,43 @@ export async function deleteResponse(formId: string, responseId: string) {
   if (error) throw new Error(error.message)
   revalidatePath(`/admin/forms/${formId}/responses`)
   revalidatePath(`/admin/forms/${formId}/edit`)
+}
+
+export async function updateResponse(
+  formId: string,
+  responseId: string,
+  payload: { answers: AnswerMap; email?: string | null },
+) {
+  const { supabase } = await requireAdmin()
+
+  const { data: form, error: formError } = await supabase
+    .from("application_forms")
+    .select("schema, settings")
+    .eq("id", formId)
+    .maybeSingle()
+  if (formError || !form) throw new Error("폼을 찾을 수 없습니다.")
+
+  const schema = parseFormSchema(form.schema)
+  const settings = parseFormSettings(form.settings)
+  // ponytail: admin override skips required; still recompute quiz score
+  const scored = validateAnswers(
+    schema,
+    { ...settings, collectEmail: false },
+    payload.answers,
+  )
+
+  const { error } = await supabase
+    .from("application_form_responses")
+    .update({
+      answers: payload.answers as Json,
+      respondent_email: payload.email?.trim() || null,
+      score: settings.isQuiz ? (scored.score ?? null) : null,
+    })
+    .eq("id", responseId)
+    .eq("form_id", formId)
+
+  if (error) throw new Error(error.message)
+  revalidatePath(`/admin/forms/${formId}/responses`)
 }
 
 export async function createFormForEvent(title: string) {

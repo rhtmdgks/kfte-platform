@@ -11,6 +11,7 @@ import {
   FileSpreadsheet,
   Pencil,
   Trash2,
+  X,
 } from "lucide-react"
 import {
   Bar,
@@ -23,9 +24,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts"
-import { deleteResponse } from "@/app/admin/forms/actions"
+import { deleteResponse, updateResponse } from "@/app/admin/forms/actions"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Textarea } from "@/components/ui/textarea"
 import {
   buildResponsesCsv,
   buildResponsesExcelXml,
@@ -34,6 +46,7 @@ import {
 } from "@/lib/application-forms/export-responses"
 import { flattenQuestions } from "@/lib/application-forms/parse"
 import type { FormQuestion, FormSchema } from "@/lib/application-forms/types"
+import type { AnswerMap } from "@/lib/application-forms/validate-answers"
 import { cn } from "@/lib/utils"
 import type { Tables } from "@/types/database"
 
@@ -284,6 +297,160 @@ function Stepper({
   )
 }
 
+function AdminAnswerEditor({
+  question,
+  value,
+  onChange,
+}: {
+  question: FormQuestion
+  value: unknown
+  onChange: (value: unknown) => void
+}) {
+  const options = question.options ?? []
+  const stringValue = typeof value === "string" ? value : ""
+  const arrayValue = Array.isArray(value) ? value.map(String) : []
+
+  if (
+    question.type === "short_answer" ||
+    question.type === "date" ||
+    question.type === "time" ||
+    question.type === "file_upload"
+  ) {
+    return (
+      <Input
+        type={
+          question.type === "date" ? "date" : question.type === "time" ? "time" : "text"
+        }
+        value={stringValue}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={question.type === "file_upload" ? "파일 URL" : undefined}
+        className="h-10 rounded-xl border-slate-200"
+      />
+    )
+  }
+
+  if (question.type === "paragraph") {
+    return (
+      <Textarea
+        value={stringValue}
+        onChange={(e) => onChange(e.target.value)}
+        rows={4}
+        className="rounded-xl border-slate-200"
+      />
+    )
+  }
+
+  if (question.type === "multiple_choice" || question.type === "dropdown") {
+    const otherText = stringValue.startsWith("__other__:")
+      ? stringValue.slice("__other__:".length)
+      : ""
+    const selectValue = stringValue.startsWith("__other__")
+      ? "__other__"
+      : stringValue || undefined
+    return (
+      <div className="space-y-2">
+        <Select
+          value={selectValue}
+          onValueChange={(next) => {
+            if (next === "__other__") onChange(`__other__:${otherText}`)
+            else onChange(next)
+          }}
+        >
+          <SelectTrigger className="h-10 rounded-xl border-slate-200">
+            <SelectValue placeholder="선택" />
+          </SelectTrigger>
+          <SelectContent>
+            {options.map((option) => (
+              <SelectItem key={option.id} value={option.id}>
+                {option.label}
+              </SelectItem>
+            ))}
+            {question.allowOther ? (
+              <SelectItem value="__other__">기타</SelectItem>
+            ) : null}
+          </SelectContent>
+        </Select>
+        {selectValue === "__other__" ? (
+          <Input
+            value={otherText}
+            onChange={(e) => onChange(`__other__:${e.target.value}`)}
+            placeholder="기타 응답"
+            className="h-10 rounded-xl border-slate-200"
+          />
+        ) : null}
+      </div>
+    )
+  }
+
+  if (question.type === "checkboxes") {
+    return (
+      <div className="space-y-2">
+        {options.map((option) => {
+          const checked = arrayValue.includes(option.id)
+          return (
+            <label
+              key={option.id}
+              className="flex items-center gap-2 text-sm text-slate-700"
+            >
+              <Checkbox
+                checked={checked}
+                onCheckedChange={(next) => {
+                  if (next) onChange([...arrayValue, option.id])
+                  else onChange(arrayValue.filter((id) => id !== option.id))
+                }}
+              />
+              {option.label}
+            </label>
+          )
+        })}
+      </div>
+    )
+  }
+
+  if (question.type === "linear_scale") {
+    const min = question.scaleMin ?? 1
+    const max = question.scaleMax ?? 5
+    const nums = Array.from({ length: max - min + 1 }, (_, i) => min + i)
+    return (
+      <Select
+        value={value != null && value !== "" ? String(value) : undefined}
+        onValueChange={(next) => onChange(Number(next))}
+      >
+        <SelectTrigger className="h-10 rounded-xl border-slate-200">
+          <SelectValue placeholder="선택" />
+        </SelectTrigger>
+        <SelectContent>
+          {nums.map((n) => (
+            <SelectItem key={n} value={String(n)}>
+              {n}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )
+  }
+
+  // ponytail: grids stay as JSON; upgrade to grid UI if admins edit them often
+  const jsonText =
+    typeof value === "string" ? value : value == null ? "" : JSON.stringify(value, null, 2)
+  return (
+    <Textarea
+      value={jsonText}
+      onChange={(e) => {
+        const raw = e.target.value
+        try {
+          onChange(JSON.parse(raw))
+        } catch {
+          onChange(raw)
+        }
+      }}
+      rows={4}
+      className="font-mono text-xs rounded-xl border-slate-200"
+      placeholder='{"rowId":"colId"}'
+    />
+  )
+}
+
 export function FormResponsesPanel({
   formId,
   formTitle,
@@ -294,6 +461,9 @@ export function FormResponsesPanel({
   const [isPending, startTransition] = useTransition()
   const [questionIndex, setQuestionIndex] = useState(0)
   const [individualIndex, setIndividualIndex] = useState(0)
+  const [editing, setEditing] = useState(false)
+  const [draftAnswers, setDraftAnswers] = useState<AnswerMap>({})
+  const [draftEmail, setDraftEmail] = useState("")
   const questions = useMemo(() => flattenQuestions(schema), [schema])
   const total = responses.length
   const fileStem = `form-${(formTitle || formId).replace(/[^\w가-힣-]+/g, "-").slice(0, 40)}-responses`
@@ -326,11 +496,36 @@ export function FormResponsesPanel({
     toast.success("CSV 파일을 내려받았습니다.")
   }
 
+  const beginEdit = () => {
+    if (!currentResponse) return
+    setDraftAnswers({ ...answersOf(currentResponse) })
+    setDraftEmail(currentResponse.respondent_email ?? "")
+    setEditing(true)
+  }
+
+  const saveEdit = () => {
+    if (!currentResponse) return
+    startTransition(async () => {
+      try {
+        await updateResponse(formId, currentResponse.id, {
+          answers: draftAnswers,
+          email: draftEmail,
+        })
+        toast.success("응답을 저장했습니다.")
+        setEditing(false)
+        router.refresh()
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "저장 실패")
+      }
+    })
+  }
+
   const removeResponse = (responseId: string) => {
     startTransition(async () => {
       try {
         await deleteResponse(formId, responseId)
         toast.success("응답을 삭제했습니다.")
+        setEditing(false)
         setIndividualIndex((i) => Math.max(0, i - (i >= total - 1 ? 1 : 0)))
         router.refresh()
       } catch (error) {
@@ -446,8 +641,14 @@ export function FormResponsesPanel({
             label="응답"
             index={safeIndividualIndex}
             total={total}
-            onPrev={() => setIndividualIndex((i) => Math.max(0, i - 1))}
-            onNext={() => setIndividualIndex((i) => Math.min(total - 1, i + 1))}
+            onPrev={() => {
+              if (editing) setEditing(false)
+              setIndividualIndex((i) => Math.max(0, i - 1))
+            }}
+            onNext={() => {
+              if (editing) setEditing(false)
+              setIndividualIndex((i) => Math.min(total - 1, i + 1))
+            }}
           />
 
           {!currentResponse ? (
@@ -457,30 +658,103 @@ export function FormResponsesPanel({
           ) : (
             <article className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4 md:px-6">
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900">
-                    {currentResponse.respondent_email || "익명 응답"}
-                  </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
-                    {new Date(currentResponse.submitted_at).toLocaleString("ko-KR")}
-                    {currentResponse.score != null ? ` · 점수 ${currentResponse.score}` : null}
-                  </p>
+                <div className="min-w-0 flex-1">
+                  {editing ? (
+                    <div className="space-y-1.5">
+                      <Label htmlFor="response-email" className="text-xs text-muted-foreground">
+                        이메일
+                      </Label>
+                      <Input
+                        id="response-email"
+                        type="email"
+                        value={draftEmail}
+                        onChange={(e) => setDraftEmail(e.target.value)}
+                        placeholder="익명 응답"
+                        className="h-10 max-w-md rounded-xl border-slate-200"
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm font-semibold text-slate-900">
+                        {currentResponse.respondent_email || "익명 응답"}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {new Date(currentResponse.submitted_at).toLocaleString("ko-KR")}
+                        {currentResponse.score != null
+                          ? ` · 점수 ${currentResponse.score}`
+                          : null}
+                      </p>
+                    </>
+                  )}
                 </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                  disabled={isPending}
-                  onClick={() => removeResponse(currentResponse.id)}
-                >
-                  <Trash2 className="mr-1.5 h-4 w-4" />
-                  삭제
-                </Button>
+                <div className="flex flex-wrap gap-1">
+                  {editing ? (
+                    <>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={isPending}
+                        onClick={() => setEditing(false)}
+                      >
+                        <X className="mr-1.5 h-4 w-4" />
+                        취소
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="bg-[#002065] hover:bg-[#002065]/90"
+                        disabled={isPending}
+                        onClick={saveEdit}
+                      >
+                        {isPending ? "저장 중…" : "저장"}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      disabled={isPending}
+                      onClick={beginEdit}
+                    >
+                      <Pencil className="mr-1.5 h-4 w-4" />
+                      수정
+                    </Button>
+                  )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                    disabled={isPending}
+                    onClick={() => removeResponse(currentResponse.id)}
+                  >
+                    <Trash2 className="mr-1.5 h-4 w-4" />
+                    삭제
+                  </Button>
+                </div>
               </div>
 
               <div className="divide-y divide-slate-100">
                 {questions.map((question) => {
+                  if (editing) {
+                    return (
+                      <div key={question.id} className="space-y-2 px-5 py-4 md:px-6">
+                        <p className="text-sm font-medium text-slate-900">
+                          {question.title}
+                        </p>
+                        <AdminAnswerEditor
+                          question={question}
+                          value={draftAnswers[question.id]}
+                          onChange={(next) =>
+                            setDraftAnswers((prev) => ({ ...prev, [question.id]: next }))
+                          }
+                        />
+                      </div>
+                    )
+                  }
+
                   const answer = formatAnswerForExport(
                     question,
                     answersOf(currentResponse)[question.id],
