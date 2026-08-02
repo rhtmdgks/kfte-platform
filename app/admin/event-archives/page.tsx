@@ -7,11 +7,16 @@ export default async function AdminEventArchivesPage() {
 
   return (
     <div className="flex flex-col">
-      <header className="flex h-14 items-center gap-4 border-b px-6">
+      <header className="flex h-14 items-center gap-3 px-3 md:px-4">
         <AdminSidebarTrigger />
-        <h1 className="text-lg font-semibold text-[#002065]">행사 아카이브 관리</h1>
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold text-[#002065]">행사 아카이브 관리</h1>
+          <p className="truncate text-sm text-muted-foreground">
+            자동·수동 기록 · 총 {rows.length}개
+          </p>
+        </div>
       </header>
-      <main className="flex-1 p-6">
+      <main className="flex-1 space-y-5 px-3 py-5 md:px-5 md:py-6">
         <EventArchiveAdminTable rows={rows} />
       </main>
     </div>
