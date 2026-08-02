@@ -30,7 +30,7 @@ import {
 import { BlogThumbnailField } from "@/components/admin/blog-thumbnail-field"
 import { PinToggleField } from "@/components/admin/pin-toggle-field"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
-import { getPublicPathsForContentType } from "@/lib/content-posts"
+import { getPublicPathsForContentType } from "@/lib/content-public-paths"
 import { parseEventPostMetadata, toDatetimeLocalValue } from "@/lib/event-metadata"
 import { cn } from "@/lib/utils"
 import type { Tables, Database } from "@/types/database"

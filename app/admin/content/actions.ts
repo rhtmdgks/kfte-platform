@@ -16,7 +16,7 @@ import {
   fromDatetimeLocalValue,
   parseEventPostMetadata,
 } from "@/lib/event-metadata"
-import { getPublicPathsForContentType } from "@/lib/content-posts"
+import { getPublicPathsForContentType } from "@/lib/content-public-paths"
 import type { Database } from "@/types/database"
 
 type ContentType = Database["public"]["Enums"]["content_type"]

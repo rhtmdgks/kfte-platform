@@ -449,20 +449,4 @@ export async function getPublishedEventArchiveWithView(slug: string): Promise<Ev
   return entry
 }
 
-export function getPublicPathsForContentType(
-  contentType:
-    | NewsContentType
-    | BlogContentType
-    | EventContentType
-    | EventArchiveContentType,
-) {
-  const map = {
-    notice: "/news/notices",
-    press: "/news/press",
-    blog: "/news/blog",
-    event: "/activities/events",
-    event_archive: "/activities/events/archive",
-  } as const
-
-  return map[contentType]
-}
+export { getPublicPathsForContentType } from "@/lib/content-public-paths"
