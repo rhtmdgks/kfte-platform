@@ -58,10 +58,10 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
         type="button"
         onClick={() => inputRef.current?.click()}
         className={cn(
-          "relative w-full overflow-hidden rounded-xl border border-dashed border-slate-300 bg-slate-50/60 transition-colors",
+          "relative aspect-video w-full overflow-hidden rounded-xl border border-dashed border-slate-300 bg-slate-50/60 transition-colors",
           "hover:border-[#002065]/40 hover:bg-[#002065]/[0.03]",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002065]/30",
-          displayUrl ? "aspect-[16/10]" : "flex min-h-[180px] flex-col items-center justify-center gap-3 p-6",
+          !displayUrl && "flex flex-col items-center justify-center gap-3 p-6",
         )}
         aria-label={displayUrl ? "썸네일 변경" : "썸네일 선택"}
       >
@@ -82,7 +82,7 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
               목록에 표시될 대표 이미지를 첨부하세요
             </p>
             <p className="text-center text-xs text-muted-foreground">
-              JPEG, PNG, WebP, GIF · 최대 15MB
+              권장 1920×1080 · JPEG/PNG/WebP/GIF · 최대 15MB
             </p>
           </>
         )}
