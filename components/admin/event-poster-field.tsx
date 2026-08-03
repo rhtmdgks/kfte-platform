@@ -5,6 +5,8 @@ import Image from "next/image"
 import { ImageIcon, Loader2, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { assertEventPosterFile } from "@/lib/event-poster"
+import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
 type EventPosterFieldProps = {
@@ -86,23 +88,39 @@ export function EventPosterField({
 
     setUploading(true)
     try {
-      const body = new FormData()
-      body.append("file", file)
+      // Fail fast in the browser — don't round-trip a doomed file
+      const contentType = assertEventPosterFile(file)
 
-      const response = await fetch("/api/admin/upload-event-poster", {
+      const signResponse = await fetch("/api/admin/upload-event-poster", {
         method: "POST",
-        body,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: file.name,
+          type: file.type || contentType,
+          size: file.size,
+        }),
       })
-      const payload = (await response.json().catch(() => null)) as
-        | { url?: string; error?: string }
+      const signed = (await signResponse.json().catch(() => null)) as
+        | { path?: string; token?: string; publicUrl?: string; contentType?: string; error?: string }
         | null
 
-      if (!response.ok || !payload?.url) {
-        throw new Error(payload?.error || "상세 페이지 이미지 업로드에 실패했습니다.")
+      if (!signResponse.ok || !signed?.path || !signed.token || !signed.publicUrl) {
+        throw new Error(signed?.error || "상세 페이지 이미지 업로드에 실패했습니다.")
       }
 
-      commitUploadedUrl(payload.url)
-      setPreviewUrl(payload.url)
+      const supabase = createClient()
+      const { error: uploadError } = await supabase.storage
+        .from("event-posters")
+        .uploadToSignedUrl(signed.path, signed.token, file, {
+          contentType: signed.contentType || contentType,
+        })
+
+      if (uploadError) {
+        throw new Error(`상세 포스터 업로드 실패: ${uploadError.message}`)
+      }
+
+      commitUploadedUrl(signed.publicUrl)
+      setPreviewUrl(signed.publicUrl)
       URL.revokeObjectURL(objectUrl)
     } catch (error) {
       commitUploadedUrl(null)
