@@ -189,15 +189,16 @@ function searchAddress(query: string): Promise<{ lat: number; lng: number } | nu
 
       const modern = response.v2?.addresses?.[0]
       if (modern?.x && modern?.y) {
-        resolve({
-          lat: Number(modern.y),
-          lng: Number(modern.x),
-        })
-        return
+        const lat = Number(modern.y)
+        const lng = Number(modern.x)
+        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+          resolve({ lat, lng })
+          return
+        }
       }
 
       const legacy = response.result?.items?.[0]?.point
-      if (legacy) {
+      if (legacy && Number.isFinite(legacy.y) && Number.isFinite(legacy.x)) {
         resolve({ lat: legacy.y, lng: legacy.x })
         return
       }
@@ -205,6 +206,28 @@ function searchAddress(query: string): Promise<{ lat: number; lng: number } | nu
       resolve(null)
     })
   })
+}
+
+/** Geocoding은 세부 호실·행사명에 약함 → 점점 단순한 후보로 재시도 */
+function buildGeocodeCandidates(address: string): string[] {
+  const trimmed = address.trim()
+  if (!trimmed) return []
+
+  const noParen = trimmed.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim()
+  const noRoom = noParen
+    .replace(/\d+\s*[·,~～~\-]\s*\d+\s*호/g, " ")
+    .replace(/\d+\s*호/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+  const head = (noRoom.split(/[·|,/]/)[0] ?? noRoom).trim()
+  const venue = head
+    .replace(/\s*(제?\d*전시장|중회의실|대회의실|컨퍼런스홀|회의실|홀)\b.*$/u, "")
+    .replace(/\s+/g, " ")
+    .trim()
+
+  return Array.from(
+    new Set([trimmed, noParen, noRoom, head, venue].filter((s) => s.length >= 2)),
+  )
 }
 
 export function NaverMap({
@@ -244,18 +267,8 @@ export function NaverMap({
         if (latitude != null && longitude != null) {
           coords = { lat: latitude, lng: longitude }
         } else {
-          const trimmed = address.trim()
-          const addressCandidates = Array.from(
-            new Set(
-              [
-                trimmed,
-                trimmed.replace(/\([^)]*\)/g, " ").replace(/\s+/g, " ").trim(),
-                markerTitle ? `${trimmed} ${markerTitle}`.trim() : "",
-              ].filter(Boolean),
-            ),
-          )
-
-          for (const candidate of addressCandidates) {
+          // ponytail: markerTitle(행사명)은 geocode에 넣지 않음 — 검색만 방해함
+          for (const candidate of buildGeocodeCandidates(address)) {
             coords = await searchAddress(candidate)
             if (coords) break
           }

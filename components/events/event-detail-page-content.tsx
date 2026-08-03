@@ -44,6 +44,19 @@ function formatRegistrationPeriod(start?: string, end?: string) {
   return `${formatEventDateTime(start)} ~ ${formatEventDateTime(end)}`
 }
 
+/** 미리보기·크게 보기 공통 검색어. 장소 필드만 사용. */
+function resolveEventMapSearch(location: string) {
+  const address = location.trim()
+  if (/대전\s*컨벤션|DCC/i.test(address)) {
+    return {
+      address: "대전컨벤션센터",
+      fallbackLat: 36.3752,
+      fallbackLng: 127.3818,
+    }
+  }
+  return { address, fallbackLat: undefined as number | undefined, fallbackLng: undefined as number | undefined }
+}
+
 function DetailRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1 sm:flex-row sm:gap-0">
@@ -349,10 +362,9 @@ export function EventDetailPageContent({
     window.open(url, "_blank", "noopener,noreferrer")
   }
 
-  // 지도·크게 보기 모두 장소명만 사용 (장소 상세는 텍스트 안내용)
-  const mapAddress = post.location
-  const mapQuery = encodeURIComponent(post.location)
-  const isDaejeonConventionCenter = /대전컨벤션|DCC/i.test(mapAddress)
+  // 지도 검색은 건물명 위주 — 호실·홀명까지 넣으면 geocode 실패함
+  const mapSearch = resolveEventMapSearch(post.location)
+  const mapQuery = encodeURIComponent(mapSearch.address)
 
   return (
     <main className={cn(pageMainClassName, "bg-[#FBFCFF]")}>
@@ -400,10 +412,10 @@ export function EventDetailPageContent({
                 <section className="mt-10">
                   <h3 className="mb-4 text-lg font-semibold text-foreground">위치</h3>
                   <NaverMap
-                    address={mapAddress}
-                    markerTitle={post.title}
-                    fallbackLat={isDaejeonConventionCenter ? 36.3752 : undefined}
-                    fallbackLng={isDaejeonConventionCenter ? 127.3818 : undefined}
+                    address={mapSearch.address}
+                    markerTitle={post.location}
+                    fallbackLat={mapSearch.fallbackLat}
+                    fallbackLng={mapSearch.fallbackLng}
                     className="aspect-[21/9] h-auto min-h-[240px] overflow-hidden rounded-[16px] md:min-h-[320px] md:rounded-[20px]"
                   />
                   <a
