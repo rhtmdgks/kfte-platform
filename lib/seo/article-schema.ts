@@ -1,12 +1,15 @@
 import type { NewsPost } from '@/lib/news-types'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kfte.kr'
+import { toAbsoluteSiteMediaUrl } from "@/lib/site-media"
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kfte.kr"
 
 export function buildNewsArticleSchema(post: NewsPost & { thumbnailUrl?: string | null }, basePath: string) {
   const url = `${siteUrl}${basePath}/${post.id}`
   const datePublished = post.createdAt
-  const images = post.thumbnailUrl
-    ? [{ '@type': 'ImageObject', url: post.thumbnailUrl, width: 1200, height: 630 }]
+  const imageUrl = toAbsoluteSiteMediaUrl(post.thumbnailUrl, siteUrl)
+  const images = imageUrl
+    ? [{ "@type": "ImageObject", url: imageUrl, width: 1200, height: 630 }]
     : []
 
   return {

@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/supabase/config"
+import { toSiteMediaUrl } from "@/lib/site-media"
 import { parseContentPostMetadata } from "@/lib/content-post-metadata"
 import { sortByPinnedThenDate } from "@/lib/content-post-pin"
 import {
@@ -171,7 +172,7 @@ export function mapContentPostToBlogPost(row: ContentPostRow): BlogPost {
     category: meta.category ?? "아티클",
     createdAt: row.published_at ?? row.created_at,
     views: meta.views ?? 0,
-    thumbnailUrl: row.thumbnail_url ?? undefined,
+    thumbnailUrl: toSiteMediaUrl(row.thumbnail_url) || undefined,
     pinned: row.is_pinned,
   }
 }
@@ -268,8 +269,8 @@ export function mapContentPostToEventPost(row: ContentPostRow): EventPost {
     registrationEnd: meta.registrationEnd,
     contactPhone: meta.contactPhone,
     contactEmail: meta.contactEmail,
-    thumbnailUrl: row.thumbnail_url ?? undefined,
-    detailImageUrl: row.detail_image_url ?? undefined,
+    thumbnailUrl: toSiteMediaUrl(row.thumbnail_url) || undefined,
+    detailImageUrl: toSiteMediaUrl(row.detail_image_url) || undefined,
     detailImageWidth: meta.detailImageWidth ?? undefined,
     detailImageHeight: meta.detailImageHeight ?? undefined,
     pinned: row.is_pinned,

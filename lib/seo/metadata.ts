@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { toSiteMediaUrl } from "@/lib/site-media"
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kfte.kr'
 
@@ -23,8 +24,9 @@ export function buildContentMetadata({
 }: ContentMetaOptions): Metadata {
   const canonical = `${basePath}/${slug}`
   const resolvedDescription = description ?? `${title} — 한국기술창업진흥재단(KFTE)`
-  const images = thumbnailUrl
-    ? [{ url: thumbnailUrl, width: 1200, height: 630, alt: title }]
+  const mediaUrl = toSiteMediaUrl(thumbnailUrl)
+  const images = mediaUrl
+    ? [{ url: mediaUrl, width: 1200, height: 630, alt: title }]
     : [{ url: '/og-default.jpg', width: 1200, height: 630, alt: title }]
 
   return {

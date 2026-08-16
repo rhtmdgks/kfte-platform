@@ -6,6 +6,7 @@ import { ImageIcon, Loader2, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { assertEventPosterFile } from "@/lib/event-poster"
+import { compressImageFile } from "@/lib/compress-image"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
 
@@ -88,16 +89,20 @@ export function EventPosterField({
 
     setUploading(true)
     try {
-      // Fail fast in the browser — don't round-trip a doomed file
-      const contentType = assertEventPosterFile(file)
+      const compressed = await compressImageFile(file, {
+        maxEdge: 1920,
+        quality: 0.8,
+        maxBytes: 2 * 1024 * 1024,
+      })
+      const contentType = assertEventPosterFile(compressed)
 
       const signResponse = await fetch("/api/admin/upload-event-poster", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: file.name,
-          type: file.type || contentType,
-          size: file.size,
+          name: compressed.name,
+          type: compressed.type || contentType,
+          size: compressed.size,
         }),
       })
       const signed = (await signResponse.json().catch(() => null)) as
@@ -111,7 +116,7 @@ export function EventPosterField({
       const supabase = createClient()
       const { error: uploadError } = await supabase.storage
         .from("event-posters")
-        .uploadToSignedUrl(signed.path, signed.token, file, {
+        .uploadToSignedUrl(signed.path, signed.token, compressed, {
           contentType: signed.contentType || contentType,
         })
 
@@ -156,7 +161,7 @@ export function EventPosterField({
       <div>
         <Label htmlFor="detail_image">상세 페이지 이미지</Label>
         <p className="mt-1.5 text-xs text-muted-foreground">
-          행사 상세 페이지 「프로그램 안내」 아래에 표시됩니다. JPEG/PNG/WebP/GIF · 최대 15MB.
+          행사 상세 페이지 「프로그램 안내」 아래에 표시됩니다. JPEG/PNG/WebP/GIF · 최대 2MB(자동 압축).
           선택 즉시 업로드됩니다.
         </p>
       </div>

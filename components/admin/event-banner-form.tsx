@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import type { EventBanner } from "@/lib/event-banners"
 import { toDatetimeLocalValue } from "@/lib/event-metadata"
+import { compressImageFile } from "@/lib/compress-image"
 import { cn } from "@/lib/utils"
 
 type EventBannerFormProps = {
@@ -56,8 +57,13 @@ export function EventBannerForm({ banner, action }: EventBannerFormProps) {
     setUploadError(null)
     setUploading(true)
     try {
+      const compressed = await compressImageFile(file, {
+        maxEdge: 1920,
+        quality: 0.8,
+        maxBytes: 800 * 1024,
+      })
       const body = new FormData()
-      body.append("file", file)
+      body.append("file", compressed)
       const response = await fetch("/api/admin/upload-event-banner", {
         method: "POST",
         body,
@@ -148,7 +154,7 @@ export function EventBannerForm({ banner, action }: EventBannerFormProps) {
           </p>
           <h2 className="mt-1 text-lg font-semibold text-[#002065]">배너 이미지 *</h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            오른쪽 비주얼 · JPEG/PNG/WebP/GIF · 최대 15MB · 권장 가로형/정사각
+            오른쪽 비주얼 · JPEG/PNG/WebP/GIF · 최대 800KB(자동 압축) · 권장 가로형/정사각
           </p>
         </div>
 
@@ -174,7 +180,7 @@ export function EventBannerForm({ banner, action }: EventBannerFormProps) {
                 <ImageIcon className="h-5 w-5" aria-hidden />
               </span>
               <p className="text-sm font-medium text-slate-700">이미지를 선택하거나 클릭</p>
-              <p className="text-xs">권장 가로형 · 최대 15MB</p>
+              <p className="text-xs">권장 가로형 · 자동 압축</p>
             </div>
           )}
           {uploading ? (

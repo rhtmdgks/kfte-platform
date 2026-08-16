@@ -6,6 +6,7 @@ import { ImageIcon, X } from "lucide-react"
 import { toast } from "sonner"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { compressImageFile } from "@/lib/compress-image"
 import { cn } from "@/lib/utils"
 
 type BlogThumbnailFieldProps = {
@@ -21,20 +22,28 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
 
   const displayUrl = removed ? null : previewUrl
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
 
-    if (file.size > 15 * 1024 * 1024) {
+    try {
+      const compressed = await compressImageFile(file, {
+        maxEdge: 1920,
+        quality: 0.8,
+        maxBytes: 800 * 1024,
+      })
+      const transfer = new DataTransfer()
+      transfer.items.add(compressed)
+      event.target.files = transfer.files
+
+      setRemoved(false)
+      setFileName(compressed.name)
+      setPreviewUrl(URL.createObjectURL(compressed))
+    } catch (error) {
       event.target.value = ""
       setFileName(null)
-      toast.error("썸네일은 15MB 이하만 업로드할 수 있습니다.")
-      return
+      toast.error(error instanceof Error ? error.message : "썸네일 처리에 실패했습니다.")
     }
-
-    setRemoved(false)
-    setFileName(file.name)
-    setPreviewUrl(URL.createObjectURL(file))
   }
 
   const handleRemove = () => {
@@ -82,7 +91,7 @@ export function BlogThumbnailField({ currentUrl, required = false }: BlogThumbna
               목록에 표시될 대표 이미지를 첨부하세요
             </p>
             <p className="text-center text-xs text-muted-foreground">
-              권장 1920×1080 · JPEG/PNG/WebP/GIF · 최대 15MB
+              권장 1920×1080 · JPEG/PNG/WebP/GIF · 최대 800KB(자동 압축)
             </p>
           </>
         )}

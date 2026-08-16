@@ -2,7 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type { Database } from "@/types/database"
 
 const BUCKET = "event-posters"
-const MAX_BYTES = 15 * 1024 * 1024
+const MAX_BYTES = 2 * 1024 * 1024
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
 
 const EXT_TO_TYPE: Record<string, string> = {
@@ -30,7 +30,7 @@ export function assertEventPosterFile(file: { name: string; type: string; size: 
     throw new Error("상세 포스터 파일이 비어 있습니다.")
   }
   if (file.size > MAX_BYTES) {
-    throw new Error("상세 포스터는 15MB 이하만 업로드할 수 있습니다.")
+    throw new Error("상세 포스터는 2MB 이하만 업로드할 수 있습니다.")
   }
   const contentType = resolveEventPosterContentType(file)
   if (!contentType) {
@@ -79,7 +79,7 @@ export async function uploadEventPoster(
   const path = buildPath(userId, file.name)
 
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
-    cacheControl: "3600",
+    cacheControl: "2592000",
     upsert: false,
     contentType,
   })

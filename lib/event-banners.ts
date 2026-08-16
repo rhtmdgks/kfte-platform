@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getSupabasePublicEnv, isSupabaseConfigured } from "@/lib/supabase/config"
+import { toSiteMediaUrl } from "@/lib/site-media"
 
 export type EventBanner = {
   id: string
@@ -115,7 +116,11 @@ async function uploadManifest(manifest: EventBannerManifest) {
 export async function getActiveEventBanners(): Promise<EventBanner[]> {
   const manifest = await downloadManifest()
   const now = Date.now()
-  return sortBanners(manifest.banners.filter((banner) => isBannerActiveNow(banner, now)))
+  return sortBanners(
+    manifest.banners
+      .filter((banner) => isBannerActiveNow(banner, now))
+      .map((banner) => ({ ...banner, imageUrl: toSiteMediaUrl(banner.imageUrl) })),
+  )
 }
 
 export async function getAllEventBanners(): Promise<EventBanner[]> {
@@ -176,8 +181,8 @@ export async function deleteEventBanner(id: string): Promise<void> {
 
 export async function uploadEventBannerImage(file: File, userId: string): Promise<string> {
   if (file.size === 0) throw new Error("배너 이미지 파일이 비어 있습니다.")
-  if (file.size > 15 * 1024 * 1024) {
-    throw new Error("배너 이미지는 15MB 이하만 업로드할 수 있습니다.")
+  if (file.size > 800 * 1024) {
+    throw new Error("배너 이미지는 800KB 이하만 업로드할 수 있습니다.")
   }
 
   const allowed = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"])
@@ -189,7 +194,7 @@ export async function uploadEventBannerImage(file: File, userId: string): Promis
   const path = `images/${userId}/${Date.now()}.${extension}`
   const admin = createAdminClient()
   const { error } = await admin.storage.from(BUCKET).upload(path, file, {
-    cacheControl: "3600",
+    cacheControl: "2592000",
     upsert: false,
     contentType: file.type,
   })

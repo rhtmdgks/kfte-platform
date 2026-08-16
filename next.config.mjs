@@ -28,6 +28,8 @@ const nextConfig = {
     },
   },
   images: {
+    minimumCacheTTL: 2678400,
+    localPatterns: [{ pathname: "/api/media/**" }],
     remotePatterns: [
       {
         protocol: 'https',

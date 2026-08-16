@@ -1,9 +1,12 @@
 import type { EventPost } from '@/lib/event-types'
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://kfte.kr'
+import { toAbsoluteSiteMediaUrl } from "@/lib/site-media"
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kfte.kr"
 
 export function buildEventSchema(post: EventPost, basePath: string, isArchive = false) {
   const url = `${siteUrl}${basePath}/${post.id}`
+  const imageUrl = toAbsoluteSiteMediaUrl(post.thumbnailUrl, siteUrl)
 
   return {
     '@context': 'https://schema.org',
@@ -31,8 +34,15 @@ export function buildEventSchema(post: EventPost, basePath: string, isArchive = 
       name: '한국기술창업진흥재단(KFTE)',
       url: siteUrl,
     },
-    ...(post.thumbnailUrl
-      ? { image: { '@type': 'ImageObject', url: post.thumbnailUrl, width: 1200, height: 630 } }
+    ...(imageUrl
+      ? {
+          image: {
+            "@type": "ImageObject" as const,
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+          },
+        }
       : {}),
     ...(post.cost === '무료' || !post.cost
       ? { offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW', availability: 'https://schema.org/InStock' } }
