@@ -270,6 +270,82 @@ export type Database = {
         }
         Relationships: []
       }
+      polls: {
+        Row: {
+          id: string
+          slug: string
+          title: string
+          description: string | null
+          status: Database["public"]["Enums"]["poll_status"]
+          questions: Json
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          slug: string
+          title: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["poll_status"]
+          questions?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          slug?: string
+          title?: string
+          description?: string | null
+          status?: Database["public"]["Enums"]["poll_status"]
+          questions?: Json
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "polls_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      poll_votes: {
+        Row: {
+          id: string
+          poll_id: string
+          voter_token: string
+          answers: Json
+          submitted_at: string
+        }
+        Insert: {
+          id?: string
+          poll_id: string
+          voter_token: string
+          answers?: Json
+          submitted_at?: string
+        }
+        Update: {
+          id?: string
+          poll_id?: string
+          voter_token?: string
+          answers?: Json
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "poll_votes_poll_id_fkey"
+            columns: ["poll_id"]
+            isOneToOne: false
+            referencedRelation: "polls"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       short_links: {
         Row: {
           click_count: number
@@ -319,9 +395,11 @@ export type Database = {
         Returns: number
       }
       resolve_short_link: { Args: { p_code: string }; Returns: string }
+      get_poll_results: { Args: { p_poll_id: string }; Returns: Json }
     }
     Enums: {
       application_form_status: "draft" | "published" | "closed"
+      poll_status: "draft" | "open" | "closed"
       application_status: "pending" | "reviewing" | "approved" | "rejected"
       content_type:
         | "notice"
@@ -460,6 +538,7 @@ export const Constants = {
   public: {
     Enums: {
       application_form_status: ["draft", "published", "closed"],
+      poll_status: ["draft", "open", "closed"],
       application_status: ["pending", "reviewing", "approved", "rejected"],
       content_type: [
         "notice",
