@@ -488,7 +488,6 @@ export function EventsPageContent({ config }: { config: EventsPageConfig }) {
           onPageChange={setCurrentPage}
         />
 
-        {/* HIDDEN: 행사 아카이브 CTA — 복구 시 주석 해제
         <MotionReveal delay={0.1} className="mt-16 border-t border-border pt-10 text-center">
           <p className="text-sm text-muted-foreground">지난 행사를 찾고 계신가요?</p>
           <Link
@@ -499,7 +498,6 @@ export function EventsPageContent({ config }: { config: EventsPageConfig }) {
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </MotionReveal>
-        */}
       </div>
     </main>
   )

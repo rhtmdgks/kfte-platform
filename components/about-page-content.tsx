@@ -469,7 +469,6 @@ function CtaSection() {
               >
                 <Link href={cta.primary.href}>{cta.primary.label}</Link>
               </Button>
-              {/* HIDDEN: secondary는 primary와 동일 목적 — 회원 가입 CTA 복구 시 아래 주석 해제
               <Button
                 asChild
                 variant="outline"
@@ -477,7 +476,6 @@ function CtaSection() {
               >
                 <Link href={cta.secondary.href}>{cta.secondary.label}</Link>
               </Button>
-              */}
             </div>
           </div>
         </MotionEnter>

@@ -18,11 +18,10 @@ const staticRoutes: MetadataRoute.Sitemap = [
   { url: `${siteUrl}/about/location` },
   { url: `${siteUrl}/about/ci` },
   { url: `${siteUrl}/activities/events` },
-  // HIDDEN: 행사 아카이브·회원사 — 복구 시 주석 해제
-  // { url: `${siteUrl}/activities/events/archive` },
-  // { url: `${siteUrl}/members` },
-  // { url: `${siteUrl}/members/join` },
-  // { url: `${siteUrl}/members/benefits` },
+  { url: `${siteUrl}/activities/events/archive` },
+  { url: `${siteUrl}/members` },
+  { url: `${siteUrl}/members/join` },
+  { url: `${siteUrl}/members/benefits` },
   { url: `${siteUrl}/news/notices` },
   { url: `${siteUrl}/news/press` },
   { url: `${siteUrl}/news/blog` },
@@ -38,8 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { data: press },
     { data: blogs },
     { data: events },
-    // HIDDEN: 행사 아카이브 동적 URL — 복구 시 archives 쿼리·toEntries 주석 해제
-    // { data: archives },
+    { data: archives },
   ] = await Promise.all([
     supabase
       .from('content_posts')
@@ -61,11 +59,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .select('slug, updated_at, published_at')
       .eq('content_type', 'event')
       .eq('status', 'published'),
-    // supabase
-    //   .from('content_posts')
-    //   .select('slug, updated_at, published_at')
-    //   .eq('content_type', 'event_archive')
-    //   .eq('status', 'published'),
+    supabase
+      .from('content_posts')
+      .select('slug, updated_at, published_at')
+      .eq('content_type', 'event_archive')
+      .eq('status', 'published'),
   ])
 
   function toEntries(
@@ -84,6 +82,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...toEntries(press, '/news/press'),
     ...toEntries(blogs, '/news/blog'),
     ...toEntries(events, '/activities/events'),
-    // HIDDEN: ...toEntries(archives, '/activities/events/archive'),
+    ...toEntries(archives, '/activities/events/archive'),
   ]
 }

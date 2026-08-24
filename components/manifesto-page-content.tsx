@@ -1,6 +1,6 @@
 "use client"
 
-// import { useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { manifestoPage, type ManifestoTabId } from "@/lib/manifesto-content"
 import { MotionReveal } from "@/components/motion"
@@ -8,11 +8,9 @@ import { pageMainClassName } from "@/lib/page-layout"
 import { cn } from "@/lib/utils"
 
 export function ManifestoPageContent() {
-  // 출범 선언문만 노출. 선언문 종류 추가 시 아래 탭 전환 로직 주석을 해제하세요.
-  // const [activeTab, setActiveTab] = useState<ManifestoTabId>(
-  //   manifestoPage.defaultTabId as ManifestoTabId,
-  // )
-  const activeTab = manifestoPage.defaultTabId as ManifestoTabId
+  const [activeTab, setActiveTab] = useState<ManifestoTabId>(
+    manifestoPage.defaultTabId as ManifestoTabId,
+  )
 
   const statement = manifestoPage.statements[activeTab]
 
@@ -41,18 +39,6 @@ export function ManifestoPageContent() {
                     |
                   </span>
                 )}
-                <span
-                  className={cn(
-                    isActive
-                      ? "font-bold text-foreground"
-                      : "font-normal text-muted-foreground",
-                  )}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {tab.label}
-                </span>
-                {/*
-                // 탭 전환 활성화 시 위 <span>을 아래 <button>으로 교체
                 <button
                   type="button"
                   onClick={() => setActiveTab(tab.id as ManifestoTabId)}
@@ -66,7 +52,6 @@ export function ManifestoPageContent() {
                 >
                   {tab.label}
                 </button>
-                */}
               </span>
             )
           })}
