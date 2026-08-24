@@ -58,10 +58,10 @@ export const navMenu = [
   },
 ] as const
 
-export const navAuth = [
+export const navAuth: readonly { label: string; href: string }[] = [
   { label: "로그인", href: "/login" },
   { label: "회원가입", href: "/signup" },
-] as const
+]
 
 export const navLinks = navMenu.flatMap((group) =>
   group.items.map((item) => ({ label: item.label, href: item.href })),

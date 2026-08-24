@@ -16,7 +16,6 @@ import {
 import { cn } from "@/lib/utils"
 
 type NavItem = { label: string; href: string }
-type NavAuthItem = { label: string; href: string }
 
 /** Fluid header — desktop keeps air; mobile stays short */
 const HEADER_H = "h-[clamp(3.75rem,3.4rem+1vw,6rem)]"
@@ -56,7 +55,7 @@ function AuthLinks({
         className,
       )}
     >
-      {(navAuth as unknown as NavAuthItem[]).map((link, index) => (
+      {navAuth.map((link, index) => (
         <span key={link.href} className={cn("flex items-center", stacked ? "w-full" : "gap-2.5")}>
           {!stacked && index > 0 && (
             <span
